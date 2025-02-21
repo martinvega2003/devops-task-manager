@@ -20,6 +20,6 @@ router.put('/:id', authMiddleware, updateTask);
 router.delete('/:id', authMiddleware, deleteTask);
 
 // Route for updating task status
-router.put('/:id/status', updateTaskStatus);
+router.patch('/:id/status', authMiddleware, updateTaskStatus);
 
 export default router;
