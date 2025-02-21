@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createTask, getAllTasks, getTaskById, updateTask, deleteTask } from '../controllers/task.controller.js';
+import { createTask, getAllTasks, getTaskById, updateTask, deleteTask, updateTaskStatus } from '../controllers/task.controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = Router();
@@ -18,5 +18,8 @@ router.put('/:id', authMiddleware, updateTask);
 
 // Delete task
 router.delete('/:id', authMiddleware, deleteTask);
+
+// Route for updating task status
+router.put('/:id/status', updateTaskStatus);
 
 export default router;
