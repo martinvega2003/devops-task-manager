@@ -20,22 +20,49 @@ export const createTask = async (req, res) => {
   }
 };
 
-// Get all tasks (User-specific)
+// Get all tasks with filtering and sorting
 export const getAllTasks = async (req, res) => {
-  const user_id = req.user.id;  // Get user ID from the authenticated user
+  const { status, priority, deadline, sortBy, order } = req.query; // Get query parameters
+
+  let query = 'SELECT * FROM tasks WHERE user_id = $1'; // Start with user filter
+
+  const queryParams = [req.user.id]; // User ID as a parameter
+
+  // Add filters based on the query parameters
+  if (status) {
+    query += ' AND status = $' + (queryParams.length + 1); // Add status filter
+    queryParams.push(status);
+  }
+
+  if (priority) {
+    query += ' AND priority = $' + (queryParams.length + 1); // Add priority filter
+    queryParams.push(priority);
+  }
+
+  if (deadline) {
+    query += ' AND deadline = $' + (queryParams.length + 1); // Add deadline filter
+    queryParams.push(deadline);
+  }
+
+  // Add sorting
+  if (sortBy) {
+    const validSortFields = ['created_at', 'deadline'];
+    if (validSortFields.includes(sortBy)) {
+      query += ` ORDER BY ${sortBy} ${order || 'ASC'}`; // Default to ascending order
+    }
+  } else {
+    query += ' ORDER BY created_at ASC'; // Default sorting by created_at
+  }
 
   try {
-    // Fetch tasks only for the authenticated user
-    const tasks = await pool.query(
-      'SELECT * FROM tasks WHERE user_id = $1', 
-      [user_id]
-    );
+    const tasks = await pool.query(query, queryParams);
     res.json(tasks.rows);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 };
+
 
 // Get task by ID (User-specific)
 export const getTaskById = async (req, res) => {
