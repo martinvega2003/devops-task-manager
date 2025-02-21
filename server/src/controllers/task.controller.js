@@ -2,8 +2,8 @@ import pool from '../database.js';
 
 // Create a new task
 export const createTask = async (req, res) => {
-  const { title, description, priority, deadline, status = 'Pending' } = req.body;  // Default status to 'Pending'
-  const user_id = req.user.id; // Get user ID from the authenticated user
+  const { title, description, priority, deadline, status = 'Pending' } = req.body;
+  const user_id = req.user.id;  // Get user ID from the authenticated user
 
   try {
     // Insert the new task into the database, including status
@@ -19,12 +19,17 @@ export const createTask = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
-  
 
-// Get all tasks
+// Get all tasks (User-specific)
 export const getAllTasks = async (req, res) => {
+  const user_id = req.user.id;  // Get user ID from the authenticated user
+
   try {
-    const tasks = await pool.query('SELECT * FROM tasks');
+    // Fetch tasks only for the authenticated user
+    const tasks = await pool.query(
+      'SELECT * FROM tasks WHERE user_id = $1', 
+      [user_id]
+    );
     res.json(tasks.rows);
   } catch (err) {
     console.error(err.message);
@@ -32,15 +37,22 @@ export const getAllTasks = async (req, res) => {
   }
 };
 
-// Get task by ID
+// Get task by ID (User-specific)
 export const getTaskById = async (req, res) => {
   const { id } = req.params;
+  const user_id = req.user.id;  // Get user ID from the authenticated user
 
   try {
-    const task = await pool.query('SELECT * FROM tasks WHERE id = $1', [id]);
+    // Fetch task by ID and ensure it belongs to the authenticated user
+    const task = await pool.query(
+      'SELECT * FROM tasks WHERE id = $1 AND user_id = $2', 
+      [id, user_id]
+    );
+
     if (task.rows.length === 0) {
-      return res.status(404).json({ msg: 'Task not found' });
+      return res.status(404).json({ msg: 'Task not found or you do not have access' });
     }
+
     res.json(task.rows[0]);
   } catch (err) {
     console.error(err.message);
@@ -48,20 +60,28 @@ export const getTaskById = async (req, res) => {
   }
 };
 
-// Update task
+// Update task (User-specific)
 export const updateTask = async (req, res) => {
   const { id } = req.params;
   const { title, description, priority, deadline, status } = req.body;
+  const user_id = req.user.id;  // Get user ID from the authenticated user
 
   try {
-    const updatedTask = await pool.query(
-      'UPDATE tasks SET title = $1, description = $2, priority = $3, deadline = $4, status = $5 WHERE id = $6 RETURNING *',
-      [title, description, priority, deadline, status, id]
+    // Check if task belongs to the user
+    const task = await pool.query(
+      'SELECT * FROM tasks WHERE id = $1 AND user_id = $2', 
+      [id, user_id]
     );
 
-    if (updatedTask.rows.length === 0) {
-      return res.status(404).json({ msg: 'Task not found' });
+    if (task.rows.length === 0) {
+      return res.status(403).json({ msg: 'You cannot update a task that you did not create' });
     }
+
+    // Update the task
+    const updatedTask = await pool.query(
+      'UPDATE tasks SET title = $1, description = $2, priority = $3, deadline = $4, status = $5 WHERE id = $6 RETURNING *', 
+      [title, description, priority, deadline, status, id]
+    );
 
     res.json(updatedTask.rows[0]);
   } catch (err) {
@@ -70,38 +90,54 @@ export const updateTask = async (req, res) => {
   }
 };
 
-// Delete task
+// Delete task (User-specific)
 export const deleteTask = async (req, res) => {
   const { id } = req.params;
+  const user_id = req.user.id;  // Get user ID from the authenticated user
 
   try {
-    const deletedTask = await pool.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [id]);
+    // Check if task belongs to the user
+    const task = await pool.query(
+      'SELECT * FROM tasks WHERE id = $1 AND user_id = $2', 
+      [id, user_id]
+    );
 
-    if (deletedTask.rows.length === 0) {
-      return res.status(404).json({ msg: 'Task not found' });
+    if (task.rows.length === 0) {
+      return res.status(403).json({ msg: 'You cannot delete a task that you did not create' });
     }
 
-    res.json({ msg: 'Task deleted' });
+    // Delete the task
+    await pool.query('DELETE FROM tasks WHERE id = $1', [id]);
+
+    res.json({ msg: 'Task deleted successfully' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 };
 
-// Update task status (New feature)
+// Update task status (User-specific)
 export const updateTaskStatus = async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;  // Status can be 'Pending', 'Completed', etc.
+  const { status } = req.body;
+  const user_id = req.user.id;  // Get user ID from the authenticated user
 
   try {
-    const updatedTask = await pool.query(
-      'UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *',
-      [status, id]
+    // Check if task belongs to the user
+    const task = await pool.query(
+      'SELECT * FROM tasks WHERE id = $1 AND user_id = $2', 
+      [id, user_id]
     );
 
-    if (updatedTask.rows.length === 0) {
-      return res.status(404).json({ msg: 'Task not found' });
+    if (task.rows.length === 0) {
+      return res.status(403).json({ msg: 'You cannot update the status of a task that you did not create' });
     }
+
+    // Update task status
+    const updatedTask = await pool.query(
+      'UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *', 
+      [status, id]
+    );
 
     res.json(updatedTask.rows[0]);
   } catch (err) {
