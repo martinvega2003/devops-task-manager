@@ -1,24 +1,35 @@
 import pool from '../database.js';
 
-// Create a new task
+// Create Task Controller
 export const createTask = async (req, res) => {
-  const { title, description, priority, deadline, status = 'Pending' } = req.body;
-  const user_id = req.user.id;  // Get user ID from the authenticated user
+  const { title, description, priority, deadline, status = 'Pending', project_id } = req.body;
+  const userId = req.user.id; // Assuming req.user.id contains the logged-in user's ID
+
+  if (!title || !description || !priority || !deadline || !project_id) {
+    return res.status(400).json({ msg: 'All fields (title, description, priority, deadline, project_id) are required.' });
+  }
 
   try {
-    // Insert the new task into the database, including status
+    // Check if project exists and belongs to the user
+    const project = await pool.query('SELECT * FROM projects WHERE id = $1 AND admin_id = $2', [project_id, userId]);
+
+    if (project.rows.length === 0) {
+      return res.status(403).json({ msg: 'Project not found or you do not have permission to add tasks to this project.' });
+    }
+
+    // Create the task
     const newTask = await pool.query(
-      'INSERT INTO tasks (title, description, user_id, priority, deadline, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [title, description, user_id, priority, deadline, status]
+      'INSERT INTO tasks (title, description, project_id, priority, deadline, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [title, description, project_id, priority, deadline, status]
     );
 
-    // Respond with the created task
     res.status(201).json(newTask.rows[0]);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 };
+
 
 // Get all tasks with filtering and sorting
 export const getAllTasks = async (req, res) => {

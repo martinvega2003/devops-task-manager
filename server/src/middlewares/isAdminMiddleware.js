@@ -1,8 +1,10 @@
+import pool from "../database.js";
+
 export const isAdminMiddleware = async (req, res, next) => {
     try {
       const user = await pool.query("SELECT role FROM users WHERE id = $1", [req.user.id]);
   
-      if (user.rows.length === 0 || user.rows[0].role !== 'admin') {
+      if (user.rows.length === 0 || user.rows[0].role !== 'Admin') {
         return res.status(403).json({ msg: 'Access denied. Admins only.' });
       }
   
