@@ -59,6 +59,7 @@ export const loginUser = async (req, res) => {
     const payload = {
       user: {
         id: user.rows[0].id,
+        role: user.rows[0].role,  // Add the role to the payload
       },
     };
 
