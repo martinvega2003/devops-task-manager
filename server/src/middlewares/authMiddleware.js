@@ -14,6 +14,9 @@ const authMiddleware = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded.user;  // Assuming the decoded JWT contains the user info
+    if (req.user.role !== 'Admin') {
+      return res.status(403).json({ msg: 'Access denied' });
+    }
     next();
   } catch (err) {
     console.error(err);
