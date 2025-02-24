@@ -1,25 +1,28 @@
 import { Router } from 'express';
 import { createTask, getAllTasks, getTaskById, updateTask, deleteTask, updateTaskStatus } from '../controllers/task.controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
+import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
+import checkProjectOwner from '../middlewares/checkProjectOwner.js';
+import checkTaskOwner from '../middlewares/checkTaskOwner.js';
 
 const router = Router();
 
 // Create a new task
-router.post('/', authMiddleware, createTask);
+router.post('/', authMiddleware, isAdminMiddleware, createTask);
 
-// Get all tasks
-router.get('/', authMiddleware, getAllTasks);
+// Get all tasks from an specific project
+router.get('/project/:id', authMiddleware, isAdminMiddleware, checkProjectOwner, getAllTasks);
 
 // Get task by ID
-router.get('/:id', authMiddleware, getTaskById);
+router.get('/:id', authMiddleware, isAdminMiddleware, checkTaskOwner, getTaskById);
 
 // Update task
-router.put('/:id', authMiddleware, updateTask);
+router.put('/:id', authMiddleware, isAdminMiddleware, checkTaskOwner, updateTask);
 
 // Delete task
-router.delete('/:id', authMiddleware, deleteTask);
+router.delete('/:id', authMiddleware, isAdminMiddleware, checkTaskOwner, deleteTask);
 
 // Route for updating task status
-router.patch('/:id/status', authMiddleware, updateTaskStatus);
+router.patch('/:id/status', authMiddleware, isAdminMiddleware, checkTaskOwner, updateTaskStatus);
 
 export default router;

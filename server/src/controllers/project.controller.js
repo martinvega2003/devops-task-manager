@@ -7,11 +7,6 @@ export const createProject = async (req, res) => {
   const { name, description, deadline } = req.body;
   const admin_id = req.user.id;  // Admin ID from the authenticated user
 
-
-  if (req.user.role !== 'Admin') {
-    return res.status(403).json({ msg: 'Only admins can create projects' });
-  }
-
   try {
     // Insert new project, associating with admin who created it
     const newProject = await pool.query(
@@ -30,11 +25,6 @@ export const createProject = async (req, res) => {
 export const getAllProjects = async (req, res) => {
   const { status, sortBy, order } = req.query; // Get query parameters
   const user_id = req.user.id;  // Get user ID from the authenticated user
-
-  // Check if user is an admin, if yes, return only the projects they created
-  if (req.user.role !== 'Admin') {
-    return res.status(403).json({ msg: 'Only admins can create projects' });
-  }
   
   let query = 'SELECT * FROM projects WHERE admin_id = $1'; // Start with admin filter
   
@@ -71,15 +61,11 @@ export const getProjectById = async (req, res) => {
   const user_id = req.user.id;
 
   try {
-    // Check if the project exists and if the user is the creator
+    // Return the project with the ID
     const project = await pool.query(
       'SELECT * FROM projects WHERE id = $1 AND admin_id = $2',
       [id, user_id]
     );
-
-    if (project.rows.length === 0) {
-      return res.status(403).json({ msg: 'You do not have access to this project' });
-    }
 
     res.json(project.rows[0]);
   } catch (err) {
@@ -92,23 +78,8 @@ export const getProjectById = async (req, res) => {
 export const updateProject = async (req, res) => {
   const { id } = req.params;
   const { name, description, deadline } = req.body;
-  const user_id = req.user.id;
-
-  if (req.user.role !== 'Admin') {
-    return res.status(403).json({ msg: 'Only admins can update projects' });
-  }
 
   try {
-    // Check if the project exists and if the user is the creator
-    const project = await pool.query(
-      'SELECT * FROM projects WHERE id = $1 AND admin_id = $2',
-      [id, user_id]
-    );
-
-    if (project.rows.length === 0) {
-      return res.status(403).json({ msg: 'You cannot update a project you did not create' });
-    }
-
     // Update project details
     const updatedProject = await pool.query(
       'UPDATE projects SET name = $1, description = $2, deadline = $3 WHERE id = $4 RETURNING *',
@@ -127,20 +98,7 @@ export const deleteProject = async (req, res) => {
   const { id } = req.params;
   const user_id = req.user.id;
 
-  if (req.user.role !== 'Admin') {
-    return res.status(403).json({ msg: 'Only admins can delete projects' });
-  }
-
   try {
-    // Check if the project exists and if the user is the creator
-    const project = await pool.query(
-      'SELECT * FROM projects WHERE id = $1 AND admin_id = $2',
-      [id, user_id]
-    );
-
-    if (project.rows.length === 0) {
-      return res.status(403).json({ msg: 'You cannot delete a project you did not create' });
-    }
 
     // Delete the project
     await pool.query('DELETE FROM projects WHERE id = $1', [id]);
@@ -158,22 +116,8 @@ export const updateProjectStatus = async (req, res) => {
   const { status } = req.body;
   const user_id = req.user.id;  // Get user ID from the authenticated user
 
-  //Check if the user is an Admin
-  if (req.user.role !== 'Admin') {
-    return res.status(403).json({ msg: 'Only admins can delete projects' });
-  }
-
   try {
-    // Check if projects belongs to the admin
-    const task = await pool.query(
-      'SELECT * FROM projects WHERE id = $1 AND admin_id = $2', 
-      [id, user_id]
-    );
-
-    if (task.rows.length === 0) {
-      return res.status(403).json({ msg: 'You cannot update the status of a project that you did not create' });
-    }
-
+    
     // Update project status
     const updatedProject = await pool.query(
       'UPDATE projects SET status = $1 WHERE id = $2 RETURNING *', 
