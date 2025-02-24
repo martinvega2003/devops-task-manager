@@ -43,7 +43,8 @@ export const registerTeamMember = async (req, res) => {
         id: user.id,
         name: user.username,
         email: user.email,
-        role: user.role
+        role: user.role,
+        admin_id: user.admin_id
       }
     });
   } catch (error) {
@@ -57,37 +58,75 @@ export const getTeamMembers = async (req, res) => {
   const adminId = req.user.id; // Get the logged-in admin's ID
 
   try {
-      // Fetch all team members created by this admin
-      const result = await pool.query('SELECT id, username, email, role FROM users WHERE admin_id = $1', [adminId]);
+    const result = await pool.query(
+      `SELECT 
+          u.id AS user_id,
+          u.username,
+          u.email,
+          u.active,
+          COUNT(DISTINCT t.id) AS tasks_count,
+          COUNT(DISTINCT ta.project_id) AS projects_count
+      FROM 
+          users u
+      LEFT JOIN 
+          task_users tu ON u.id = tu.user_id
+      LEFT JOIN 
+          tasks t ON tu.task_id = t.id
+      LEFT JOIN 
+          tasks ta ON ta.id = tu.task_id
+      WHERE 
+          u.admin_id = $1
+      GROUP BY 
+          u.id;`,
+      [adminId]
+    );
 
-      res.status(200).json({
-          teamMembers: result.rows
-      });
-
+    res.status(200).json({
+      message: 'Team members fetched successfully',
+      teamMembers: result.rows,
+    });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal Server Error" });
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 // Deactivate Team Member Account (Soft Delete):
-export const deactivateUser = async (req, res) => {
-	const { userId } = req.params;
+export const toggleUserActiveStatus = async (req, res) => {
+  const { userId } = req.params;
 
-	try {
-			// Deactivate user
-			await pool.query(
-					'UPDATE users SET active = false WHERE id = $1',
-					[userId]
-			);
+  try {
+      // Fetch the current active status of the user
+      const userResult = await pool.query(
+          'SELECT active FROM users WHERE id = $1',
+          [userId]
+      );
 
-			res.json({ msg: 'User deactivated successfully' });
-	} catch (error) {
-			console.error(error);
-			res.status(500).json({ msg: 'Internal server error' });
-	}
+      // If the user doesn't exist
+      if (userResult.rowCount === 0) {
+          return res.status(404).json({ msg: 'User not found' });
+      }
+
+      // Get the current active status
+      const currentActiveStatus = userResult.rows[0].active;
+
+      // Toggle the active status
+      const newActiveStatus = !currentActiveStatus;
+
+      // Update the user with the new active status
+      await pool.query(
+          'UPDATE users SET active = $1 WHERE id = $2',
+          [newActiveStatus, userId]
+      );
+
+      res.json({
+          msg: `User ${newActiveStatus ? 'activated' : 'deactivated'} successfully`,
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: 'Internal server error' });
+  }
 };
-
 
 // Permanently Delete Team Member From Database:
 export const deleteUser = async (req, res) => {

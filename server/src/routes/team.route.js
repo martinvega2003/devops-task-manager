@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { registerTeamMember, getTeamMembers, deactivateUser, deleteUser } from '../controllers/team.controller.js';
+import { registerTeamMember, getTeamMembers, deleteUser, toggleUserActiveStatus } from '../controllers/team.controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
 import checkUserAdminMiddleware from '../middlewares/checkUserAdminMiddleware.js';
@@ -13,7 +13,7 @@ router.post('/invite', authMiddleware, isAdminMiddleware, registerTeamMember);
 router.get('/team-members', authMiddleware, isAdminMiddleware, getTeamMembers);
 
 // Deactivate a team member
-router.put('/deactivate/:userId', authMiddleware, checkUserAdminMiddleware, deactivateUser);
+router.put('/deactivate/:userId', authMiddleware, checkUserAdminMiddleware, toggleUserActiveStatus);
 
 // Delete a team member
 router.delete('/delete/:userId', authMiddleware, checkUserAdminMiddleware, deleteUser);
