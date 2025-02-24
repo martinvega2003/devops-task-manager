@@ -58,16 +58,36 @@ export const getTeamMembers = async (req, res) => {
   const adminId = req.user.id; // Get the logged-in admin's ID
 
   try {
-      // Fetch all team members created by this admin
-      const result = await pool.query('SELECT id, username, email, role, active FROM users WHERE admin_id = $1', [adminId]);
+    const result = await pool.query(
+      `SELECT 
+          u.id AS user_id,
+          u.username,
+          u.email,
+          u.active,
+          COUNT(DISTINCT t.id) AS tasks_count,
+          COUNT(DISTINCT ta.project_id) AS projects_count
+      FROM 
+          users u
+      LEFT JOIN 
+          task_users tu ON u.id = tu.user_id
+      LEFT JOIN 
+          tasks t ON tu.task_id = t.id
+      LEFT JOIN 
+          tasks ta ON ta.id = tu.task_id
+      WHERE 
+          u.admin_id = $1
+      GROUP BY 
+          u.id;`,
+      [adminId]
+    );
 
-      res.status(200).json({
-          teamMembers: result.rows
-      });
-
+    res.status(200).json({
+      message: 'Team members fetched successfully',
+      teamMembers: result.rows,
+    });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal Server Error" });
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
