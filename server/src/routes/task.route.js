@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { createTask, getAllTasks, getTaskById, updateTask, deleteTask, updateTaskStatus } from '../controllers/task.controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
-import { isAdminMiddleware } from '../middlewares/isAdminMiddleware.js';
-import { checkTaskOwner } from '../middlewares/checkTaskOwner.js';
-import { checkProjectOwner } from '../middlewares/checkProjectOwner.js';
+import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
+import checkProjectOwner from '../middlewares/checkProjectOwner.js';
+import checkTaskOwner from '../middlewares/checkTaskOwner.js';
 
 const router = Router();
 

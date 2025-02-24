@@ -1,6 +1,6 @@
 import pool from "../database.js";
 
-export const checkProjectOwner = async (req, res, next) => {
+const checkProjectOwner = async (req, res, next) => {
   const { id } = req.params; // Get project ID from request body (or params if needed)
   const userId = req.user.id; // Assuming `req.user.id` contains the logged-in user's ID
 
@@ -18,3 +18,5 @@ export const checkProjectOwner = async (req, res, next) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
+export default checkProjectOwner

@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { createProject, getAllProjects, getProjectById, updateProject, deleteProject, updateProjectStatus } from '../controllers/project.controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
-import { isAdminMiddleware } from '../middlewares/isAdminMiddleware.js';
-import { checkProjectOwner } from '../middlewares/checkProjectOwner.js';
+import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
+import checkProjectOwner from '../middlewares/checkProjectOwner.js';
 
 const router = Router();
 

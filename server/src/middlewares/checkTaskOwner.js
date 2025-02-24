@@ -1,6 +1,6 @@
 import pool from "../database.js";
 
-export const checkTaskOwner = async (req, res, next) => {
+const checkTaskOwner = async (req, res, next) => {
     const { id } = req.params; 
     const userId = req.user.id;
   
@@ -21,4 +21,6 @@ export const checkTaskOwner = async (req, res, next) => {
       res.status(500).json({ msg: 'Server error' });
     }
 };
+
+export default checkTaskOwner
   
