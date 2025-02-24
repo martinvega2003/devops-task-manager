@@ -2,7 +2,7 @@ import pool from '../database.js';
 
 // Create Task Controller
 export const createTask = async (req, res) => {
-  const { title, description, priority, deadline, status = 'Pending', project_id } = req.body;
+  const { title, description, priority, deadline, status = 'Pending', project_id, assigned_users } = req.body;
   const userId = req.user.id; // Assuming req.user.id contains the logged-in user's ID
 
   if (!title || !description || !priority || !deadline || !project_id) {
@@ -23,7 +23,13 @@ export const createTask = async (req, res) => {
       [title, description, project_id, priority, deadline, status]
     );
 
-    res.status(201).json(newTask.rows[0]);
+    // Assign users to the task if the Admin assigned them
+    if (assigned_users && assigned_users.length > 0) {
+      const values = assigned_users.map(userId => `(${taskId}, ${userId})`).join(", ");
+      await pool.query(`INSERT INTO task_users (task_id, user_id) VALUES ${values}`);
+    }
+
+    res.status(201).json(newTask.rows[0], assigned_users);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
