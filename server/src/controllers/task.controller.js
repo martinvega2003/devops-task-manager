@@ -31,46 +31,50 @@ export const createTask = async (req, res) => {
 };
 
 
-// Get all tasks with filtering and sorting
+// Get all tasks for a specific project with filtering and sorting
 export const getAllTasks = async (req, res) => {
+  const { id } = req.params; // Get project ID from URL params
   const { status, priority, deadline, sortBy, order } = req.query; // Get query parameters
 
-  let query = 'SELECT * FROM tasks WHERE user_id = $1'; // Start with user filter
-
-  const queryParams = [req.user.id]; // User ID as a parameter
-
-  // Add filters based on the query parameters
-  if (status) {
-    query += ' AND status = $' + (queryParams.length + 1); // Add status filter
-    queryParams.push(status);
-  }
-
-  if (priority) {
-    query += ' AND priority = $' + (queryParams.length + 1); // Add priority filter
-    queryParams.push(priority);
-  }
-
-  if (deadline) {
-    query += ' AND deadline = $' + (queryParams.length + 1); // Add deadline filter
-    queryParams.push(deadline);
-  }
-
-  // Add sorting
-  if (sortBy) {
-    const validSortFields = ['created_at', 'deadline'];
-    if (validSortFields.includes(sortBy)) {
-      query += ` ORDER BY ${sortBy} ${order || 'ASC'}`; // Default to ascending order
-    }
-  } else {
-    query += ' ORDER BY created_at ASC'; // Default sorting by created_at
+  if (!id) {
+    return res.status(400).json({ msg: 'Project ID is required.' });
   }
 
   try {
+    // Base query: Get tasks for the specified project
+    let query = 'SELECT * FROM tasks WHERE project_id = $1';
+    const queryParams = [id];
+
+    // Add filters based on the query parameters
+    if (status) {
+      query += ' AND status = $' + (queryParams.length + 1);
+      queryParams.push(status);
+    }
+
+    if (priority) {
+      query += ' AND priority = $' + (queryParams.length + 1);
+      queryParams.push(priority);
+    }
+
+    if (deadline) {
+      query += ' AND deadline = $' + (queryParams.length + 1);
+      queryParams.push(deadline);
+    }
+
+    // Add sorting
+    const validSortFields = ['created_at', 'deadline'];
+    if (sortBy && validSortFields.includes(sortBy)) {
+      query += ` ORDER BY ${sortBy} ${order?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'}`;
+    } else {
+      query += ' ORDER BY created_at ASC'; // Default sorting by created_at
+    }
+
+    // Execute query
     const tasks = await pool.query(query, queryParams);
     res.json(tasks.rows);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 };
 

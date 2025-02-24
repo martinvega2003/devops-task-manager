@@ -3,14 +3,15 @@ import { createTask, getAllTasks, getTaskById, updateTask, deleteTask, updateTas
 import authMiddleware from '../middlewares/authMiddleware.js';
 import { isAdminMiddleware } from '../middlewares/isAdminMiddleware.js';
 import { checkTaskOwner } from '../middlewares/checkTaskOwner.js';
+import { checkProjectOwner } from '../middlewares/checkProjectOwner.js';
 
 const router = Router();
 
 // Create a new task
 router.post('/', authMiddleware, isAdminMiddleware, createTask);
 
-// Get all tasks
-router.get('/', authMiddleware, isAdminMiddleware, getAllTasks);
+// Get all tasks from an specific project
+router.get('/project/:id', authMiddleware, isAdminMiddleware, checkProjectOwner, getAllTasks);
 
 // Get task by ID
 router.get('/:id', authMiddleware, isAdminMiddleware, checkTaskOwner, getTaskById);
