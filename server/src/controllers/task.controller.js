@@ -17,6 +17,17 @@ export const createTask = async (req, res) => {
       return res.status(403).json({ msg: 'Project not found or you do not have permission to add tasks to this project.' });
     }
 
+    // Get Users registered by this Admin (Their IDs)
+    const registeredUsers = await pool.query('SELECT id FROM users WHERE admin_id = $1', [adminId]);
+    console.log(registeredUsers.rows)
+    const validUserIds = registeredUsers.rows.map(user => user.id);
+
+    console.log(assignedUsers)
+
+    // Filter assignedUsers to include just the ones registered by the Admin.
+    const filteredAssignedUsers = assignedUsers?.filter(userId => validUserIds.includes(Number(userId))) || [];
+    console.log(filteredAssignedUsers)
+
     // Create the task
     const newTask = await pool.query(
       'INSERT INTO tasks (title, description, project_id, priority, deadline, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
@@ -24,8 +35,8 @@ export const createTask = async (req, res) => {
     );
 
     // Assign users to the task if the Admin assigned them using the task_users Database table
-    if (assignedUsers && assignedUsers.length > 0) {
-      const values = assignedUsers.map(userId => `(${newTask.rows[0].id}, ${userId})`).join(", "); //Pass the task id and the id of all assigned users in differnet rows in the task_users table
+    if (filteredAssignedUsers && filteredAssignedUsers.length > 0) {
+      const values = filteredAssignedUsers.map(userId => `(${newTask.rows[0].id}, ${userId})`).join(", "); //Pass the task id and the id of all assigned users in differnet rows in the task_users table
       await pool.query(`INSERT INTO task_users (task_id, user_id) VALUES ${values}`);
     }
 
