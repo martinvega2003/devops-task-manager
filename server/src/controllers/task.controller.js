@@ -43,7 +43,6 @@ export const createTask = async (req, res) => {
   }
 };
 
-
 // Get all tasks for a specific project with filtering and sorting
 export const getAllTasks = async (req, res) => {
   const { projectId } = req.params; // Get project ID from URL params
@@ -143,7 +142,8 @@ export const getTaskById = async (req, res) => {
 // Update task (User-specific)
 export const updateTask = async (req, res) => {
   const { taskId } = req.params;
-  const { title, description, priority, deadline, status } = req.body;
+  const { title, description, priority, deadline, status, assignedUsers } = req.body;
+  const adminId = req.user.id
 
   try {
     // Update the task
@@ -151,6 +151,22 @@ export const updateTask = async (req, res) => {
       'UPDATE tasks SET title = $1, description = $2, priority = $3, deadline = $4, status = $5 WHERE id = $6 RETURNING *', 
       [title, description, priority, deadline, status, taskId]
     );
+
+    // Get Users registered by this Admin (Their IDs)
+    const registeredUsers = await pool.query('SELECT id FROM users WHERE admin_id = $1', [adminId]);
+    const validUserIds = registeredUsers.rows.map(user => user.id);
+
+    // Filter assignedUsers to include just the ones registered by the Admin.
+    const filteredAssignedUsers = assignedUsers?.filter(userId => validUserIds.includes(Number(userId))) || [];
+
+    // Remove all current assignments
+    await pool.query('DELETE FROM task_users WHERE task_id = $1', [taskId]);
+
+    // Assign users to the task if the Admin assigned them
+    if (filteredAssignedUsers.length > 0) {
+      const values = filteredAssignedUsers.map(userId => `(${taskId}, ${userId})`).join(", ");
+      await pool.query(`INSERT INTO task_users (task_id, user_id) VALUES ${values}`);
+    }
 
     res.json(updatedTask.rows[0]);
   } catch (err) {
