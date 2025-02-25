@@ -2,15 +2,23 @@ import pool from '../database.js';
 
 // Create Task Controller
 export const createTask = async (req, res) => {
-  const { title, description, priority, deadline, status = 'Pending', projectId, assignedUsers } = req.body;
+  const { title, description, priority, status = 'Pending', projectId, assignedUsers, startTime, endTime } = req.body;
   const adminId = req.user.id; // Assuming req.user.id contains the logged-in user's ID
 
-  if (!title || !description || !priority || !deadline || !projectId) {
-    return res.status(400).json({ msg: 'All fields (title, description, priority, deadline, project_id) are required.' });
+  if (!title || !description || !priority || !startTime || !endTime || !projectId) {
+    return res.status(400).json({ msg: 'All fields (title, description, priority, start_time, end_time, project_id) are required.' });
+  }
+
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+  const duration = (end - start) / (1000 * 60); // Duration in minutes
+
+  if (duration < 15 || duration > 480) {
+    return res.status(400).json({ msg: 'Task duration must be between 15 minutes and 8 hours.' });
   }
 
   try {
-    // Check if project exists and belongs to the user
+    // Check if project exists and belongs to the user - checkProjectOwner uses projectId from req.params, which is not available in this controller
     const project = await pool.query('SELECT * FROM projects WHERE id = $1 AND admin_id = $2', [projectId, adminId]);
 
     if (project.rows.length === 0) {
@@ -24,10 +32,30 @@ export const createTask = async (req, res) => {
     // Filter assignedUsers to include just the ones registered by the Admin.
     const filteredAssignedUsers = assignedUsers?.filter(userId => validUserIds.includes(Number(userId))) || [];
 
+    // Check for overlapping tasks
+    if (filteredAssignedUsers.length > 0) {
+      const overlappingUsers = await pool.query(
+        `SELECT DISTINCT tu.user_id 
+         FROM task_users tu 
+         JOIN tasks t ON tu.task_id = t.id 
+         WHERE tu.user_id = ANY($1)  
+         AND t.end_time > $2
+         AND t.start_time < $3`,
+        [filteredAssignedUsers, start, end]
+      );
+
+      if (overlappingUsers.rows.length > 0) {
+        return res.status(400).json({
+          msg: 'One or more assigned users already have a task during this time block.',
+          conflictingUsers: overlappingUsers.rows.map(row => row.user_id),
+        });
+      }
+    }
+
     // Create the task
     const newTask = await pool.query(
-      'INSERT INTO tasks (title, description, project_id, priority, deadline, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [title, description, projectId, priority, deadline, status]
+      'INSERT INTO tasks (title, description, project_id, priority, start_time, end_time, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+      [title, description, projectId, priority, start, end, status]
     );
 
     // Assign users to the task if the Admin assigned them using the task_users Database table
