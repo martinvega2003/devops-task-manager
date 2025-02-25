@@ -39,17 +39,17 @@ export const createTask = async (req, res) => {
 
 // Get all tasks for a specific project with filtering and sorting
 export const getAllTasks = async (req, res) => {
-  const { id } = req.params; // Get project ID from URL params
+  const { projectId } = req.params; // Get project ID from URL params
   const { status, priority, deadline, sortBy, order } = req.query; // Get query parameters
 
-  if (!id) {
+  if (!projectId) {
     return res.status(400).json({ msg: 'Project ID is required.' });
   }
 
   try {
     // Base query: Get tasks for the specified project
     let query = 'SELECT * FROM tasks WHERE project_id = $1';
-    const queryParams = [id];
+    const queryParams = [projectId];
 
     // Add filters based on the query parameters
     if (status) {
@@ -70,7 +70,7 @@ export const getAllTasks = async (req, res) => {
     // Add sorting
     const validSortFields = ['created_at', 'deadline'];
     if (sortBy && validSortFields.includes(sortBy)) {
-      query += ` ORDER BY ${sortBy} ${order?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'}`;
+      query += ` ORDER BY ${sortBy} ${order?.toUpperCase() || 'ASC'}`;
     } else {
       query += ' ORDER BY created_at ASC'; // Default sorting by created_at
     }
@@ -87,13 +87,13 @@ export const getAllTasks = async (req, res) => {
 
 // Get task by ID (User-specific)
 export const getTaskById = async (req, res) => {
-  const { id } = req.params;
+  const { taskId } = req.params;
 
   try {
     // Fetch task by ID
     const task = await pool.query(
       'SELECT * FROM tasks WHERE id = $1', 
-      [id]
+      [taskId]
     );
 
     res.json(task.rows[0]);
@@ -105,14 +105,14 @@ export const getTaskById = async (req, res) => {
 
 // Update task (User-specific)
 export const updateTask = async (req, res) => {
-  const { id } = req.params;
+  const { taskId } = req.params;
   const { title, description, priority, deadline, status } = req.body;
 
   try {
     // Update the task
     const updatedTask = await pool.query(
       'UPDATE tasks SET title = $1, description = $2, priority = $3, deadline = $4, status = $5 WHERE id = $6 RETURNING *', 
-      [title, description, priority, deadline, status, id]
+      [title, description, priority, deadline, status, taskId]
     );
 
     res.json(updatedTask.rows[0]);
@@ -124,11 +124,11 @@ export const updateTask = async (req, res) => {
 
 // Delete task (User-specific)
 export const deleteTask = async (req, res) => {
-  const { id } = req.params;
+  const { taskId } = req.params;
 
   try {
     // Delete the task
-    await pool.query('DELETE FROM tasks WHERE id = $1', [id]);
+    await pool.query('DELETE FROM tasks WHERE id = $1', [taskId]);
 
     res.json({ msg: 'Task deleted successfully' });
   } catch (err) {
@@ -139,14 +139,14 @@ export const deleteTask = async (req, res) => {
 
 // Update task status (User-specific)
 export const updateTaskStatus = async (req, res) => {
-  const { id } = req.params;
+  const { taskId } = req.params;
   const { status } = req.body;
 
   try {
     // Update task status
     const updatedTask = await pool.query(
       'UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *', 
-      [status, id]
+      [status, taskId]
     );
 
     res.json(updatedTask.rows[0]);

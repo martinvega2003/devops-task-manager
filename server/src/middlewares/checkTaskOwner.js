@@ -1,14 +1,14 @@
 import pool from "../database.js";
 
 const checkTaskOwner = async (req, res, next) => {
-    const { id } = req.params; 
-    const userId = req.user.id;
+    const { taskId } = req.params; 
+    const adminId = req.user.id;
   
     try {
       // Check if task exists and belongs to an admin's project
       const task = await pool.query(
         'SELECT t.id FROM tasks t JOIN projects p ON t.project_id = p.id WHERE t.id = $1 AND p.admin_id = $2',
-        [id, userId]
+        [taskId, adminId]
       );
   
       if (task.rows.length === 0) {

@@ -40,7 +40,7 @@ export const getAllProjects = async (req, res) => {
   if (sortBy) {
     const validSortFields = ['created_at', 'deadline'];
     if (validSortFields.includes(sortBy)) { //Execute only if sortBy value = created_at or deadline
-      query += ` ORDER BY ${sortBy} ${order || 'ASC'}`; // Default to ascending order
+      query += ` ORDER BY ${sortBy} ${order?.toUpperCase() || 'ASC'}`; // Default to ascending order
     }
   } else {
     query += ' ORDER BY created_at ASC'; // Default sorting by created_at and ASC order (If no sortBt value was passed in the query params)
