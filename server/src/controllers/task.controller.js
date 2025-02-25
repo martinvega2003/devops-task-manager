@@ -54,32 +54,46 @@ export const getAllTasks = async (req, res) => {
   }
 
   try {
-    // Base query: Get tasks for the specified project
-    let query = 'SELECT * FROM tasks WHERE project_id = $1';
+    // Base query: Get tasks with user count and assigned users
+    let query = `
+      SELECT 
+        t.*,
+        COUNT(tu.user_id) AS assigned_users_count,
+        JSON_AGG(
+          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email)
+        ) AS assigned_users
+      FROM tasks t
+      LEFT JOIN task_users tu ON t.id = tu.task_id
+      LEFT JOIN users u ON tu.user_id = u.id
+      WHERE t.project_id = $1
+    `;
     const queryParams = [projectId];
 
     // Add filters based on the query parameters
     if (status) {
-      query += ' AND status = $' + (queryParams.length + 1);
+      query += ' AND t.status = $' + (queryParams.length + 1);
       queryParams.push(status);
     }
 
     if (priority) {
-      query += ' AND priority = $' + (queryParams.length + 1);
+      query += ' AND t.priority = $' + (queryParams.length + 1);
       queryParams.push(priority);
     }
 
     if (deadline) {
-      query += ' AND deadline = $' + (queryParams.length + 1);
+      query += ' AND t.deadline = $' + (queryParams.length + 1);
       queryParams.push(deadline);
     }
+
+    // Group by task ID
+    query += ' GROUP BY t.id';
 
     // Add sorting
     const validSortFields = ['created_at', 'deadline'];
     if (sortBy && validSortFields.includes(sortBy)) {
-      query += ` ORDER BY ${sortBy} ${order?.toUpperCase() || 'ASC'}`;
+      query += ` ORDER BY t.${sortBy} ${order?.toUpperCase() || 'ASC'}`;
     } else {
-      query += ' ORDER BY created_at ASC'; // Default sorting by created_at
+      query += ' ORDER BY t.created_at ASC'; // Default sorting by created_at
     }
 
     // Execute query
@@ -90,7 +104,6 @@ export const getAllTasks = async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 };
-
 
 // Get task by ID (User-specific)
 export const getTaskById = async (req, res) => {
