@@ -2,26 +2,43 @@ import pool from '../database.js';
 
 // Create Task Controller
 export const createTask = async (req, res) => {
-  const { title, description, priority, deadline, status = 'Pending', project_id } = req.body;
-  const userId = req.user.id; // Assuming req.user.id contains the logged-in user's ID
+  const { title, description, priority, deadline, status = 'Pending', projectId, assignedUsers } = req.body;
+  const adminId = req.user.id; // Assuming req.user.id contains the logged-in user's ID
 
-  if (!title || !description || !priority || !deadline || !project_id) {
+  if (!title || !description || !priority || !deadline || !projectId) {
     return res.status(400).json({ msg: 'All fields (title, description, priority, deadline, project_id) are required.' });
   }
 
   try {
     // Check if project exists and belongs to the user
-    const project = await pool.query('SELECT * FROM projects WHERE id = $1 AND admin_id = $2', [project_id, userId]);
+    const project = await pool.query('SELECT * FROM projects WHERE id = $1 AND admin_id = $2', [projectId, adminId]);
 
     if (project.rows.length === 0) {
       return res.status(403).json({ msg: 'Project not found or you do not have permission to add tasks to this project.' });
     }
 
+    // Get Users registered by this Admin (Their IDs)
+    const registeredUsers = await pool.query('SELECT id FROM users WHERE admin_id = $1', [adminId]);
+    console.log(registeredUsers.rows)
+    const validUserIds = registeredUsers.rows.map(user => user.id);
+
+    console.log(assignedUsers)
+
+    // Filter assignedUsers to include just the ones registered by the Admin.
+    const filteredAssignedUsers = assignedUsers?.filter(userId => validUserIds.includes(Number(userId))) || [];
+    console.log(filteredAssignedUsers)
+
     // Create the task
     const newTask = await pool.query(
       'INSERT INTO tasks (title, description, project_id, priority, deadline, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [title, description, project_id, priority, deadline, status]
+      [title, description, projectId, priority, deadline, status]
     );
+
+    // Assign users to the task if the Admin assigned them using the task_users Database table
+    if (filteredAssignedUsers && filteredAssignedUsers.length > 0) {
+      const values = filteredAssignedUsers.map(userId => `(${newTask.rows[0].id}, ${userId})`).join(", "); //Pass the task id and the id of all assigned users in differnet rows in the task_users table
+      await pool.query(`INSERT INTO task_users (task_id, user_id) VALUES ${values}`);
+    }
 
     res.status(201).json(newTask.rows[0]);
   } catch (err) {
@@ -33,17 +50,17 @@ export const createTask = async (req, res) => {
 
 // Get all tasks for a specific project with filtering and sorting
 export const getAllTasks = async (req, res) => {
-  const { id } = req.params; // Get project ID from URL params
+  const { projectId } = req.params; // Get project ID from URL params
   const { status, priority, deadline, sortBy, order } = req.query; // Get query parameters
 
-  if (!id) {
+  if (!projectId) {
     return res.status(400).json({ msg: 'Project ID is required.' });
   }
 
   try {
     // Base query: Get tasks for the specified project
     let query = 'SELECT * FROM tasks WHERE project_id = $1';
-    const queryParams = [id];
+    const queryParams = [projectId];
 
     // Add filters based on the query parameters
     if (status) {
@@ -64,7 +81,7 @@ export const getAllTasks = async (req, res) => {
     // Add sorting
     const validSortFields = ['created_at', 'deadline'];
     if (sortBy && validSortFields.includes(sortBy)) {
-      query += ` ORDER BY ${sortBy} ${order?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'}`;
+      query += ` ORDER BY ${sortBy} ${order?.toUpperCase() || 'ASC'}`;
     } else {
       query += ' ORDER BY created_at ASC'; // Default sorting by created_at
     }
@@ -81,13 +98,13 @@ export const getAllTasks = async (req, res) => {
 
 // Get task by ID (User-specific)
 export const getTaskById = async (req, res) => {
-  const { id } = req.params;
+  const { taskId } = req.params;
 
   try {
     // Fetch task by ID
     const task = await pool.query(
       'SELECT * FROM tasks WHERE id = $1', 
-      [id]
+      [taskId]
     );
 
     res.json(task.rows[0]);
@@ -99,14 +116,14 @@ export const getTaskById = async (req, res) => {
 
 // Update task (User-specific)
 export const updateTask = async (req, res) => {
-  const { id } = req.params;
+  const { taskId } = req.params;
   const { title, description, priority, deadline, status } = req.body;
 
   try {
     // Update the task
     const updatedTask = await pool.query(
       'UPDATE tasks SET title = $1, description = $2, priority = $3, deadline = $4, status = $5 WHERE id = $6 RETURNING *', 
-      [title, description, priority, deadline, status, id]
+      [title, description, priority, deadline, status, taskId]
     );
 
     res.json(updatedTask.rows[0]);
@@ -118,11 +135,11 @@ export const updateTask = async (req, res) => {
 
 // Delete task (User-specific)
 export const deleteTask = async (req, res) => {
-  const { id } = req.params;
+  const { taskId } = req.params;
 
   try {
     // Delete the task
-    await pool.query('DELETE FROM tasks WHERE id = $1', [id]);
+    await pool.query('DELETE FROM tasks WHERE id = $1', [taskId]);
 
     res.json({ msg: 'Task deleted successfully' });
   } catch (err) {
@@ -133,14 +150,14 @@ export const deleteTask = async (req, res) => {
 
 // Update task status (User-specific)
 export const updateTaskStatus = async (req, res) => {
-  const { id } = req.params;
+  const { taskId } = req.params;
   const { status } = req.body;
 
   try {
     // Update task status
     const updatedTask = await pool.query(
       'UPDATE tasks SET status = $1 WHERE id = $2 RETURNING *', 
-      [status, id]
+      [status, taskId]
     );
 
     res.json(updatedTask.rows[0]);

@@ -11,18 +11,18 @@ const router = Router();
 router.post('/', authMiddleware, isAdminMiddleware, createTask);
 
 // Get all tasks from an specific project
-router.get('/project/:id', authMiddleware, isAdminMiddleware, checkProjectOwner, getAllTasks);
+router.get('/project/:projectId', authMiddleware, isAdminMiddleware, checkProjectOwner, getAllTasks);
 
 // Get task by ID
-router.get('/:id', authMiddleware, isAdminMiddleware, checkTaskOwner, getTaskById);
+router.get('/:taskId', authMiddleware, isAdminMiddleware, checkTaskOwner, getTaskById);
 
 // Update task
-router.put('/:id', authMiddleware, isAdminMiddleware, checkTaskOwner, updateTask);
+router.put('/:taskId', authMiddleware, isAdminMiddleware, checkTaskOwner, updateTask);
 
 // Delete task
-router.delete('/:id', authMiddleware, isAdminMiddleware, checkTaskOwner, deleteTask);
+router.delete('/:taskId', authMiddleware, isAdminMiddleware, checkTaskOwner, deleteTask);
 
 // Route for updating task status
-router.patch('/:id/status', authMiddleware, isAdminMiddleware, checkTaskOwner, updateTaskStatus);
+router.patch('/:taskId/status', authMiddleware, isAdminMiddleware, checkTaskOwner, updateTaskStatus);
 
 export default router;

@@ -44,7 +44,7 @@ export const registerTeamMember = async (req, res) => {
         name: user.username,
         email: user.email,
         role: user.role,
-        admin_id: user.admin_id
+        adminId: user.admin_id
       }
     });
   } catch (error) {
