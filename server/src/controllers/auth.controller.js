@@ -4,7 +4,6 @@ import pool from '../database.js';
 
 // Register new user
 export const registerUser = async (req, res) => {
-    console.log('Register endpoint hit');
     const { name, email, password } = req.body;
   
     if (!name || !email || !password) {

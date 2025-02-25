@@ -19,14 +19,10 @@ export const createTask = async (req, res) => {
 
     // Get Users registered by this Admin (Their IDs)
     const registeredUsers = await pool.query('SELECT id FROM users WHERE admin_id = $1', [adminId]);
-    console.log(registeredUsers.rows)
     const validUserIds = registeredUsers.rows.map(user => user.id);
-
-    console.log(assignedUsers)
 
     // Filter assignedUsers to include just the ones registered by the Admin.
     const filteredAssignedUsers = assignedUsers?.filter(userId => validUserIds.includes(Number(userId))) || [];
-    console.log(filteredAssignedUsers)
 
     // Create the task
     const newTask = await pool.query(

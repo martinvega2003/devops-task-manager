@@ -3,8 +3,6 @@ import pool from '../database.js';
 
 // Creating a Team Member Account
 export const registerTeamMember = async (req, res) => {
-  console.log('Register endpoint hit');
-
   const { name, email, password, role } = req.body;
   const adminId = req.user.id; // The logged-in admin's ID
 
