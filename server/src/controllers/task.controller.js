@@ -110,11 +110,27 @@ export const getTaskById = async (req, res) => {
   const { taskId } = req.params;
 
   try {
-    // Fetch task by ID
+    // Fetch task by ID with assigned users
     const task = await pool.query(
-      'SELECT * FROM tasks WHERE id = $1', 
+      `
+      SELECT 
+        t.*, 
+        COUNT(tu.user_id) AS assigned_users_count,
+        JSON_AGG(
+          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email)
+        ) AS assigned_users
+      FROM tasks t
+      LEFT JOIN task_users tu ON t.id = tu.task_id
+      LEFT JOIN users u ON tu.user_id = u.id
+      WHERE t.id = $1
+      GROUP BY t.id
+      `,
       [taskId]
     );
+
+    if (task.rows.length === 0) {
+      return res.status(404).json({ msg: 'Task not found' });
+    }
 
     res.json(task.rows[0]);
   } catch (err) {
@@ -122,6 +138,7 @@ export const getTaskById = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+
 
 // Update task (User-specific)
 export const updateTask = async (req, res) => {
