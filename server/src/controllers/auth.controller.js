@@ -26,7 +26,7 @@ export const registerUser = async (req, res) => {
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
   
       res.status(201).json({
-        message: 'User created successfully',
+        message: 'Admin User created successfully',
         user: {
           id: user.id,
           name: user.name,
@@ -53,7 +53,7 @@ export const loginUser = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.rows[0].password);
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(400).json({ msg: 'Invalid password' });
     }
 
     const payload = {
@@ -64,7 +64,7 @@ export const loginUser = async (req, res) => {
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token });
+    res.json({ token }); // Return just the login Token
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');

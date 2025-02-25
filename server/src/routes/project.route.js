@@ -15,16 +15,16 @@ router.post('/', authMiddleware, isAdminMiddleware, createProject);
 router.get('/', authMiddleware, isAdminMiddleware, getAllProjects);
 
 //Get A Project By ID
-router.get('/:id', authMiddleware, isAdminMiddleware, checkProjectOwner, getProjectById);
+router.get('/:projectId', authMiddleware, isAdminMiddleware, checkProjectOwner, getProjectById);
 
 //Update Project
-router.put('/:id', authMiddleware, isAdminMiddleware, checkProjectOwner, updateProject);
+router.put('/:projectId', authMiddleware, isAdminMiddleware, checkProjectOwner, updateProject);
 
 //Delete Project 
-router.delete('/:id', authMiddleware, isAdminMiddleware, checkProjectOwner, deleteProject);
+router.delete('/:projectId', authMiddleware, isAdminMiddleware, checkProjectOwner, deleteProject);
 
 //Update Project Status:
-router.patch('/:id/status', authMiddleware, isAdminMiddleware, checkProjectOwner, updateProjectStatus);
+router.patch('/:projectId/status', authMiddleware, isAdminMiddleware, checkProjectOwner, updateProjectStatus);
 
 
 export default router;
