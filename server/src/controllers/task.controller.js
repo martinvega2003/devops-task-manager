@@ -2,16 +2,16 @@ import pool from '../database.js';
 
 // Create Task Controller
 export const createTask = async (req, res) => {
-  const { title, description, priority, deadline, status = 'Pending', project_id, assigned_users } = req.body;
-  const userId = req.user.id; // Assuming req.user.id contains the logged-in user's ID
+  const { title, description, priority, deadline, status = 'Pending', projectId, assignedUsers } = req.body;
+  const adminId = req.user.id; // Assuming req.user.id contains the logged-in user's ID
 
-  if (!title || !description || !priority || !deadline || !project_id) {
+  if (!title || !description || !priority || !deadline || !projectId) {
     return res.status(400).json({ msg: 'All fields (title, description, priority, deadline, project_id) are required.' });
   }
 
   try {
     // Check if project exists and belongs to the user
-    const project = await pool.query('SELECT * FROM projects WHERE id = $1 AND admin_id = $2', [project_id, userId]);
+    const project = await pool.query('SELECT * FROM projects WHERE id = $1 AND admin_id = $2', [projectId, adminId]);
 
     if (project.rows.length === 0) {
       return res.status(403).json({ msg: 'Project not found or you do not have permission to add tasks to this project.' });
@@ -20,16 +20,16 @@ export const createTask = async (req, res) => {
     // Create the task
     const newTask = await pool.query(
       'INSERT INTO tasks (title, description, project_id, priority, deadline, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [title, description, project_id, priority, deadline, status]
+      [title, description, projectId, priority, deadline, status]
     );
 
-    // Assign users to the task if the Admin assigned them
-    if (assigned_users && assigned_users.length > 0) {
-      const values = assigned_users.map(userId => `(${taskId}, ${userId})`).join(", ");
+    // Assign users to the task if the Admin assigned them using the task_users Database table
+    if (assignedUsers && assignedUsers.length > 0) {
+      const values = assignedUsers.map(userId => `(${newTask.rows[0].id}, ${userId})`).join(", "); //Pass the task id and the id of all assigned users in differnet rows in the task_users table
       await pool.query(`INSERT INTO task_users (task_id, user_id) VALUES ${values}`);
     }
 
-    res.status(201).json(newTask.rows[0], assigned_users);
+    res.status(201).json(newTask.rows[0]);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
