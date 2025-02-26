@@ -35,10 +35,11 @@ export const createTask = async (req, res) => {
     // Check for overlapping tasks
     if (filteredAssignedUsers.length > 0) {
       const overlappingUsers = await pool.query(
-        `SELECT DISTINCT tu.user_id 
-         FROM task_users tu 
-         JOIN tasks t ON tu.task_id = t.id 
-         WHERE tu.user_id = ANY($1)  
+        `SELECT DISTINCT u.id, u.email, u.username, u.role
+         FROM task_users tu
+         JOIN tasks t ON tu.task_id = t.id
+         JOIN users u ON tu.user_id = u.id
+         WHERE tu.user_id = ANY($1)
          AND t.end_time > $2
          AND t.start_time < $3`,
         [filteredAssignedUsers, start, end]
@@ -47,7 +48,7 @@ export const createTask = async (req, res) => {
       if (overlappingUsers.rows.length > 0) {
         return res.status(400).json({
           msg: 'One or more assigned users already have a task during this time block.',
-          conflictingUsers: overlappingUsers.rows.map(row => row.user_id),
+          conflictingUsers: overlappingUsers.rows, // Returns full user objects now
         });
       }
     }
@@ -170,22 +171,53 @@ export const getTaskById = async (req, res) => {
 // Update task (User-specific)
 export const updateTask = async (req, res) => {
   const { taskId } = req.params;
-  const { title, description, priority, deadline, status, assignedUsers } = req.body;
-  const adminId = req.user.id
+  const { title, description, priority, status, assignedUsers, startTime, endTime } = req.body;
+  const adminId = req.user.id;
 
   try {
-    // Update the task
-    const updatedTask = await pool.query(
-      'UPDATE tasks SET title = $1, description = $2, priority = $3, deadline = $4, status = $5 WHERE id = $6 RETURNING *', 
-      [title, description, priority, deadline, status, taskId]
-    );
+    // Ensure the task exists and belongs to the admin
+    const task = await pool.query('SELECT * FROM tasks WHERE id = $1', [taskId]);
+
+    if (task.rows.length === 0) {
+      return res.status(404).json({ msg: 'Task not found.' });
+    }
+
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const duration = (end - start) / (1000 * 60); // Duration in minutes
+
+    if (duration < 15 || duration > 480) {
+      return res.status(400).json({ msg: 'Task duration must be between 15 minutes and 8 hours.' });
+    }
 
     // Get Users registered by this Admin (Their IDs)
     const registeredUsers = await pool.query('SELECT id FROM users WHERE admin_id = $1', [adminId]);
     const validUserIds = registeredUsers.rows.map(user => user.id);
 
-    // Filter assignedUsers to include just the ones registered by the Admin.
+    // Filter assignedUsers to include just the ones registered by the Admin
     const filteredAssignedUsers = assignedUsers?.filter(userId => validUserIds.includes(Number(userId))) || [];
+
+    // Check for overlapping tasks
+    if (filteredAssignedUsers.length > 0) {
+      const overlappingUsers = await pool.query(
+        `SELECT DISTINCT u.id, u.email, u.username, u.role
+         FROM task_users tu
+         JOIN tasks t ON tu.task_id = t.id
+         JOIN users u ON tu.user_id = u.id
+         WHERE tu.user_id = ANY($1)
+         AND t.id != $2
+         AND t.end_time > $3
+         AND t.start_time < $4`,
+        [filteredAssignedUsers, taskId, startTime, endTime]
+      );
+
+      if (overlappingUsers.rows.length > 0) {
+        return res.status(400).json({
+          msg: 'One or more assigned users already have a task during this time block.',
+          conflictingUsers: overlappingUsers.rows, // Returns full user objects now
+        });
+      }
+    }
 
     // Remove all current assignments
     await pool.query('DELETE FROM task_users WHERE task_id = $1', [taskId]);
@@ -195,6 +227,12 @@ export const updateTask = async (req, res) => {
       const values = filteredAssignedUsers.map(userId => `(${taskId}, ${userId})`).join(", ");
       await pool.query(`INSERT INTO task_users (task_id, user_id) VALUES ${values}`);
     }
+
+    // Update the task
+    const updatedTask = await pool.query(
+      'UPDATE tasks SET title = $1, description = $2, priority = $3, start_time = $4, end_time = $5, status = $6 WHERE id = $7 RETURNING *', 
+      [title, description, priority, startTime, endTime, status, taskId]
+    );
 
     res.json(updatedTask.rows[0]);
   } catch (err) {
