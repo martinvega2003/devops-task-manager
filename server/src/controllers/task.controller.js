@@ -35,10 +35,13 @@ export const createTask = async (req, res) => {
     // Check for overlapping tasks
     if (filteredAssignedUsers.length > 0) {
       const overlappingUsers = await pool.query(
-        `SELECT DISTINCT u.id, u.email, u.username, u.role
+        `SELECT DISTINCT u.id, u.email, u.username, u.role, 
+                t.id AS task_id, t.title AS task_title, t.start_time, t.end_time, 
+                p.name AS project_name
          FROM task_users tu
          JOIN tasks t ON tu.task_id = t.id
          JOIN users u ON tu.user_id = u.id
+         JOIN projects p ON t.project_id = p.id
          WHERE tu.user_id = ANY($1)
          AND t.end_time > $2
          AND t.start_time < $3`,
@@ -48,7 +51,7 @@ export const createTask = async (req, res) => {
       if (overlappingUsers.rows.length > 0) {
         return res.status(400).json({
           msg: 'One or more assigned users already have a task during this time block.',
-          conflictingUsers: overlappingUsers.rows, // Returns full user objects now
+          conflictingUsers: overlappingUsers.rows,
         });
       }
     }
@@ -71,6 +74,7 @@ export const createTask = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+
 
 // Get all tasks for a specific project with filtering and sorting
 export const getAllTasks = async (req, res) => {
@@ -200,21 +204,24 @@ export const updateTask = async (req, res) => {
     // Check for overlapping tasks
     if (filteredAssignedUsers.length > 0) {
       const overlappingUsers = await pool.query(
-        `SELECT DISTINCT u.id, u.email, u.username, u.role
+        `SELECT DISTINCT u.id, u.email, u.username, u.role, 
+                t.id AS task_id, t.title AS task_title, t.start_time, t.end_time, 
+                p.name AS project_name
          FROM task_users tu
          JOIN tasks t ON tu.task_id = t.id
          JOIN users u ON tu.user_id = u.id
+         JOIN projects p ON t.project_id = p.id
          WHERE tu.user_id = ANY($1)
-         AND t.id != $2
-         AND t.end_time > $3
-         AND t.start_time < $4`,
-        [filteredAssignedUsers, taskId, startTime, endTime]
+         AND t.end_time > $2
+         AND t.start_time < $3
+         AND t.id <> $4  -- Exclude the task being updated`,
+        [filteredAssignedUsers, start, end, taskId]
       );
 
       if (overlappingUsers.rows.length > 0) {
         return res.status(400).json({
           msg: 'One or more assigned users already have a task during this time block.',
-          conflictingUsers: overlappingUsers.rows, // Returns full user objects now
+          conflictingUsers: overlappingUsers.rows,
         });
       }
     }
