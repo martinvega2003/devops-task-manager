@@ -281,3 +281,14 @@ export const updateTaskStatus = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+
+// TASK ASSETS CONTROLLERS:
+
+// Fetch All Asset
+export const getAllAssets = async (req, res) => {}
+
+// Delete an Asset
+export const deleteAsset = async (req, res) => {}
+
+// Upload an Asset
+export const uploadAsset = async (req, res) => {}

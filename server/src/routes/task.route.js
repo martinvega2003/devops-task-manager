@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createTask, getAllTasks, getTaskById, updateTask, deleteTask, updateTaskStatus } from '../controllers/task.controller.js';
+import { createTask, getAllTasks, getTaskById, updateTask, deleteTask, updateTaskStatus, getAllAssets, deleteAsset, uploadAsset } from '../controllers/task.controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
 import checkProjectOwner from '../middlewares/checkProjectOwner.js';
@@ -24,5 +24,16 @@ router.delete('/:taskId', authMiddleware, isAdminMiddleware, checkTaskOwner, del
 
 // Route for updating task status
 router.patch('/:taskId/status', authMiddleware, isAdminMiddleware, checkTaskOwner, updateTaskStatus);
+
+// TASK ASSETS ROUTES:
+
+// get all assets 
+router.get('/:taskId/assets', getAllAssets)
+
+// get all assets 
+router.post('/:taskId/assets', uploadAsset)
+
+// get all assets 
+router.delete('/:taskId/assets/:assetId', deleteAsset)
 
 export default router;
