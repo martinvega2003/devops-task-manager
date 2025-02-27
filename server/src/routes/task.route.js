@@ -5,7 +5,8 @@ import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
 import checkProjectOwner from '../middlewares/checkProjectOwner.js';
 import checkTaskOwner from '../middlewares/checkTaskOwner.js';
 import { validateTaskAccess } from '../middlewares/validateTaskAccessMiddleware.js';
-import { validateFileUploadMiddleware } from '../middlewares/validateFileUploadMiddleware.js';
+import { upload } from '../middlewares/multerConfig.js';
+import multer from 'multer';
 
 const router = Router();
 
@@ -33,7 +34,7 @@ router.patch('/:taskId/status', authMiddleware, validateTaskAccess, updateTaskSt
 router.get('/:taskId/assets', authMiddleware, validateTaskAccess, getAllAssets)
 
 // get all assets 
-router.post('/:taskId/assets', authMiddleware, validateTaskAccess, validateFileUploadMiddleware, uploadAsset)
+router.post('/:taskId/assets', authMiddleware, validateTaskAccess, uploadAsset)
 
 // get all assets 
 router.delete('/:taskId/assets/:assetId', authMiddleware, validateTaskAccess, deleteAsset)

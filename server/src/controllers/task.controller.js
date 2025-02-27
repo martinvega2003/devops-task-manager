@@ -1,4 +1,6 @@
 import pool from '../database.js';
+import { upload } from '../middlewares/multerConfig.js';
+import multer from 'multer';
 
 // Create Task Controller
 export const createTask = async (req, res) => {
@@ -291,8 +293,40 @@ export const getAllAssets = async (req, res) => {
 
 // Upload an Asset
 export const uploadAsset = async (req, res) => {
+  upload.single("file")(req, res, async (err) => {
+    try {
+      if (err) {
+        if (err instanceof multer.MulterError) {
+          return res.status(400).json({ msg: `Multer error: ${err.field}` });
+        }
+        return res.status(500).json({ msg: "File upload failed. Please try again." });
+      }
 
-}
+      const { taskId } = req.params;
+      const userId = req.user.id; // Assuming req.user is set in auth middleware
+      const file = req.file;
+
+      if (!file) {
+        return res.status(400).json({ msg: "No file uploaded." });
+      }
+
+      // Store file details in the database
+      const result = await pool.query(
+        `INSERT INTO task_assets (task_id, uploaded_by, filename, file_url)
+         VALUES ($1, $2, $3, $4) RETURNING *`,
+        [taskId, userId, file.filename, `/uploads/${file.filename}`]
+      );
+
+      res.status(201).json({
+        msg: "File uploaded successfully.",
+        asset: result.rows[0],
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      res.status(500).json({ msg: "Server error." });
+    }
+  });
+};
 
 // Delete an Asset
 export const deleteAsset = async (req, res) => {
