@@ -1,12 +1,12 @@
-import pool from "../database";
+import pool from "../database.js";
 
 export const validateTaskAccess = async (req, res, next) => {
   const { taskId } = req.params;
   const userId = req.user.id;
 
   try {
-    // Check if task exists
-    const task = await pool.query("SELECT * FROM tasks WHERE id = $1", [taskId]);
+    // Check if task exists !) Join projects Table to have admin_id value
+    const task = await pool.query("SELECT t.*, p.admin_id FROM tasks t JOIN projects p ON p.id = t.project_id WHERE t.id = $1", [taskId]);
     if (task.rows.length === 0) {
       return res.status(404).json({ msg: "Task not found." });
     }

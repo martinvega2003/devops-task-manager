@@ -285,10 +285,16 @@ export const updateTaskStatus = async (req, res) => {
 // TASK ASSETS CONTROLLERS:
 
 // Fetch All Asset
-export const getAllAssets = async (req, res) => {}
+export const getAllAssets = async (req, res) => {
 
-// Delete an Asset
-export const deleteAsset = async (req, res) => {}
+}
 
 // Upload an Asset
-export const uploadAsset = async (req, res) => {}
+export const uploadAsset = async (req, res) => {
+
+}
+
+// Delete an Asset
+export const deleteAsset = async (req, res) => {
+  
+}

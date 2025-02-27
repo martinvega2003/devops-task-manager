@@ -4,6 +4,8 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
 import checkProjectOwner from '../middlewares/checkProjectOwner.js';
 import checkTaskOwner from '../middlewares/checkTaskOwner.js';
+import { validateTaskAccess } from '../middlewares/validateTaskAccessMiddleware.js';
+import { validateFileUploadMiddleware } from '../middlewares/validateFileUploadMiddleware.js';
 
 const router = Router();
 
@@ -23,17 +25,17 @@ router.put('/:taskId', authMiddleware, isAdminMiddleware, checkTaskOwner, update
 router.delete('/:taskId', authMiddleware, isAdminMiddleware, checkTaskOwner, deleteTask);
 
 // Route for updating task status
-router.patch('/:taskId/status', authMiddleware, isAdminMiddleware, checkTaskOwner, updateTaskStatus);
+router.patch('/:taskId/status', authMiddleware, validateTaskAccess, updateTaskStatus);
 
 // TASK ASSETS ROUTES:
 
 // get all assets 
-router.get('/:taskId/assets', getAllAssets)
+router.get('/:taskId/assets', authMiddleware, validateTaskAccess, getAllAssets)
 
 // get all assets 
-router.post('/:taskId/assets', uploadAsset)
+router.post('/:taskId/assets', authMiddleware, validateTaskAccess, validateFileUploadMiddleware, uploadAsset)
 
 // get all assets 
-router.delete('/:taskId/assets/:assetId', deleteAsset)
+router.delete('/:taskId/assets/:assetId', authMiddleware, validateTaskAccess, deleteAsset)
 
 export default router;
