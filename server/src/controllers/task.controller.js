@@ -286,22 +286,39 @@ export const updateTaskStatus = async (req, res) => {
 
 // TASK ASSETS CONTROLLERS:
 
-// Fetch All Asset
+// Get All Assets
 export const getAllAssets = async (req, res) => {
   const { taskId } = req.params;
 
   try {
     const assets = await pool.query(
-      "SELECT * FROM task_assets WHERE task_id = $1",
+      `SELECT ta.*, 
+              u.id AS user_id, u.username, u.email, u.role 
+       FROM task_assets ta
+       JOIN users u ON ta.uploaded_by = u.id
+       WHERE ta.task_id = $1`,
       [taskId]
     );
 
-    res.json(assets.rows);
+    const formattedAssets = assets.rows.map(asset => ({
+      id: asset.id,
+      task_id: asset.task_id,
+      filename: asset.filename,
+      file_url: asset.file_url,
+      uploaded_by: {
+        id: asset.user_id,
+        name: asset.username,
+        email: asset.email,
+        role: asset.role,
+      },
+    }));
+
+    res.json(formattedAssets);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ msg: "Server error" });
   }
-}
+};
 
 // Upload an Asset
 export const uploadAsset = async (req, res) => {
