@@ -288,7 +288,19 @@ export const updateTaskStatus = async (req, res) => {
 
 // Fetch All Asset
 export const getAllAssets = async (req, res) => {
+  const { taskId } = req.params;
 
+  try {
+    const assets = await pool.query(
+      "SELECT * FROM task_assets WHERE task_id = $1",
+      [taskId]
+    );
+
+    res.json(assets.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
 }
 
 // Upload an Asset
@@ -330,5 +342,22 @@ export const uploadAsset = async (req, res) => {
 
 // Delete an Asset
 export const deleteAsset = async (req, res) => {
-  
+  const { assetId } = req.params;
+
+  try {
+    // Get the asset details
+    const asset = await pool.query("SELECT * FROM task_assets WHERE id = $1", [assetId]);
+
+    if (asset.rows.length === 0) {
+      return res.status(404).json({ msg: "Asset not found." });
+    }
+    
+    // Delete the asset
+    await pool.query("DELETE FROM task_assets WHERE id = $1", [assetId]);
+
+    res.json({ msg: "Asset deleted successfully." });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
 }
