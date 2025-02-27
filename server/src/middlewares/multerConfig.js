@@ -44,6 +44,15 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+// Helper function to delete a file
+export const deleteFile = (filename) => {
+  const filePath = path.join(uploadDir, filename);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    console.log(`File deleted: ${filename}`);
+  }
+};
+
 // File upload middleware
 export const upload = multer({
   storage,

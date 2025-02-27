@@ -1,5 +1,5 @@
 import pool from '../database.js';
-import { upload } from '../middlewares/multerConfig.js';
+import { upload, deleteFile } from '../middlewares/multerConfig.js';
 import multer from 'multer';
 
 // Create Task Controller
@@ -351,6 +351,9 @@ export const deleteAsset = async (req, res) => {
     if (asset.rows.length === 0) {
       return res.status(404).json({ msg: "Asset not found." });
     }
+
+    // Delete the file from the uploads folder
+    deleteFile(asset.rows[0].filename);
     
     // Delete the asset
     await pool.query("DELETE FROM task_assets WHERE id = $1", [assetId]);
