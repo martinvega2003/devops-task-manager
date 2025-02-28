@@ -89,6 +89,54 @@ export const getTeamMembers = async (req, res) => {
   }
 };
 
+export const getTeamMemberById = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Fetch user details
+    const userQuery = await pool.query("SELECT id, username, email, active, role, created_at FROM users WHERE id = $1", [userId]);
+    if (userQuery.rows.length === 0) {
+      return res.status(404).json({ msg: "User not found." });
+    }
+    const user = userQuery.rows[0];
+
+    // Fetch active tasks assigned to the user
+    const activeTasksQuery = await pool.query(
+      `SELECT t.* FROM tasks t
+       JOIN task_users tu ON t.id = tu.task_id
+       WHERE tu.user_id = $1 AND t.status IN ('Pending', 'In Progress')`,
+      [userId]
+    );
+    
+    const activeTasks = activeTasksQuery.rows;
+
+    // Fetch active projects based on the active tasks
+    const activeProjectsQuery = await pool.query(
+      `SELECT DISTINCT p.id, p.name
+       FROM projects p
+       JOIN tasks t ON p.id = t.project_id
+       WHERE t.id = ANY($1) AND p.status = 'Active'`,
+      [activeTasks.map(task => task.id)]
+    );
+    
+    // Structure response
+    const activeProjects = activeProjectsQuery.rows.map(project => {
+      return {
+        title: project.name,
+        tasks: activeTasks.filter(task => task.project_id === project.id)
+      };
+    });
+
+    res.json({
+      ...user,
+      active_projects: activeProjects
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error." });
+  }
+};
+
 // Deactivate Team Member Account (Soft Delete):
 export const toggleUserActiveStatus = async (req, res) => {
   const { userId } = req.params;
