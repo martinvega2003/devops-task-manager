@@ -94,7 +94,7 @@ export const getAllTasks = async (req, res) => {
         t.*,
         COUNT(tu.user_id) AS assigned_users_count,
         JSON_AGG(
-          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email)
+          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'active', u.active)
         ) AS assigned_users
       FROM tasks t
       LEFT JOIN task_users tu ON t.id = tu.task_id
@@ -151,7 +151,7 @@ export const getTaskById = async (req, res) => {
         t.*, 
         COUNT(tu.user_id) AS assigned_users_count,
         JSON_AGG(
-          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email)
+          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'active', u.active)
         ) AS assigned_users
       FROM tasks t
       LEFT JOIN task_users tu ON t.id = tu.task_id
