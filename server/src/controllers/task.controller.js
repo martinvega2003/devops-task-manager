@@ -81,7 +81,7 @@ export const createTask = async (req, res) => {
 // Get all tasks for a specific project with filtering and sorting
 export const getAllTasks = async (req, res) => {
   const { projectId } = req.params; // Get project ID from URL params
-  const { status, priority, deadline, sortBy, order } = req.query; // Get query parameters
+  const { status, priority, order } = req.query; // Get query parameters
 
   if (!projectId) {
     return res.status(400).json({ msg: 'Project ID is required.' });
@@ -114,21 +114,8 @@ export const getAllTasks = async (req, res) => {
       queryParams.push(priority);
     }
 
-    if (deadline) {
-      query += ' AND t.deadline = $' + (queryParams.length + 1);
-      queryParams.push(deadline);
-    }
-
     // Group by task ID
     query += ' GROUP BY t.id';
-
-    // Add sorting
-    const validSortFields = ['created_at', 'deadline'];
-    if (sortBy && validSortFields.includes(sortBy)) {
-      query += ` ORDER BY t.${sortBy} ${order?.toUpperCase() || 'ASC'}`;
-    } else {
-      query += ' ORDER BY t.created_at ASC'; // Default sorting by created_at
-    }
 
     // Execute query
     const tasks = await pool.query(query, queryParams);
