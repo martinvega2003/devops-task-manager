@@ -48,7 +48,39 @@ export const getAllProjects = async (req, res) => {
   
   try {
     const projects = await pool.query(query, queryParams); // Make the SQL query to the Database
-    res.json(projects.rows);
+    
+    const projectsWithCounts = await Promise.all( // Projects with active tasks and members count
+
+      // Count how many pending, in progress and completed tasks there are in the project
+      projects.rows.map(async (project) => {
+        const taskCounts = await pool.query(
+          `SELECT 
+            COUNT(CASE WHEN status = 'Pending' THEN 1 END) AS pending,
+            COUNT(CASE WHEN status = 'In Progress' THEN 1 END) AS in_progress,
+            COUNT(CASE WHEN status = 'Completed' THEN 1 END) AS completed
+           FROM tasks WHERE project_id = $1`,
+          [project.id]
+        );
+
+        // Count how many active members are working on the project (Working on active or in progress tasks)
+        const activeMembers = await pool.query(
+          `SELECT COUNT(DISTINCT user_id) AS active_members
+           FROM task_users 
+           JOIN tasks ON task_users.task_id = tasks.id 
+           WHERE tasks.project_id = $1 AND tasks.status IN ('Pending', 'In Progress')`,
+          [project.id]
+        );
+
+        return {
+          ...project,
+          task_counts: taskCounts.rows[0],
+          active_members: activeMembers.rows[0].active_members || 0,
+        };
+      })
+    );
+
+    // Return the full information of the projects with the tasks and team members count
+    res.json(projectsWithCounts);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
@@ -66,7 +98,31 @@ export const getProjectById = async (req, res) => {
       [projectId]
     );
 
-    res.json(project.rows[0]);
+    // Count how many pending, in progress and completed tasks there are in the project
+    const taskCounts = await pool.query(
+      `SELECT 
+        COUNT(CASE WHEN status = 'Pending' THEN 1 END) AS pending,
+        COUNT(CASE WHEN status = 'In Progress' THEN 1 END) AS in_progress,
+        COUNT(CASE WHEN status = 'Completed' THEN 1 END) AS completed
+       FROM tasks WHERE project_id = $1`,
+      [projectId]
+    );
+
+    // Count how many active members are working on the project (Working on active or in progress tasks)
+    const activeMembers = await pool.query(
+      `SELECT COUNT(DISTINCT user_id) AS active_members
+       FROM task_users 
+       JOIN tasks ON task_users.task_id = tasks.id 
+       WHERE tasks.project_id = $1 AND tasks.status IN ('Pending', 'In Progress')`,
+      [projectId]
+    );
+
+    // Return the full information of the project with the tasks and team members count
+    res.json({
+      ...project.rows[0],
+      task_counts: taskCounts.rows[0],
+      active_members: activeMembers.rows[0].active_members || 0,
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
