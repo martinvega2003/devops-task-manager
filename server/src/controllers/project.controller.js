@@ -49,7 +49,7 @@ export const getAllProjects = async (req, res) => {
   try {
     const projects = await pool.query(query, queryParams); // Make the SQL query to the Database
     
-    const projectsWithCounts = await Promise.all( // Projects with active tasks and members count
+    const projectsWithCounts = await Promise.all( // Projects with active tasks and members count - Using Promise.all as we will use many asynchronous operations
 
       // Count how many pending, in progress and completed tasks there are in the project
       projects.rows.map(async (project) => {

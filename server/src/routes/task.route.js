@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createTask, getAllTasks, getTaskById, updateTask, deleteTask, updateTaskStatus, getAllAssets, deleteAsset, uploadAsset } from '../controllers/task.controller.js';
+import { createTask, getAllTasks, getTaskById, updateTask, deleteTask, updateTaskStatus, getAllAssets, deleteAsset, uploadAsset, getUserTasks } from '../controllers/task.controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
 import checkProjectOwner from '../middlewares/checkProjectOwner.js';
@@ -39,5 +39,9 @@ router.post('/:taskId/assets', authMiddleware, validateTaskAccess, uploadAsset)
 
 // delete assets 
 router.delete('/:taskId/assets/:assetId', authMiddleware, validateTaskAccess, validateAssetAccess, deleteAsset)
+
+// ------------- NON ADMIN SPECIFIC ROUTES
+
+router.get('/user/assigned', authMiddleware, getUserTasks)
 
 export default router;
