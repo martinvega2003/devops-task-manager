@@ -1,6 +1,6 @@
 import pool from "../database.js";
 
-export const validateTaskAccess = async (req, res, next) => {
+const validateTaskAccess = async (req, res, next) => {
   const { taskId } = req.params;
   const userId = req.user.id;
 
@@ -29,3 +29,5 @@ export const validateTaskAccess = async (req, res, next) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
+
+export default validateTaskAccess

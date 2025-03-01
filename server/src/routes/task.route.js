@@ -2,10 +2,10 @@ import { Router } from 'express';
 import { createTask, getAllTasks, getTaskById, updateTask, deleteTask, updateTaskStatus, getAllAssets, deleteAsset, uploadAsset, getUserTasks } from '../controllers/task.controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
-import checkProjectOwner from '../middlewares/checkProjectOwner.js';
+import checkProjectAccess from '../middlewares/checkProjectAccess.js';
 import checkTaskOwner from '../middlewares/checkTaskOwner.js';
-import { validateTaskAccess } from '../middlewares/validateTaskAccessMiddleware.js';
-import { validateAssetAccess } from '../middlewares/validateAssetAccessMiddleware.js';
+import validateTaskAccess from '../middlewares/validateTaskAccessMiddleware.js';
+import validateAssetAccess from '../middlewares/validateAssetAccessMiddleware.js';
 
 const router = Router();
 
@@ -13,7 +13,7 @@ const router = Router();
 router.post('/', authMiddleware, isAdminMiddleware, createTask);
 
 // Get all tasks from an specific project
-router.get('/project/:projectId', authMiddleware, isAdminMiddleware, checkProjectOwner, getAllTasks);
+router.get('/project/:projectId', authMiddleware, checkProjectAccess, getAllTasks);
 
 // Get task by ID
 router.get('/:taskId', authMiddleware, validateTaskAccess, getTaskById);
