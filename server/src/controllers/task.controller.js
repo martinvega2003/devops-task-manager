@@ -153,7 +153,7 @@ export const getTaskById = async (req, res) => {
         t.*, 
         COUNT(tu.user_id) AS assigned_users_count,
         JSON_AGG(
-          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'role', u.role 'active', u.active)
+          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'role', u.role, 'active', u.active)
         ) AS assigned_users
       FROM tasks t
       LEFT JOIN task_users tu ON t.id = tu.task_id
@@ -376,11 +376,11 @@ export const uploadAsset = async (req, res) => {
 
 // Delete an Asset
 export const deleteAsset = async (req, res) => {
-  const { assetId } = req.params;
+  const { taskId, assetId } = req.params;
 
   try {
     // Get the asset details
-    const asset = await pool.query("SELECT * FROM task_assets WHERE id = $1", [assetId]);
+    const asset = await pool.query("SELECT * FROM task_assets WHERE id = $1 and task_id = $2", [assetId, taskId]);
 
     if (asset.rows.length === 0) {
       return res.status(404).json({ msg: "Asset not found." });
