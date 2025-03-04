@@ -70,7 +70,22 @@ export const createTask = async (req, res) => {
       await pool.query(`INSERT INTO task_users (task_id, user_id) VALUES ${values}`);
     }
 
-    res.status(201).json(newTask.rows[0]);
+    const response = await pool.query(
+      `SELECT t.*,
+        JSON_AGG(
+          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'role', u.role, 'active', u.active)
+        ) AS assigned_users 
+        FROM tasks t
+        JOIN task_users tu
+        ON t.id = tu.task_id
+        JOIN users u
+        ON tu.user_id = u.id
+        WHERE t.id = $1
+        GROUP BY t.id`,
+        [newTask.rows[0].id]
+    )
+
+    res.status(201).json(response.rows[0]);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
@@ -94,7 +109,7 @@ export const getAllTasks = async (req, res) => {
         t.*,
         COUNT(tu.user_id) AS assigned_users_count,
         JSON_AGG(
-          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'active', u.active)
+          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'role', u.role, 'active', u.active)
         ) AS assigned_users
       FROM tasks t
       LEFT JOIN task_users tu ON t.id = tu.task_id
@@ -138,7 +153,7 @@ export const getTaskById = async (req, res) => {
         t.*, 
         COUNT(tu.user_id) AS assigned_users_count,
         JSON_AGG(
-          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'active', u.active)
+          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'role', u.role 'active', u.active)
         ) AS assigned_users
       FROM tasks t
       LEFT JOIN task_users tu ON t.id = tu.task_id
