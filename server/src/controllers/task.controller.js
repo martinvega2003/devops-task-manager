@@ -245,7 +245,22 @@ export const updateTask = async (req, res) => {
       [title, description, priority, startTime, endTime, status, taskId]
     );
 
-    res.json(updatedTask.rows[0]);
+    const response = await pool.query(
+      `SELECT t.*,
+        JSON_AGG(
+          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'role', u.role, 'active', u.active)
+        ) AS assigned_users 
+        FROM tasks t
+        JOIN task_users tu
+        ON t.id = tu.task_id
+        JOIN users u
+        ON tu.user_id = u.id
+        WHERE t.id = $1
+        GROUP BY t.id`,
+        [updatedTask.rows[0].id]
+    )
+
+    res.json(response.rows[0]);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
