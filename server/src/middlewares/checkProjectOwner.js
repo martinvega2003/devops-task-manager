@@ -2,7 +2,7 @@ import pool from "../database.js";
 
 const checkProjectOwner = async (req, res, next) => {
   const { projectId } = req.params; // Get project ID from request body (or params if needed)
-  const adminId = req.user.id; // Assuming `req.user.id` contains the logged-in user's ID
+  const adminId = req.user.id; // Assuming req.user.id contains the logged-in user's ID
 
   try {
     // Check if project exists and belongs to the admin user
