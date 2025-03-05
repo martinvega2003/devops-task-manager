@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createProject, getAllProjects, getProjectById, updateProject, deleteProject, updateProjectStatus } from '../controllers/project.controller.js';
+import { createProject, getAllProjects, getProjectById, updateProject, deleteProject, updateProjectStatus, getUserProjects } from '../controllers/project.controller.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
 import checkProjectOwner from '../middlewares/checkProjectOwner.js';
@@ -26,6 +26,10 @@ router.delete('/:projectId', authMiddleware, isAdminMiddleware, checkProjectOwne
 
 //Update Project Status:
 router.patch('/:projectId/status', authMiddleware, isAdminMiddleware, checkProjectOwner, updateProjectStatus);
+
+// ------------- NON ADMIN SPECIFIC ROUTES
+
+router.get('/user/assigned', authMiddleware, getUserProjects)
 
 
 export default router;

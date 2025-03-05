@@ -182,3 +182,62 @@ export const updateProjectStatus = async (req, res) => {
   }
 };
 
+// -------------- NON ADMIN CONTROLLERS ---------------
+
+export const getUserProjects = async (req, res) => {
+  const userId = req.user.id; // Get the logged-in user's ID
+
+  try {
+    // Fetch projects where the user has assigned tasks
+    const projects = await pool.query(
+      `SELECT DISTINCT p.*
+       FROM projects p
+       JOIN tasks t ON p.id = t.project_id
+       JOIN task_users tu ON t.id = tu.task_id
+       WHERE tu.user_id = $1`,
+      [userId]
+    );
+
+    // If no projects found, return an empty array
+    if (projects.rows.length === 0) {
+      return res.json([]);
+    }
+
+    // Process each project to include active members count & task counts
+    const projectsWithCounts = await Promise.all(
+      projects.rows.map(async (project) => {
+        // Count active members in the project
+        const activeMembers = await pool.query(
+          `SELECT COUNT(DISTINCT tu.user_id) AS active_members
+           FROM task_users tu
+           JOIN tasks t ON tu.task_id = t.id
+           WHERE t.project_id = $1 AND t.status IN ('Pending', 'In Progress')`,
+          [project.id]
+        );
+
+        // Count tasks by status
+        const taskCounts = await pool.query(
+          `SELECT 
+            COUNT(CASE WHEN status = 'Pending' THEN 1 END) AS pending,
+            COUNT(CASE WHEN status = 'In Progress' THEN 1 END) AS in_progress,
+            COUNT(CASE WHEN status = 'Completed' THEN 1 END) AS completed
+           FROM tasks WHERE project_id = $1`,
+          [project.id]
+        );
+
+        return {
+          ...project,
+          active_members: activeMembers.rows[0].active_members || 0,
+          task_counts: taskCounts.rows[0],
+        };
+      })
+    );
+
+    res.json(projectsWithCounts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+
