@@ -3,6 +3,7 @@ import { createProject, getAllProjects, getProjectById, updateProject, deletePro
 import authMiddleware from '../middlewares/authMiddleware.js';
 import isAdminMiddleware from '../middlewares/isAdminMiddleware.js';
 import checkProjectOwner from '../middlewares/checkProjectOwner.js';
+import checkProjectAccess from '../middlewares/checkProjectAccess.js';
 
 const router = Router();
 
@@ -15,7 +16,7 @@ router.post('/', authMiddleware, isAdminMiddleware, createProject);
 router.get('/', authMiddleware, isAdminMiddleware, getAllProjects);
 
 //Get A Project By ID
-router.get('/:projectId', authMiddleware, isAdminMiddleware, checkProjectOwner, getProjectById);
+router.get('/:projectId', authMiddleware, checkProjectAccess, getProjectById);
 
 //Update Project
 router.put('/:projectId', authMiddleware, isAdminMiddleware, checkProjectOwner, updateProject);
