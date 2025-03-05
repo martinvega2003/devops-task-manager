@@ -1,6 +1,6 @@
 import pool from "../database.js";
 
-export const validateAssetAccess = async (req, res, next) => {
+const validateAssetAccess = async (req, res, next) => {
   const { assetId } = req.params;
   const userId = req.user.id;
 
@@ -21,3 +21,5 @@ export const validateAssetAccess = async (req, res, next) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
+
+export default validateAssetAccess

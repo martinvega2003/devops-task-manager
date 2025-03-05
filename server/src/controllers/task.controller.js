@@ -2,6 +2,8 @@ import pool from '../database.js';
 import { upload, deleteFile } from '../middlewares/multerConfig.js';
 import multer from 'multer';
 
+// ------- ADMIN CONTROLLERS -------------
+
 // Create Task Controller
 export const createTask = async (req, res) => {
   const { title, description, priority, status = 'Pending', projectId, assignedUsers, startTime, endTime } = req.body;
@@ -96,7 +98,7 @@ export const createTask = async (req, res) => {
 // Get all tasks for a specific project with filtering and sorting
 export const getAllTasks = async (req, res) => {
   const { projectId } = req.params; // Get project ID from URL params
-  const { status, priority, order } = req.query; // Get query parameters
+  const { status, priority } = req.query; // Get query parameters
 
   if (!projectId) {
     return res.status(400).json({ msg: 'Project ID is required.' });
@@ -398,3 +400,54 @@ export const deleteAsset = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 }
+
+// -------------- NON ADMIN CONTROLLERS ---------------
+
+export const getUserTasks = async (req, res) => {
+  const userId = req.user.id;
+  const { status, priority } = req.query;
+
+  try {
+    // Base query: Get tasks assigned to the user along with project details and assigned users
+    let query = `
+      SELECT 
+        t.*,
+        p.id AS project_id,
+        p.name AS project_name,
+        p.description AS project_description,
+        COUNT(tu2.user_id) AS assigned_users_count,
+        JSON_AGG(
+          JSON_BUILD_OBJECT('id', u.id, 'name', u.username, 'email', u.email, 'active', u.active)
+        ) AS assigned_users
+      FROM tasks t
+      JOIN projects p ON t.project_id = p.id
+      JOIN task_users tu ON t.id = tu.task_id
+      LEFT JOIN task_users tu2 ON t.id = tu2.task_id
+      LEFT JOIN users u ON tu2.user_id = u.id
+      WHERE tu.user_id = $1
+    `;
+
+    const queryParams = [userId];
+
+    // Add filters based on the query parameters
+    if (status) {
+      query += ' AND t.status = $' + (queryParams.length + 1);
+      queryParams.push(status);
+    }
+
+    if (priority) {
+      query += ' AND t.priority = $' + (queryParams.length + 1);
+      queryParams.push(priority);
+    }
+
+    // Group by task ID and project ID
+    query += ' GROUP BY t.id, p.id';
+
+    // Execute query
+    const tasks = await pool.query(query, queryParams);
+    res.json(tasks.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
