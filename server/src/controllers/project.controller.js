@@ -117,11 +117,22 @@ export const getProjectById = async (req, res) => {
       [projectId]
     );
 
+    // Get full details of active members
+    const members = await pool.query(
+      `SELECT DISTINCT u.id, u.username, u.email, u.role, u.active
+       FROM users u
+       JOIN task_users tu ON u.id = tu.user_id
+       JOIN tasks t ON tu.task_id = t.id
+       WHERE t.project_id = $1 AND t.status IN ('Pending', 'In Progress')`,
+      [projectId]
+    );
+
     // Return the full information of the project with the tasks and team members count
     res.json({
       ...project.rows[0],
       task_counts: taskCounts.rows[0],
       active_members: activeMembers.rows[0].active_members || 0,
+      members: members.rows,
     });
   } catch (err) {
     console.error(err.message);
