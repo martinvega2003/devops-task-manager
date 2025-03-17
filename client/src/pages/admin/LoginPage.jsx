@@ -56,9 +56,9 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen">
+    <div className="relative flex flex-col md:flex-row min-h-screen">
       {/* Left Side */}
-      <div className="w-1/2 flex flex-col-reverse">
+      <div className="w-full md:w-1/2 flex flex-col-reverse">
         {/* Upper half: Image placeholder */}
         <div className="h-1/2">
           <img
@@ -82,7 +82,7 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side: Login/Register Form */}
-      <div className="fixed z-10 right-0 w-1/2 min-h-full flex items-center justify-center bg-white p-8 border-l-2 border-primary">
+      <div className="md:fixed md:z-10 md:right-0 w-full md:w-1/2 min-h-full flex items-center justify-center bg-white p-8 border-l-2 border-primary">
         <form className="w-full max-w-md" onSubmit={handleSubmit}>
           <h2 className="text-heading text-primary mb-4">
             {isLogin ? 'Login' : 'Register'}
