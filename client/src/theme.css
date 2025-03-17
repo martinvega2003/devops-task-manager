@@ -1,0 +1,27 @@
+/* ===================== */
+/* File used to apply Dark & Light theme styles for each section of the App */
+/* ===================== */
+
+/* ===================== */
+/* Dark & Light Mode Classes For The App Section */
+/* ===================== */
+
+.app-section {
+  background-color: var(--color-background);
+  color: var(--color-surface);
+}
+
+.dark .app-section {
+  background-color: var(--color-background-dark);
+  color: var(--color-surface-dark);
+}
+
+.dark .app-section .text-heading {
+  color: var(--color-primary-dark);
+}
+
+.dark .app-section .text-subheading {
+  color: var(--color-surface-white);
+}
+
+  
