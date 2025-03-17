@@ -56,136 +56,139 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative flex flex-col md:flex-row min-h-screen">
-      {/* Left Side */}
-      <div className="w-full md:w-1/2 flex flex-col-reverse">
-        {/* Upper half: Image placeholder */}
-        <div className="h-1/2">
-          <img
-            src={mainImage || "https://via.placeholder.com/800x600"}
-            alt="Project Management Team Drawing"
-            className="w-full h-auto"
-          />
-        </div>
-        {/* Lower half: Text content */}
-        <div className="h-1/2 flex flex-col items-start justify-center p-8">
-          <h1 className="text-heading text-primary font-bold mb-2">
-            Project Manager
-          </h1>
-          <h2 className="text-subheading text-surface-black mb-2">
-            Manage your projects, manage their tasks, manage your team.
-          </h2>
-          <p className="text-body text-surface-black">
-            A tool to manage all the projects you have in one single platform. Define daily tasks, register your team members, and start assigning their duties.
-          </p>
-        </div>
+    <div className="h-fit py-8 sm:py-20 px-4 sm:px-8 flex flex-col items-center justify-center">
+      {/* Upper half: Text content */}
+      <div className="flex flex-col items-start justify-center mb-8 sm:mb-20">
+        <h1 className="text-heading text-primary font-bold mb-2">
+          Project Manager
+        </h1>
+        <h2 className="text-subheading text-surface-black mb-2">
+          Manage your projects, manage their tasks, manage your team.
+        </h2>
+        <p className="text-body text-surface-black">
+          A tool to manage all the projects you have in one single platform. Define daily tasks, register your team members, and start assigning their duties.
+        </p>
       </div>
 
-      {/* Right Side: Login/Register Form */}
-      <div className="md:fixed md:z-10 md:right-0 w-full md:w-1/2 min-h-full flex items-center justify-center bg-white p-8 border-l-2 border-primary">
-        <form className="w-full max-w-md" onSubmit={handleSubmit}>
-          <h2 className="text-heading text-primary mb-4">
-            {isLogin ? 'Login' : 'Register'}
-          </h2>
-          {/* Conditionally render username field in register mode */}
-          {!isLogin && (
+      <div className="py-2 sm:py-6 px-4 sm:px-12 flex flex-col md:flex-row items-center h-fit rounded-4xl shadow-2xl">
+        {/* Left Side */}
+        <div className="w-full md:w-1/2">
+          {/* Upper half: Image placeholder */}
+          <div className="h-full">
+            <img
+              src={mainImage || "https://via.placeholder.com/800x600"}
+              alt="Project Management Team Drawing"
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
+
+        {/* Right Side: Login/Register Form */}
+        <div className="w-full md:w-1/2 h-fit justify-center bg-white p-4 sm:p-8 border-t-2 md:border-t-0 md:border-l-2 border-primary">
+          <form className="w-full max-w-md" onSubmit={handleSubmit}>
+            <h2 className="text-heading text-primary mb-4">
+              {isLogin ? 'Login' : 'Register'}
+            </h2>
+            {/* Conditionally render username field in register mode */}
+            {!isLogin && (
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-1" htmlFor="email">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Enter your username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                />
+              </div>
+            )}
             <div className="mb-4">
               <label className="block text-gray-700 mb-1" htmlFor="email">
-                Username
+                Email
               </label>
               <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Enter your username"
-                value={formData.username}
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                value={formData.email}
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded"
                 required
               />
             </div>
-          )}
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1" htmlFor="email">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-1" htmlFor="password">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded"
-              required
-            />
-          </div>
-          {/* Conditionally render confirm password field in register mode */}
-          {!isLogin && (
             <div className="mb-4">
-              <label className="block text-gray-700 mb-1" htmlFor="confirmPassword">
-                Confirm Password
+              <label className="block text-gray-700 mb-1" htmlFor="password">
+                Password
               </label>
               <input
                 type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                value={formData.password}
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded"
                 required
               />
             </div>
-          )}
-          <button
-            type="submit"
-            onClick={e => handleSubmit}
-            className="w-full bg-primary text-white py-2 rounded hover:bg-transparent hover:text-primary transition duration-300 border-2 border-primary"
-          >
-            {isLogin ? 'Login' : 'Register'}
-          </button>
-          <p className="mt-4 text-center">
-            {isLogin ? (
-              <>
-                Don't have an account?{' '}
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(false)}
-                  className="text-secondary font-bold underline"
-                >
-                  Register
-                </button>
-              </>
-            ) : (
-              <>
-                Already have an account?{' '}
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(true)}
-                  className="text-secondary font-bold underline"
-                >
-                  Login
-                </button>
-              </>
+            {/* Conditionally render confirm password field in register mode */}
+            {!isLogin && (
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-1" htmlFor="confirmPassword">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                />
+              </div>
             )}
-          </p>
-        </form>
+            <button
+              type="submit"
+              onClick={e => handleSubmit}
+              className="w-full bg-primary text-white py-2 rounded hover:bg-transparent hover:text-primary transition duration-300 border-2 border-primary"
+            >
+              {isLogin ? 'Login' : 'Register'}
+            </button>
+            <p className="mt-4 text-center">
+              {isLogin ? (
+                <>
+                  Don't have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsLogin(false)}
+                    className="text-secondary font-bold underline"
+                  >
+                    Register
+                  </button>
+                </>
+              ) : (
+                <>
+                  Already have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsLogin(true)}
+                    className="text-secondary font-bold underline"
+                  >
+                    Login
+                  </button>
+                </>
+              )}
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   );
