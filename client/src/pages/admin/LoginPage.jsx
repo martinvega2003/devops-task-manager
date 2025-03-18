@@ -54,6 +54,9 @@ const LoginPage = () => {
           email: formData.email,
           password: formData.password,
         });
+
+        // Save token in localStorage
+        login(response.data.token)
         console.log('Successfully registered:', response.data);
       }
     } catch (error) {
