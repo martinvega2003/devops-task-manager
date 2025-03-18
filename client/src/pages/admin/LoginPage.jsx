@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import mainImage from "../../images/login-page-image.jpg";
+import { AuthContext } from '../../context/authContext';
 
 const LoginPage = () => {
+  // Login context
+  const { login } = useContext(AuthContext)
+
   // State to control whether we're in login mode or register mode
   const [isLogin, setIsLogin] = useState(true);
 
@@ -39,6 +43,9 @@ const LoginPage = () => {
           email: formData.email,
           password: formData.password,
         });
+
+        // Save token in localStorage
+        login(response.data.token)
         console.log('Successfully logged:', response.data);
       } else {
         const endpoint = "http://localhost:5001/api/auth/register"
