@@ -20,15 +20,22 @@ export const registerUser = async (req, res) => {
       );
   
       const user = result.rows[0];
+      const payload = {
+        user: {
+          id: user.id,
+          name: user.username,
+          email: user.email
+        },
+      }
   
       // Generate JWT token
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
   
       res.status(201).json({
         message: 'Admin User created successfully',
         user: {
           id: user.id,
-          name: user.name,
+          name: user.username,
           email: user.email
         },
         token
