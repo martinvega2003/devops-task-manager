@@ -58,15 +58,12 @@ const LoginPage = () => {
   return (
     <div className="h-fit py-8 sm:py-20 px-4 sm:px-8 flex flex-col items-center justify-center">
       {/* Upper half: Text content */}
-      <div className="flex flex-col items-start justify-center mb-8 sm:mb-20">
+      <div className="py-2 sm:py-6 px-4 sm:px-12 flex flex-col items-start justify-center mb-8 sm:mb-20">
         <h1 className="text-heading text-primary font-bold mb-2">
           Project Manager
         </h1>
-        <h2 className="text-subheading text-surface-black mb-2">
-          Manage your projects, manage their tasks, manage your team.
-        </h2>
         <p className="text-body text-surface-black">
-          A tool to manage all the projects you have in one single platform. Define daily tasks, register your team members, and start assigning their duties.
+          A tool to manage all the projects you have in one single platform. Create a new project, setup an starting date and a deadline, define daily tasks, register your team members, and start assigning their duties.
         </p>
       </div>
 
@@ -86,7 +83,7 @@ const LoginPage = () => {
         {/* Right Side: Login/Register Form */}
         <div className="w-full md:w-1/2 h-fit justify-center bg-white p-4 sm:p-8 border-t-2 md:border-t-0 md:border-l-2 border-primary">
           <form className="w-full max-w-md" onSubmit={handleSubmit}>
-            <h2 className="text-heading text-primary mb-4">
+            <h2 className="text-subheading text-primary mb-4">
               {isLogin ? 'Login' : 'Register'}
             </h2>
             {/* Conditionally render username field in register mode */}
@@ -158,7 +155,7 @@ const LoginPage = () => {
             <button
               type="submit"
               onClick={e => handleSubmit}
-              className="w-full bg-primary text-white py-2 rounded hover:bg-transparent hover:text-primary transition duration-300 border-2 border-primary"
+              className="w-full bg-primary text-white py-2 rounded hover:bg-transparent hover:text-primary transition duration-300 border-2 border-primary cursor-pointer"
             >
               {isLogin ? 'Login' : 'Register'}
             </button>
