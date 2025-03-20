@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { ThemeModeProvider } from './context/themeModeContext.jsx';
 import { AuthProvider } from './context/authContext.jsx';
-import "./theme.css";
 import LoginPage from './pages/admin/LoginPage.jsx';
 import Navbar from './components/Navbar.jsx';
 
