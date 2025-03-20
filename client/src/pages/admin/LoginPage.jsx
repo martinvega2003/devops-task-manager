@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import mainImage from "../../images/login-page-image.jpg";
+import mainImage from "../../images/login-page-image.png";
 import { AuthContext } from '../../context/authContext';
+import Button from '../../components/Button';
 
 const LoginPage = () => {
   // Login context
@@ -66,13 +67,13 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="h-fit py-8 sm:py-20 px-4 sm:px-8 flex flex-col items-center justify-center">
+    <div className="login-section bg-background dark:bg-background-dark h-fit py-8 px-4 sm:px-8 flex flex-col items-center justify-center">
       {/* Upper half: Text content */}
       <div className="py-2 sm:py-6 px-4 sm:px-12 flex flex-col items-start justify-center mb-8 sm:mb-20">
-        <h1 className="text-heading text-primary font-bold mb-2">
+        <h1 className="text-heading text-primary dark:text-secondary-dark font-bold mb-2">
           Project Manager
         </h1>
-        <p className="text-body text-surface-black">
+        <p className="text-body text-surface-black dark:text-surface-white">
           A tool to manage all the projects you have in one single platform. Create a new project, setup an starting date and a deadline, define daily tasks, register your team members, and start assigning their duties.
         </p>
       </div>
@@ -91,15 +92,15 @@ const LoginPage = () => {
         </div>
 
         {/* Right Side: Login/Register Form */}
-        <div className="w-full md:w-1/2 h-fit justify-center bg-white p-4 sm:p-8 border-t-2 md:border-t-0 md:border-l-2 border-primary">
+        <div className="w-full md:w-1/2 h-fit justify-center p-4 sm:p-8 border-t-2 md:border-t-0 md:border-l-2 border-primary dark:border-secondary-dark">
           <form className="w-full max-w-md" onSubmit={handleSubmit}>
-            <h2 className="text-subheading text-primary mb-4">
+            <h2 className="text-subheading text-primary dark:text-secondary-dark mb-4">
               {isLogin ? 'Login' : 'Register'}
             </h2>
             {/* Conditionally render username field in register mode */}
             {!isLogin && (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1" htmlFor="email">
+                <label className="block text-surface-black dark:text-surface-white placeholder:text-gray-800 dark:placeholder:text-gray-300 mb-1" htmlFor="email">
                   Username
                 </label>
                 <input
@@ -109,13 +110,13 @@ const LoginPage = () => {
                   placeholder="Enter your username"
                   value={formData.username}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-2 rounded"
+                  className="w-full border border-gray-300 p-2 rounded placeholder:text-gray-400 dark:placeholder:text-gray-500"
                   required
                 />
               </div>
             )}
             <div className="mb-4">
-              <label className="block text-gray-700 mb-1" htmlFor="email">
+              <label className="block text-surface-black dark:text-surface-white placeholder:text-gray-800 dark:placeholder:text-gray-300 mb-1" htmlFor="email">
                 Email
               </label>
               <input
@@ -125,12 +126,12 @@ const LoginPage = () => {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border border-gray-300 p-2 rounded placeholder:text-gray-400 dark:placeholder:text-gray-500"
                 required
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 mb-1" htmlFor="password">
+              <label className="block text-surface-black dark:text-surface-white placeholder:text-gray-800 dark:placeholder:text-gray-300 mb-1" htmlFor="password">
                 Password
               </label>
               <input
@@ -140,14 +141,14 @@ const LoginPage = () => {
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border border-gray-300 p-2 rounded placeholder:text-gray-400 dark:placeholder:text-gray-500"
                 required
               />
             </div>
             {/* Conditionally render confirm password field in register mode */}
             {!isLogin && (
               <div className="mb-4">
-                <label className="block text-gray-700 mb-1" htmlFor="confirmPassword">
+                <label className="block text-surface-black dark:text-surface-white mb-1" htmlFor="confirmPassword">
                   Confirm Password
                 </label>
                 <input
@@ -157,26 +158,22 @@ const LoginPage = () => {
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-2 rounded"
+                  className="w-full border border-gray-300 p-2 rounded placeholder:text-gray-400 dark:placeholder:text-gray-500"
                   required
                 />
               </div>
             )}
-            <button
-              type="submit"
-              onClick={e => handleSubmit}
-              className="w-full bg-primary text-white py-2 rounded hover:bg-transparent hover:text-primary transition duration-300 border-2 border-primary cursor-pointer"
-            >
+            <Button>
               {isLogin ? 'Login' : 'Register'}
-            </button>
-            <p className="mt-4 text-center">
+            </Button>
+            <p className="text-caption text-surface-black dark:text-surface-white mt-4 text-center">
               {isLogin ? (
                 <>
                   Don't have an account?{' '}
                   <button
                     type="button"
                     onClick={() => setIsLogin(false)}
-                    className="text-secondary font-bold underline"
+                    className="text-secondary dark:text-primary-dark font-bold underline cursor-pointer"
                   >
                     Register
                   </button>
@@ -187,7 +184,7 @@ const LoginPage = () => {
                   <button
                     type="button"
                     onClick={() => setIsLogin(true)}
-                    className="text-secondary font-bold underline"
+                    className="text-secondary dark:text-primary-dark font-bold underline cursor-pointer"
                   >
                     Login
                   </button>
