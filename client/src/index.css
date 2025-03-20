@@ -7,6 +7,12 @@
 
 /* Importing Tailwind CSS */
 @import "tailwindcss";
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Body Styles */
+body {
+  padding-top: 4rem;
+}
 
 /* ===================== */
 /* Design Tokens */
