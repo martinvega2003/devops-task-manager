@@ -4,11 +4,13 @@ import { ThemeModeProvider } from './context/themeModeContext.jsx';
 import { AuthProvider } from './context/authContext.jsx';
 import "./theme.css";
 import LoginPage from './pages/admin/LoginPage.jsx';
+import Navbar from './components/Navbar.jsx';
 
 const App = () => (
   <AuthProvider>
     <ThemeModeProvider>
       <BrowserRouter>
+        <Navbar />
         <Routes>
           <Route path='/login' element={<LoginPage />} />
         </Routes>
