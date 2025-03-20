@@ -4,6 +4,7 @@ import { ThemeModeProvider } from './context/themeModeContext.jsx';
 import { AuthProvider } from './context/authContext.jsx';
 import LoginPage from './pages/admin/LoginPage.jsx';
 import Navbar from './components/Navbar.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 const App = () => (
   <AuthProvider>
@@ -12,6 +13,9 @@ const App = () => (
         <Navbar />
         <Routes>
           <Route path='/login' element={<LoginPage />} />
+          <Route path='/home' element={<ProtectedRoute />}>
+            <Route index element={<h2>Home Page</h2>} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </ThemeModeProvider>
