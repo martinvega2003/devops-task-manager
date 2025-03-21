@@ -3,6 +3,7 @@ import axios from 'axios';
 import mainImage from "../../images/login-page-image.png";
 import { AuthContext } from '../../context/authContext';
 import Button from '../../components/Button';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   // Login context
@@ -19,6 +20,8 @@ const LoginPage = () => {
     username: '',
     confirmPassword: '',
   });
+
+  const navigate = useNavigate() // navigate function to redirect the user
 
   // Handle input changes
   const handleChange = (e) => {
@@ -48,6 +51,7 @@ const LoginPage = () => {
         // Save token in localStorage
         login(response.data.token)
         console.log('Successfully logged:', response.data);
+        navigate('/home')
       } else {
         const endpoint = "http://localhost:5001/api/auth/register"
         const response = await axios.post(endpoint, {
@@ -59,6 +63,7 @@ const LoginPage = () => {
         // Save token in localStorage
         login(response.data.token)
         console.log('Successfully registered:', response.data);
+        navigate('/home')
       }
     } catch (error) {
       console.error('Error:', error.response ? error.response.data : error.message);
@@ -93,7 +98,7 @@ const LoginPage = () => {
 
         {/* Right Side: Login/Register Form */}
         <div className="w-full md:w-1/2 h-fit justify-center p-4 sm:p-8 border-t-2 md:border-t-0 md:border-l-2 border-primary dark:border-secondary-dark">
-          <form className="w-full max-w-md" onSubmit={handleSubmit}>
+          <form className="w-full max-w-md">
             <h2 className="text-subheading text-primary dark:text-secondary-dark mb-4">
               {isLogin ? 'Login' : 'Register'}
             </h2>
@@ -163,7 +168,7 @@ const LoginPage = () => {
                 />
               </div>
             )}
-            <Button>
+            <Button link="/home" onClick={handleSubmit}>
               {isLogin ? 'Login' : 'Register'}
             </Button>
             <p className="text-caption text-surface-black dark:text-surface-white mt-4 text-center">
