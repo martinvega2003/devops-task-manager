@@ -24,7 +24,8 @@ export const registerUser = async (req, res) => {
         user: {
           id: user.id,
           name: user.username,
-          email: user.email
+          email: user.email,
+          role: user.role,
         },
       }
   
@@ -32,11 +33,12 @@ export const registerUser = async (req, res) => {
       const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
   
       res.status(201).json({
-        message: 'Admin User created successfully',
+        message: 'User created successfully',
         user: {
           id: user.id,
           name: user.username,
-          email: user.email
+          email: user.email,
+          role: user.role
         },
         token
       });
@@ -51,26 +53,38 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await pool.query('SELECT * FROM users WHERE email = $1 AND active = true', [email]);
+    const result = await pool.query('SELECT * FROM users WHERE email = $1 AND active = true', [email]);
 
-    if (user.rows.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(400).json({ msg: 'Invalid credentials or deactivated account' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.rows[0].password);
+    const isMatch = await bcrypt.compare(password, result.rows[0].password);
     if (!isMatch) {
       return res.status(400).json({ msg: 'Invalid password' });
     }
 
+    const user = result.rows[0];
     const payload = {
       user: {
-        id: user.rows[0].id,
-        role: user.rows[0].role,  // Add the role to the payload
+        id: user.id,
+        name: user.username,
+        email: user.email,
+        role: user.role,  // Add the role to the payload
       },
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token }); // Return just the login Token
+    res.json({
+      message: 'User Logged successfully',
+      user: {
+        id: user.id,
+        name: user.username,
+        email: user.email,
+        role: user.role
+      },
+      token
+    }); // Return just the user information, success message and login Token
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
