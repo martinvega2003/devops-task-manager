@@ -12,7 +12,7 @@ const Navbar = () => {
       {/* Left side: Logo */}
       <div className="flex items-center">
         <FaRocket className="text-primary text-3xl" />
-        <span className="ml-2 text-xl font-bold text-primary">CompanyName</span>
+        <span className="ml-2 text-xl font-bold text-primary hidden sm:block">CompanyName</span>
       </div>
       
       {/* Right side: Buttons */}
