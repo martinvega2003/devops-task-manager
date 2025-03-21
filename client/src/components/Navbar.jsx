@@ -20,7 +20,7 @@ const Navbar = () => {
         {token && (
           <button 
             onClick={logout} 
-            className="px-3 py-1 border rounded text-white bg-primary hover:bg-transparent hover:text-primary transition duration-300"
+            className="px-3 py-1 border border-primary rounded text-white bg-primary hover:bg-transparent hover:text-primary transition duration-300"
           >
             Logout
           </button>
