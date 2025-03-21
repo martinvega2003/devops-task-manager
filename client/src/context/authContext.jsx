@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect } from 'react';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+
   // Initialize token and user values from LS (If there are)
   const [token, setToken] = useState(() => localStorage.getItem('token') || null); // Set token as null if there is none in the LS
   const [user, setUser] = useState(() => {
@@ -31,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   const login = (token, user) => {
     setToken(token); 
     setUser(user)
-  }
+  };
 
   const logout = () => {
     setToken(null);
