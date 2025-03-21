@@ -1,6 +1,9 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import mainImage from "../../images/login-page-image.jpg";
+import mainImage from "../../images/login-page-image.png";
+import { AuthContext } from '../../context/authContext';
+import Button from '../../components/Button';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext';
 
 const LoginPage = () => {
@@ -18,6 +21,8 @@ const LoginPage = () => {
     username: '',
     confirmPassword: '',
   });
+
+  const navigate = useNavigate() // navigate function to redirect the user
 
   // Handle input changes
   const handleChange = (e) => {
@@ -45,8 +50,9 @@ const LoginPage = () => {
         });
 
         // Save token in localStorage
-        login(response.data.token)
+        login(response.data.token, response.data.user)
         console.log('Successfully logged:', response.data);
+        navigate('/home')
       } else {
         const endpoint = "http://localhost:5001/api/auth/register"
         const response = await axios.post(endpoint, {
@@ -56,8 +62,9 @@ const LoginPage = () => {
         });
 
         // Save token in localStorage
-        login(response.data.token)
+        login(response.data.token, response.data.user)
         console.log('Successfully registered:', response.data);
+        navigate('/home')
       }
     } catch (error) {
       console.error('Error:', error.response ? error.response.data : error.message);
