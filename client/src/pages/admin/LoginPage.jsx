@@ -49,7 +49,7 @@ const LoginPage = () => {
         });
 
         // Save token in localStorage
-        login(response.data.token)
+        login(response.data.token, response.data.user)
         console.log('Successfully logged:', response.data);
         navigate('/home')
       } else {
@@ -61,7 +61,7 @@ const LoginPage = () => {
         });
 
         // Save token in localStorage
-        login(response.data.token)
+        login(response.data.token, response.data.user)
         console.log('Successfully registered:', response.data);
         navigate('/home')
       }
