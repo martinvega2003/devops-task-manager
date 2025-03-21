@@ -115,7 +115,7 @@ const LoginPage = () => {
                   placeholder="Enter your username"
                   value={formData.username}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-2 rounded placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                  className="w-full border border-gray-300 p-2 rounded text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                   required
                 />
               </div>
@@ -131,7 +131,7 @@ const LoginPage = () => {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                className="w-full border border-gray-300 p-2 rounded text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                 required
               />
             </div>
@@ -146,7 +146,7 @@ const LoginPage = () => {
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                className="w-full border border-gray-300 p-2 rounded text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                 required
               />
             </div>
@@ -163,7 +163,7 @@ const LoginPage = () => {
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 p-2 rounded placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                  className="w-full border border-gray-300 p-2 rounded text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                   required
                 />
               </div>
