@@ -96,8 +96,8 @@ const MyTeamSection = () => {
     <div className="fixed inset-0 z-10 flex items-center justify-center bg-transparent">
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
       <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h3 className="text-xl font-bold mb-4">Add New Team Member</h3>
-        <form onSubmit={handleSubmit}>
+        <h3 className="text-subheading dark:text-surface-white font-bold mb-4">Add New Team Member</h3>
+        <form onSubmit={handleSubmit} className="text-body dark:text-surface-white">
           <div className="mb-4">
             <label className="block text-gray-700 dark:text-gray-200 mb-1" htmlFor="name">
               Name
@@ -109,6 +109,7 @@ const MyTeamSection = () => {
               value={memberData.name}
               onChange={handleChange}
               className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
+              placeholder="Your team member's name"
               required
             />
           </div>
@@ -123,6 +124,7 @@ const MyTeamSection = () => {
               value={memberData.email}
               onChange={handleChange}
               className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
+              placeholder="Your team member's email"
               required
             />
           </div>
@@ -137,6 +139,7 @@ const MyTeamSection = () => {
               value={memberData.password}
               onChange={handleChange}
               className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
+              placeholder="Your team member's password"
               required
             />
           </div>
@@ -151,6 +154,7 @@ const MyTeamSection = () => {
               value={memberData.role}
               onChange={handleChange}
               className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
+              placeholder="Your team member's role"
               required
             />
           </div>
@@ -198,7 +202,7 @@ const MyTeamSection = () => {
             // Only render section if there are team members for that role
             return members.length > 0 ? (
               <div key={key} className="min-w-full mb-8">
-                <h3 className="text-lg font-bold mb-2">{label}</h3>
+                <h3 className="text-subheading dark:text-surface-white font-bold mb-2">{label}</h3>
                 <div className="flex overflow-x-auto gap-4 p-2">
                   {members.map((member) => (
                     <MemberCard
