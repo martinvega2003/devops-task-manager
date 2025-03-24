@@ -93,8 +93,9 @@ const MyTeamSection = () => {
   };
 
   const Modal = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+    <div className="fixed inset-0 z-10 flex items-center justify-center bg-transparent">
+      <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
         <h3 className="text-xl font-bold mb-4">Add New Team Member</h3>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
