@@ -23,7 +23,7 @@ const MemberCard = ({ onClick, className = "", member }) => {
       onClick={onClick}
       className={`${bg} cursor-pointer p-4 rounded shadow-md hover:scale-110 transition duration-300 dark:text-surface-white ${className}`}
     >
-      <h3 className="text-body font-semibold">{member.username}</h3>
+      <h3 className="text-body font-semibold whitespace-nowrap">{member.username}</h3>
     </div>
   );
 };

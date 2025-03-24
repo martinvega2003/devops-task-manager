@@ -203,7 +203,7 @@ const MyTeamSection = () => {
             return members.length > 0 ? (
               <div key={key} className="min-w-full mb-8">
                 <h3 className="text-subheading dark:text-surface-white font-bold mb-2">{label}</h3>
-                <div className="flex overflow-x-auto gap-4 p-2">
+                <div className="flex flex-nowrap overflow-x-auto gap-4 p-2 pl-0">
                   {members.map((member) => (
                     <MemberCard
                       key={member.id}
