@@ -36,6 +36,24 @@ const MyTeamSection = () => {
     }
   };
 
+  // Group members by role
+  const groupedMembers = teamMembers.reduce((acc, member) => {
+    const role = member.role.toLowerCase();
+    if (!acc[role]) {
+      acc[role] = [];
+    }
+    acc[role].push(member);
+    return acc;
+  }, {});
+  
+  // Define the order and display names for the roles
+  const roleOrder = [
+    { key: 'developer', label: 'Developer' },
+    { key: 'designer', label: 'Designer' },
+    { key: 'administrative', label: 'Administrative' },
+    { key: 'manager', label: 'Manager' },
+  ];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -168,17 +186,26 @@ const MyTeamSection = () => {
           </div>
         </div>
       ) : (
-        <div className="flex overflow-x-auto gap-4 p-2">
-          {teamMembers.map((member) => (
-            <MemberCard
-              key={member.id}
-              className={`cursor-pointer p-4 ${!member.active ? "opacity-50" : ""}`}
-              onClick={() => handleMemberClick(member)}
-            >
-              <h3 className="text-lg font-semibold">{member.name}</h3>
-              <p>{member.role}</p>
-            </MemberCard>
-          ))}
+        <div className="flex flex-col overflow-x-auto gap-4 p-2">
+          {roleOrder.map(({ key, label }) => {
+            const members = groupedMembers[key] || [];
+            // Only render section if there are team members for that role
+            return members.length > 0 ? (
+              <div key={key} className="min-w-full mb-8">
+                <h3 className="text-lg font-bold mb-2">{label}</h3>
+                <div className="flex overflow-x-auto gap-4 p-2">
+                  {members.map((member) => (
+                    <MemberCard
+                      key={member.id}
+                      className={`cursor-pointer p-4 ${!member.active ? "opacity-50" : ""}`}
+                      onClick={() => handleMemberClick(member)}
+                      member={member}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : null;
+          })}
         </div>
       )}
 
