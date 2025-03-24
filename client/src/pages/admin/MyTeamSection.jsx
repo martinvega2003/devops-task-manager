@@ -177,7 +177,12 @@ const MyTeamSection = () => {
     <div className="bg-background dark:bg-background-dark min-h-screen p-4">
       {isModalOpen && Modal}
       <ToastContainer position="top-right" autoClose={5000} />
-      <h2 className="text-heading dark:text-surface-white font-bold mb-8">My Team</h2>
+      <div className="flex gap-3 justify-start items-center mb-8">
+        <h2 className="text-heading dark:text-surface-white font-bold">My Team</h2>
+        <div className="w-fit sm:w-1/3 md:w-1/4">
+          <Button onClick={() => setIsModalOpen(true)}>Add Team Member</Button>
+        </div>
+      </div>
       {teamMembers.length === 0 ? (
         <div className="w-full flex flex-col gap-6 justify-center items-center">
           <p className="text-body dark:text-surface-white">No team members yet.</p>
