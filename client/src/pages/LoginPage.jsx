@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import mainImage from "../../images/login-page-image.png";
-import { AuthContext } from '../../context/authContext';
-import Button from '../../components/Button';
+import mainImage from "../images/login-page-image.png";
+import { AuthContext } from '../context/authContext';
+import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
