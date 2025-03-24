@@ -7,6 +7,10 @@ import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import HomePage from './pages/HomePage.jsx';
 
+//React-tostify:
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const App = () => {
 
   return (
@@ -14,6 +18,7 @@ const App = () => {
       <ThemeModeProvider>
         <BrowserRouter>
           <Navbar />
+          <ToastContainer position="top-right" autoClose={5000} />
           <Routes>
             <Route path='/login' element={<LoginPage />} />
             <Route path='/home' element={<ProtectedRoute />}>

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 // Create an Axios instance
 const api = axios.create({
@@ -22,7 +23,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && ([400, 401, 403, 404].includes(error.response.status))) {
-      window.alert(error.response.data.msg || "An error Occurred");
+      toast.error(error.response.data.msg || "An error Occurred");
     }
     return Promise.reject(error);
   }
