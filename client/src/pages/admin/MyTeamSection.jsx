@@ -4,7 +4,7 @@ import Button from "../../components/Button";
 import MemberCard from "../../components/MemberCard";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaPlus } from "react-icons/fa"
+import { FaPlus, FaCheck } from "react-icons/fa"
 
 const MyTeamSection = () => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -62,7 +62,7 @@ const MyTeamSection = () => {
       setMemberData({ name: '', email: '', password: '', role: '' });
       setIsModalOpen(false)
     } catch (error) {
-      
+      console.log(error)
     }
     fetchTeamMembers();
   };
@@ -98,7 +98,7 @@ const MyTeamSection = () => {
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
       <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
         <h3 className="text-subheading dark:text-surface-white font-bold mb-4">Add New Team Member</h3>
-        <form onSubmit={handleSubmit} className="text-body dark:text-surface-white">
+        <form className="text-body dark:text-surface-white">
           <div className="mb-4">
             <label className="block text-gray-700 dark:text-gray-200 mb-1" htmlFor="name">
               Name
@@ -148,28 +148,38 @@ const MyTeamSection = () => {
             <label className="block text-gray-700 dark:text-gray-200 mb-1" htmlFor="role">
               Role
             </label>
-            <input
-              type="text"
-              id="role"
-              name="role"
-              value={memberData.role}
-              onChange={handleChange}
-              className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
-              placeholder="Your team member's role"
-              required
-            />
+            <div className="flex flex-wrap justfy-start items-center gap-2 p-2 pl-0">
+              {
+                [
+                  {role: 'developer', bg: 'bg-gradient-to-r from-blue-700 to-blue-500'},
+                  {role: 'designer', bg: 'bg-gradient-to-r from-yellow-700 to-yellow-500'},
+                  {role: 'administrative', bg: 'bg-gradient-to-r from-green-700 to-green-500'},
+                  {role: 'manager', bg: 'bg-gradient-to-r from-red-700 to-red-500'},
+                ].map(card => (
+                  <button 
+                    type="button"
+                    onClick={() => setMemberData({...memberData, role: card.role})}  
+                    className={`text-caption py-2 px-4 rounded-sm ${card.bg} hover:scale-105 ${card.role === memberData.role ? "scale-105" : ""} cursor-pointer`}
+                  >
+                    <div className="flex flex-nowrap gap-2 items-center">
+                      {card.role.toLocaleUpperCase()}
+                      {card.role === memberData.role ? <FaCheck /> : <></>}
+                    </div>
+                  </button>
+                ))
+              }
+            </div>
           </div>
           <div className="flex justify-end space-x-2">
             <button
-              type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 rounded bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              className="px-4 py-2 rounded bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 cursor-pointer"
             >
               Cancel
             </button>
             <button
-              type="submit"
-              className="px-4 py-2 rounded bg-primary dark:bg-secondary text-white"
+              onClick={handleSubmit}
+              className="px-4 py-2 rounded bg-primary dark:bg-secondary text-white cursor-pointer"
             >
               Add Member
             </button>
