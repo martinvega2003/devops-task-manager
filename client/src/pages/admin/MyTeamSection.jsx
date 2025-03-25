@@ -17,13 +17,6 @@ const MyTeamSection = () => {
     role: '',
   });
 
-  const handleChange = (e) => {
-    setMemberData({
-      ...memberData,
-      [e.target.name]: e.target.value,
-    });
-  };
-  
   useEffect(() => {
     fetchTeamMembers();
   }, []);
@@ -55,6 +48,13 @@ const MyTeamSection = () => {
     { key: 'manager', label: 'Managers' },
   ];
 
+  const handleChange = (e) => {
+    setMemberData({
+      ...memberData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -73,7 +73,7 @@ const MyTeamSection = () => {
 
   const toggleMemberStatus = async (id) => {
     try {
-      await api.patch(`/team-members/${id}/toggle-status`);
+      await api.put(`/team/deactivate/${id}`);
       fetchTeamMembers();
       toast.success("Member status updated");
     } catch (error) {
@@ -84,7 +84,7 @@ const MyTeamSection = () => {
 
   const deleteMember = async (id) => {
     try {
-      await api.delete(`/team-members/${id}`);
+      await api.delete(`/team/delete/${id}`);
       fetchTeamMembers();
       toast.success("Member deleted");
     } catch (error) {
@@ -245,10 +245,10 @@ const MyTeamSection = () => {
           <h3>{selectedMember.name}</h3>
           <p>Role: {selectedMember.role}</p>
           <p>Email: {selectedMember.email}</p>
-          <Button onClick={() => toggleMemberStatus(selectedMember.id)}>
+          <Button onClick={() => toggleMemberStatus(selectedMember.user_id)}>
             {selectedMember.active ? "Deactivate" : "Activate"}
           </Button>
-          <Button variant="destructive" onClick={() => deleteMember(selectedMember.id)}>
+          <Button variant="destructive" onClick={() => deleteMember(selectedMember.user_id)}>
             Delete
           </Button>
           <Button onClick={() => setSelectedMember(null)}>Close</Button>
