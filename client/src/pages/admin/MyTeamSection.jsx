@@ -4,6 +4,7 @@ import Button from "../../components/Button";
 import MemberCard from "../../components/MemberCard";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaPlus } from "react-icons/fa"
 
 const MyTeamSection = () => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -182,7 +183,7 @@ const MyTeamSection = () => {
     <div className="bg-background dark:bg-background-dark min-h-screen p-4">
       {isModalOpen && Modal}
       <ToastContainer position="top-right" autoClose={5000} />
-      <div className="flex gap-3 justify-start items-center mb-8">
+      <div className="flex gap-3 justify-between items-center mb-8">
         <h2 className="text-heading dark:text-surface-white font-bold">My Team</h2>
         <div className="w-fit sm:w-1/3 md:w-1/4">
           <Button onClick={() => setIsModalOpen(true)}>Add Team Member</Button>
@@ -203,15 +204,25 @@ const MyTeamSection = () => {
             return members.length > 0 ? (
               <div key={key} className="min-w-full mb-8">
                 <h3 className="text-subheading dark:text-surface-white font-bold mb-2">{label}</h3>
-                <div className="flex flex-nowrap overflow-x-auto gap-4 p-2 pl-0">
+                <div className="flex flex-nowrap overflow-x-auto gap-8 p-2 pl-0">
                   {members.map((member) => (
                     <MemberCard
                       key={member.id}
-                      className={`cursor-pointer p-4 ${!member.active ? "opacity-50" : ""}`}
                       onClick={() => handleMemberClick(member)}
                       member={member}
                     />
                   ))}
+                  {/* Add a Button to add new member at the end of each array of cards */}
+                  <div className="ml-3 sm:ml-8 min-h-full flex justify-center items-center">
+                    <button onClick={() => setIsModalOpen(true)} className={`h-2/3 w-auto aspect-square flex items-center justify-center rounded-full whitespace-nowrap cursor-pointer border-2 ${
+                      label === 'Developer' ? 'hover:bg-gradient-to-r hover:from-blue-700 hover:to-blue-500 border-blue-600 text-blue-600' : 
+                      label === 'Designer' ? 'hover:bg-gradient-to-r hover:from-yellow-700 hover:to-yellow-500 border-yellow-600 text-yellow-600' :
+                      label === 'Administrative' ? 'hover:bg-gradient-to-r hover:from-green-700 hover:to-green-500 border-green-600 text-green-600' :
+                      'bg-gradient-to-r hover:from-red-700 hover:to-red-500 border-red-600 text-red-600'
+                    } from-transparent to-transparent text-heading hover:text-surface-white transition duration-300`}>
+                      <FaPlus />
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : null;
