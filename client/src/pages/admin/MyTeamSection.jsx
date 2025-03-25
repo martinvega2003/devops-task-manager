@@ -190,10 +190,10 @@ const MyTeamSection = () => {
   )
 
   return (
-    <div className="bg-background dark:bg-background-dark min-h-screen p-4">
+    <div className="bg-background dark:bg-background-dark min-h-screen">
       {isModalOpen && Modal}
       <ToastContainer position="top-right" autoClose={5000} />
-      <div className="flex gap-3 justify-between items-center mb-8">
+      <div className="flex gap-3 justify-between items-center p-4">
         <h2 className="text-heading dark:text-surface-white font-bold">My Team</h2>
         <div className="w-fit sm:w-1/3 md:w-1/4">
           <Button onClick={() => setIsModalOpen(true)}>Add Team Member</Button>
@@ -207,12 +207,12 @@ const MyTeamSection = () => {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col overflow-x-auto gap-4 p-2">
+        <div className="flex flex-col">
           {roleOrder.map(({ key, label }) => {
             const members = groupedMembers[key] || [];
             // Only render section if there are team members for that role
             return members.length > 0 ? (
-              <div key={key} className="min-w-full mb-8">
+              <div key={key} className={`min-w-full py-6 px-4 overflow-x-auto ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
                 <h3 className="text-subheading dark:text-surface-white font-bold mb-2">{label}</h3>
                 <div className="flex flex-nowrap overflow-x-auto gap-8 p-2 pl-0">
                   {members.map((member) => (
