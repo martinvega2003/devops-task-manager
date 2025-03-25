@@ -1,7 +1,7 @@
 import React from 'react';
 import profilePic from "../images/profile-pic.png"
 
-const MemberCard = ({ onClick, className = "", member }) => {
+const MemberCard = ({ onClick, member }) => {
   
   let bg = 'bg-white';
   switch(member.role) {
@@ -22,13 +22,13 @@ const MemberCard = ({ onClick, className = "", member }) => {
   return (
     <div
       onClick={onClick}
-      className={`${bg} cursor-pointer p-4 flex justify-center items-start gap-4 rounded shadow-md hover:scale-110 transition duration-300 text-surface-white ${className}`}
+      className={`${bg} min-w-fit ${!member.active ? "opacity-50" : ""} cursor-pointer p-4 flex justify-center items-start gap-4 rounded shadow-md hover:scale-110 transition duration-300 text-surface-white`}
     >
       <img src={profilePic} alt="Profile picture" className='w-1/4 h-auto rounded-md' />
       <div className="w-3/4">
         <h3 className="text-body font-semibold whitespace-nowrap">{member.username}</h3>
         <p className="text-caption italic whitespace-nowrap text-zinc-100">
-          working on {member.tasks_count} tasks
+          Currently working on <strong>{member.tasks_count}</strong> tasks
         </p>
       </div>
     </div>
