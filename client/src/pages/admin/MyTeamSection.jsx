@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import api from "../../API/api.interceptors";
 import Button from "../../components/Button";
 import MemberCard from "../../components/MemberCard";
+import profilePic from "../../images/profile-pic.png"
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaPlus, FaCheck } from "react-icons/fa"
+import { FaPlus, FaCheck, FaTimes } from "react-icons/fa"
 
 const MyTeamSection = () => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -92,6 +93,7 @@ const MyTeamSection = () => {
   const deleteMember = async (id) => {
     try {
       await api.delete(`/team/delete/${id}`);
+      setSelectedMember(null)
       fetchTeamMembers();
       toast.success("Member deleted");
     } catch (error) {
@@ -247,20 +249,69 @@ const MyTeamSection = () => {
         </div>
       )}
 
-      <div className={`fixed top-0 ${selectedMember ? 'right-0' : '-right-full'} w-1/2 h-full bg-white px-8 py-12 pt-20 shadow-lg transition-all duration-600`}>
+      <div className={`fixed top-0 ${selectedMember ? 'right-0' : '-right-full'} w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 pt-20 overflow-y-scroll transition-all duration-600`}>
         {selectedMember &&
-          <>
-            <h3>{selectedMember.username}</h3>
-            <p>Role: {selectedMember.role}</p>
-            <p>Email: {selectedMember.email}</p>
-            <Button onClick={() => toggleMemberStatus(selectedMember.id)}>
-              {selectedMember.active ? "Deactivate" : "Activate"}
-            </Button>
-            <Button variant="destructive" onClick={() => deleteMember(selectedMember.id)}>
-              Delete
-            </Button>
-            <Button onClick={() => setSelectedMember(null)}>Close</Button>
-          </>
+          <div className="relative flex flex-col justify-start items-start gap-4">
+            <div className="w-full flex justify-start items-start gap-2 mt-20 border-2 dark:border-surface-white">
+              <img src={profilePic} alt="" className="w-1/3 h-auto" />
+              <div className="flex flex-col justify-start items-start gap-2 p-2 whitespace-nowrap overflow-x-auto">
+                <h3 className="text-subheading dark:text-surface-white">{selectedMember.username}</h3>
+                <p className="text-body dark:text-surface-white">{selectedMember.role}</p>
+                <p className="text-body dark:text-surface-white">{selectedMember.email}</p>
+              </div>
+            </div>
+            <div className="w-full my-4">
+              {!selectedMember.active_projects.length > 0 ? 
+                <h2 className="text-body text-center font-extrabold dark:text-surface-white">The Member Does Not Have An Assigned Task Yet.</h2> : (
+                  <>
+                    <h2 className="text-subheading dark:text-surface-white mb-2">
+                      Active Tasks
+                    </h2>
+                    <div className="w-full flex flex-col justify-start items-start gap-2">
+                      {
+                        selectedMember.active_projects.map(project => (
+                          <div className="w-full py-2 px-4 rounded-md whitespace-nowrap overflow-x-auto bg-zinc-200 dark:bg-zinc-800">
+                            <h2 className="text-body font-extrabold dark:text-surface-white">
+                              {project.title}
+                            </h2>
+                            <div className="flex flex-wrap gap-2 py-2">
+                              {
+                                project.tasks.map(task => (
+                                  <div className={
+                                    `text-center text-body text-surface-white py-1 px-3 rounded-md
+                                    ${task.priority === 'High' ? 'bg-gradient-to-r from-red-700 to-red-500' :
+                                      task.priority === 'Medium' ? 'bg-gradient-to-r from-yellow-700 to-yellow-500' :
+                                      'bg-gradient-to-r from-blue-700 to-blue-500'
+                                    } hover:-translate-y-1 transition duration-200 cursor-pointer`
+                                  }>
+                                    {task.title}
+                                  </div>
+                                ))
+                              }
+                            </div>
+                          </div>
+                        ))
+                      }
+                    </div>
+                  </>
+                )
+              }
+            </div>
+            <div className="w-full flex justify-between gap-4 my-6">
+              <Button onClick={() => toggleMemberStatus(selectedMember.id)}>
+                {selectedMember.active ? "Deactivate" : "Activate"}
+              </Button>
+              <Button variant="destructive" onClick={() => deleteMember(selectedMember.id)}>
+                Delete
+              </Button>
+            </div>
+            <button 
+              onClick={() => setSelectedMember(null)}  
+              className="absolute top-0 left-0 py-1 px-6 bg-red-400 dark:bg-red-800 hover:bg-transparent text-white hover:text-red-400 dark:hover:text-red-800 flex items-center gap-1 border-2 border-red-400 dark:border-red-800 rounded-lg cursor-pointer transition duration-300"
+            >
+              <FaTimes /> Close
+            </button>
+          </div>
         }
       </div>
 
