@@ -8,11 +8,11 @@ const Navbar = () => {
   const { darkMode, setDarkMode } = useContext(ThemeModeContext);
 
   return (
-    <nav className="fixed top-0 w-full h-16 flex items-center justify-between px-4 py-2 shadow-md bg-white dark:bg-gray-800">
+    <nav className="fixed z-50 top-0 w-full h-16 flex items-center justify-between px-4 py-2 shadow-md bg-white dark:bg-gray-800">
       {/* Left side: Logo */}
-      <div className="flex items-center">
-        <FaRocket className="text-primary text-3xl" />
-        <span className="ml-2 text-xl font-bold text-primary hidden sm:block">CompanyName</span>
+      <div className="flex items-center text-primary dark:text-secondary-dark">
+        <FaRocket className="text-3xl" />
+        <span className="ml-2 text-xl font-bold hidden sm:block">CompanyName</span>
       </div>
       
       {/* Right side: Buttons */}
@@ -29,7 +29,7 @@ const Navbar = () => {
           onClick={() => setDarkMode(!darkMode)} 
           className="px-3 py-1 border border-secondary rounded text-white bg-secondary hover:bg-transparent hover:text-secondary transition duration-300"
         >
-          {darkMode ? 'Dark Mode' : 'Light Mode'}
+          {darkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
       </div>
     </nav>

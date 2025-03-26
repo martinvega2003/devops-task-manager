@@ -195,17 +195,3 @@ body {
     font-size: var(--caption-font-size-xl);
   }
 }
-
-/* ===================== */
-/* Dark & Light Mode Classes Per Section */
-/* ===================== */
-
-.app-section {
-  background-color: var(--color-background);
-  color: var(--color-surface);
-}
-
-.dark .app-section {
-  background-color: var(--color-background-dark);
-  color: var(--color-surface-dark);
-}

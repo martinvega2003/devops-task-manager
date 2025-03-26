@@ -17,7 +17,6 @@ const App = () => {
     <AuthProvider>
       <ThemeModeProvider>
         <BrowserRouter>
-          <Navbar />
           <ToastContainer position="top-right" autoClose={5000} />
           <Routes>
             <Route path='/login' element={<LoginPage />} />
@@ -25,6 +24,7 @@ const App = () => {
               <Route index element={<HomePage />} />
             </Route>
           </Routes>
+          <Navbar />
         </BrowserRouter>
       </ThemeModeProvider>
     </AuthProvider>

@@ -12,7 +12,7 @@ export const ThemeModeProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (!darkMode) {
+    if (darkMode) {
       document.documentElement.dataset.theme = 'dark';
     } else {
       document.documentElement.dataset.theme = 'light';
