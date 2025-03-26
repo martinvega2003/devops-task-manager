@@ -212,7 +212,7 @@ const MyTeamSection = () => {
             const members = groupedMembers[key] || [];
             // Only render section if there are team members for that role
             return members.length > 0 ? (
-              <div key={key} className={`min-w-full py-6 px-4 overflow-x-auto ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
+              <div key={key} className={`w-[90%] py-6 px-8 my-4 mx-auto overflow-x-auto rounded-4xl shadow-2xl ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
                 <h3 className="text-subheading dark:text-surface-white font-bold mb-2">{label}</h3>
                 <div className="flex flex-nowrap overflow-x-auto gap-8 p-2 pl-0">
                   {members.map((member) => (
