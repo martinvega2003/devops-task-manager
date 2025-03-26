@@ -67,13 +67,20 @@ const MyTeamSection = () => {
     fetchTeamMembers();
   };
 
-  const handleMemberClick = (member) => {
-    setSelectedMember(member);
+  const handleMemberClick = async (id) => {
+    try {
+      const response = await api.get(`/team/team-members/${id}`)
+      const member = response.data
+      setSelectedMember(member);
+    } catch (error) {
+      console.error(error)
+    }
   };
 
   const toggleMemberStatus = async (id) => {
     try {
       await api.put(`/team/deactivate/${id}`);
+      handleMemberClick(id)
       fetchTeamMembers();
       toast.success("Member status updated");
     } catch (error) {
@@ -218,7 +225,7 @@ const MyTeamSection = () => {
                   {members.map((member) => (
                     <MemberCard
                       key={member.id}
-                      onClick={() => handleMemberClick(member)}
+                      onClick={() => handleMemberClick(member.user_id)}
                       member={member}
                     />
                   ))}
@@ -240,20 +247,23 @@ const MyTeamSection = () => {
         </div>
       )}
 
-      {selectedMember && (
-        <div className="fixed top-0 right-0 w-1/2 h-full bg-white p-4 shadow-lg">
-          <h3>{selectedMember.name}</h3>
-          <p>Role: {selectedMember.role}</p>
-          <p>Email: {selectedMember.email}</p>
-          <Button onClick={() => toggleMemberStatus(selectedMember.user_id)}>
-            {selectedMember.active ? "Deactivate" : "Activate"}
-          </Button>
-          <Button variant="destructive" onClick={() => deleteMember(selectedMember.user_id)}>
-            Delete
-          </Button>
-          <Button onClick={() => setSelectedMember(null)}>Close</Button>
-        </div>
-      )}
+      <div className={`fixed top-0 ${selectedMember ? 'right-0' : '-right-full'} w-1/2 h-full bg-white px-8 py-12 pt-20 shadow-lg transition-all duration-600`}>
+        {selectedMember &&
+          <>
+            <h3>{selectedMember.username}</h3>
+            <p>Role: {selectedMember.role}</p>
+            <p>Email: {selectedMember.email}</p>
+            <Button onClick={() => toggleMemberStatus(selectedMember.id)}>
+              {selectedMember.active ? "Deactivate" : "Activate"}
+            </Button>
+            <Button variant="destructive" onClick={() => deleteMember(selectedMember.id)}>
+              Delete
+            </Button>
+            <Button onClick={() => setSelectedMember(null)}>Close</Button>
+          </>
+        }
+      </div>
+
     </div>
   );
 };
