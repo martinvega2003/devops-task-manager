@@ -224,7 +224,7 @@ const MyTeamSection = () => {
                   ))}
                   {/* Add a Button to add new member at the end of each array of cards */}
                   <div className="ml-3 sm:ml-8 min-h-full flex justify-center items-center">
-                    <button onClick={() => setIsModalOpen(true)} className={`h-2/3 w-auto aspect-square flex items-center justify-center rounded-full whitespace-nowrap cursor-pointer border-2 ${
+                    <button onClick={() => {setMemberData({...memberData, role: key}); setIsModalOpen(true)}} className={`h-2/3 w-auto aspect-square flex items-center justify-center rounded-full whitespace-nowrap cursor-pointer border-2 ${
                       label === 'Developers' ? 'hover:bg-gradient-to-r hover:from-blue-700 hover:to-blue-500 border-blue-600 text-blue-600' : 
                       label === 'Designers' ? 'hover:bg-gradient-to-r hover:from-yellow-700 hover:to-yellow-500 border-yellow-600 text-yellow-600' :
                       label === 'Administratives' ? 'hover:bg-gradient-to-r hover:from-green-700 hover:to-green-500 border-green-600 text-green-600' :
