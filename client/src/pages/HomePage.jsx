@@ -1,12 +1,13 @@
 import React, {useContext} from 'react'
 import { AuthContext } from '../context/authContext'
 import MyTeamSection from './admin/MyTeamSection'
+import { Routes, Route } from 'react-router-dom'
 
 const HomePage = () => {
   const {user} = useContext(AuthContext)
   return (
-    <div>
-      {user.role === "Admin" ? <MyTeamSection /> : <h2>Non Admin User</h2>}
+    <div className='flex justify-center items-center text-7xl dark:bg-background-dark dark:text-surface-white'>
+      Non Admin User
     </div>
   )
 }

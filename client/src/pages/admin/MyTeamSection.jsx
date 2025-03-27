@@ -164,8 +164,9 @@ const MyTeamSection = () => {
                   {role: 'designer', bg: 'bg-gradient-to-r from-yellow-700 to-yellow-500'},
                   {role: 'administrative', bg: 'bg-gradient-to-r from-green-700 to-green-500'},
                   {role: 'manager', bg: 'bg-gradient-to-r from-red-700 to-red-500'},
-                ].map(card => (
-                  <button 
+                ].map((card, i) => (
+                  <button
+                    key={i} 
                     type="button"
                     onClick={() => setMemberData({...memberData, role: card.role})}  
                     className={`text-caption py-2 px-4 rounded-sm ${card.bg} hover:scale-105 ${card.role === memberData.role ? "scale-105" : ""} cursor-pointer`}
