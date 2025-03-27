@@ -4,12 +4,15 @@ import { ThemeModeProvider } from './context/themeModeContext.jsx';
 import { AuthProvider } from './context/authContext.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import Navbar from './components/Navbar.jsx';
+import Sidebar from './components/Sidebar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import HomePage from './pages/HomePage.jsx';
 
 //React-tostify:
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AdminRoute from './components/AdminRoute.jsx';
+import MyTeamSection from './pages/admin/MyTeamSection.jsx';
 
 const App = () => {
 
@@ -20,10 +23,13 @@ const App = () => {
           <ToastContainer position="top-right" autoClose={5000} />
           <Routes>
             <Route path='/login' element={<LoginPage />} />
-            <Route path='/home' element={<ProtectedRoute />}>
-              <Route index element={<HomePage />} />
+            <Route path='/home' element={<AdminRoute />}>
+              <Route path="/home/my-team" element={<MyTeamSection />} />
+              <Route path="/home/my-projects" element={<h2>My Projects</h2>} />
             </Route>
+            <Route path='/home/non-admin' element={<HomePage />} />
           </Routes>
+          <Sidebar />
           <Navbar />
         </BrowserRouter>
       </ThemeModeProvider>
