@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { AuthContext } from '../context/authContext';
 
-const AdminRoute = () => {
+const NonAdminRoute = () => {
   const { user } = useContext(AuthContext);
 
   if (!user) {
@@ -10,12 +10,12 @@ const AdminRoute = () => {
   }
 
   // If user is not admin, redirect (you can choose an appropriate route)
-  if (user.role !== 'Admin') {
-    return <Navigate to="/user/home" replace />;
+  if (user.role === 'Admin') {
+    return <Navigate to="/home/my-team" replace />;
   }
   
   // If the user is admin, render the nested routes
   return <Outlet />;
 };
 
-export default AdminRoute;
+export default NonAdminRoute;

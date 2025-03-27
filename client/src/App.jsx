@@ -13,6 +13,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AdminRoute from './components/AdminRoute.jsx';
 import MyTeamSection from './pages/admin/MyTeamSection.jsx';
+import NonAdminRoute from './components/NonAdminRoute.jsx';
 
 const App = () => {
 
@@ -27,7 +28,9 @@ const App = () => {
               <Route path="/home/my-team" element={<MyTeamSection />} />
               <Route path="/home/my-projects" element={<h2>My Projects</h2>} />
             </Route>
-            <Route path='/home/non-admin' element={<HomePage />} />
+            <Route path='/user' element={<NonAdminRoute />}>
+              <Route path="/user/home" element={<HomePage />} />
+            </Route>
           </Routes>
           <Sidebar />
           <Navbar />
