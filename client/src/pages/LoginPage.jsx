@@ -51,7 +51,7 @@ const LoginPage = () => {
         // Save token in localStorage
         login(response.data.token, response.data.user)
         console.log('Successfully logged:', response.data);
-        navigate('/home')
+        navigate('/home/my-team')
       } else {
         const endpoint = "http://localhost:5001/api/auth/register"
         const response = await axios.post(endpoint, {
