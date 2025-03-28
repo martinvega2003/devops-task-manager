@@ -16,23 +16,17 @@ const ProjectCard = ({ project }) => {
       className="bg-white dark:bg-gray-800 h-full border dark:border-surface-white shadow-md p-4 cursor-pointer"
       onClick={handleCardClick}
     >
-      <h3 className="text-subheading font-bold text-surface-black dark:text-surface-white truncate">
+      <h3 className="text-body font-bold text-surface-black dark:text-surface-white truncate">
         {project.name}
       </h3>
-      <p className="line-clamp-3 text-body text-gray-600 dark:text-gray-400">
-        {project.description}
-      </p>
-      <p className="mt-2 text-caption font-semibold text-gray-700 dark:text-gray-300">
-        Tasks:
-      </p>
-      <div className="flex gap-2">
-        <span className="text-caption font-semibold text-red-700 dark:text-red-400">
+      <div className="mt-2 flex flex-wrap gap-2">
+        <span className="text-caption text-surface-white font-semibold py-2 px-4 rounded bg-red-700 dark:bg-red-400">
           Pending: {project.task_counts.pending}
         </span>
-        <span className="text-caption font-semibold text-yellow-700 dark:text-yellow-400">
-          Active: {project.task_counts.in_progress}
+        <span className="text-caption text-surface-white font-semibold py-2 px-4 rounded bg-yellow-700 dark:bg-yellow-400">
+          Started: {project.task_counts.in_progress}
         </span>
-        <span className="text-caption font-semibold text-green-700 dark:text-green-400">
+        <span className="text-caption text-surface-white font-semibold py-2 px-4 rounded bg-green-700 bg:text-green-400">
           Completed: {project.task_counts.completed}
         </span>
       </div>
@@ -41,19 +35,31 @@ const ProjectCard = ({ project }) => {
           Active Members: {project.active_members}
         </span>
       </div>
-      
-      <div className="my-3 text-surface-black dark:text-surface-white">
-        <p className="text-body">
-          Deadline:
-        </p>
-        <div className="flex gap-2">
-          <span>
-            {formattedCreatedDate}
-          </span>
-          -
-          <span>
-            {formattedDeadline}
-          </span>
+
+      {/* Timeline Section */}
+      <div className="relative mt-3">
+        {/* Horizontal line */}
+        <div className="absolute top-1/2 w-full border-t border-gray-300 dark:border-gray-600"></div>
+        {/* Start marker */}
+        <div className="absolute left-0 top-1/2 transform -translate-y-1/2">
+          <div className="w-3 h-3 bg-primary dark:bg-secondary rounded-full"></div>
+        </div>
+        {/* End marker */}
+        <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+          <div className="w-3 h-3 bg-primary dark:bg-secondary rounded-full"></div>
+        </div>
+        {/* Dates */}
+        <div className="relative flex justify-between">
+          <div className="bg-white dark:bg-gray-800 px-2">
+            <span className="text-body text-gray-700 dark:text-gray-300">
+              {formattedCreatedDate}
+            </span>
+          </div>
+          <div className="bg-white dark:bg-gray-800 px-2">
+            <span className="text-body text-gray-700 dark:text-gray-300">
+              {formattedDeadline}
+            </span>
+          </div>
         </div>
       </div>
     </div>
