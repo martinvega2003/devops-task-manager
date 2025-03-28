@@ -30,6 +30,16 @@ const MyProjectsSection = () => {
     });
   };
 
+  const handleDeadlineChange = (e) => {
+    const selectedDate = e.target.value; // e.g., "2025-08-01"
+    // Create a Date object at local midnight for the selected date
+    const date = new Date(selectedDate + "T00:00:00");
+    // Convert to an ISO string (this converts local time to UTC)
+    // For example, if you're in UTC-4, local midnight "2025-08-01T00:00:00" becomes "2025-08-01T04:00:00Z"
+    const isoDate = date.toISOString().replace(/\.\d{3}Z$/, 'Z');
+    setProjectData({ ...projectData, deadline: isoDate });
+  };  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -82,6 +92,15 @@ const MyProjectsSection = () => {
             <label className="block text-gray-700 dark:text-gray-200 mb-1">
               Deadline
             </label>
+            <input
+              type="date"
+              id="deadline"
+              name="deadline"
+              value={projectData.deadline ? projectData.deadline.substring(0, 10) : ''}
+              onChange={handleDeadlineChange}
+              className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
+              required
+            />
           </div>
           <div className="flex justify-end space-x-2">
             <button

@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 const ProjectCard = ({ project }) => {
   const navigate = useNavigate();
 
+  const formattedDeadline = new Date(project.deadline).toISOString().split('T')[0];
+
   const handleCardClick = () => {
     navigate(`/projects/${project.id}`);
   };
@@ -38,7 +40,10 @@ const ProjectCard = ({ project }) => {
           Active Members: {project.active_members}
         </span>
       </div>
-      {/* Timeline component can be added here */}
+      
+      <div className="my-3">
+        {formattedDeadline}
+      </div>
     </div>
   );
 };
