@@ -142,15 +142,13 @@ const MyProjectsSection = () => {
           <ToastContainer position="top-right" autoClose={5000} />
           <div className="flex gap-3 justify-between items-center p-4">
             <h2 className="text-heading dark:text-surface-white font-bold">My Projects</h2>
-            <div className="w-fit sm:w-1/3 md:w-1/4">
-              <Button 
-                width='fit' 
-                isAddButton={true} 
-                onClick={() => setIsModalOpen(true)}
-              >
-                <FaPlus />
-              </Button>
-            </div>
+            <Button 
+              width='fit' 
+              isAddButton={true} 
+              onClick={() => setIsModalOpen(true)}
+            >
+              <FaPlus />
+            </Button>
           </div>
           <div className="px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {
