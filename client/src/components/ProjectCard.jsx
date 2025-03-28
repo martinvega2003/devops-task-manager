@@ -37,30 +37,17 @@ const ProjectCard = ({ project }) => {
       </div>
 
       {/* Timeline Section */}
-      <div className="relative mt-3">
+      <div className="w-full py-2 px-4 bg-gray-200 dark:bg-gray-900 rounded flex items-center mt-3">
         {/* Horizontal line */}
-        <div className="absolute top-1/2 w-full border-t border-gray-300 dark:border-gray-600"></div>
-        {/* Start marker */}
-        <div className="absolute left-0 top-1/2 transform -translate-y-1/2">
-          <div className="w-3 h-3 bg-primary dark:bg-secondary rounded-full"></div>
-        </div>
-        {/* End marker */}
-        <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
-          <div className="w-3 h-3 bg-primary dark:bg-secondary rounded-full"></div>
-        </div>
-        {/* Dates */}
-        <div className="relative flex justify-between">
-          <div className="bg-white dark:bg-gray-800 px-2">
-            <span className="text-body text-gray-700 dark:text-gray-300">
-              {formattedCreatedDate}
-            </span>
-          </div>
-          <div className="bg-white dark:bg-gray-800 px-2">
-            <span className="text-body text-gray-700 dark:text-gray-300">
-              {formattedDeadline}
-            </span>
-          </div>
-        </div>
+        <span className="text-body text-gray-700 dark:text-gray-300 mr-2 whitespace-nowrap">
+          {formattedCreatedDate}
+        </span>
+        <div className="min-w-3 min-h-3 bg-primary dark:bg-secondary rounded-full"></div>
+        <div className="w-1/2 border-t border-primary dark:border-secondary"></div>
+        <div className="min-w-3 min-h-3 bg-primary dark:bg-secondary rounded-full"></div>
+        <span className="text-body text-gray-700 dark:text-gray-300 ml-2 whitespace-nowrap">
+          {formattedDeadline}
+        </span>
       </div>
     </div>
   );
