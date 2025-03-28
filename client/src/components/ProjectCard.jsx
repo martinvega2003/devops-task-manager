@@ -4,15 +4,16 @@ import { useNavigate } from 'react-router-dom';
 const ProjectCard = ({ project }) => {
   const navigate = useNavigate();
 
+  const formattedCreatedDate = new Date(project.created_at).toISOString().split('T')[0];
   const formattedDeadline = new Date(project.deadline).toISOString().split('T')[0];
 
   const handleCardClick = () => {
-    navigate(`/projects/${project.id}`);
+    navigate(`/home/my-projects/${project.id}`);
   };
 
   return (
     <div
-      className="bg-white dark:bg-gray-800 h-full border shadow-md p-4 cursor-pointer"
+      className="bg-white dark:bg-gray-800 h-full border dark:border-surface-white shadow-md p-4 cursor-pointer"
       onClick={handleCardClick}
     >
       <h3 className="text-subheading font-bold text-surface-black dark:text-surface-white truncate">
@@ -41,8 +42,19 @@ const ProjectCard = ({ project }) => {
         </span>
       </div>
       
-      <div className="my-3">
-        {formattedDeadline}
+      <div className="my-3 text-surface-black dark:text-surface-white">
+        <p className="text-body">
+          Deadline:
+        </p>
+        <div className="flex gap-2">
+          <span>
+            {formattedCreatedDate}
+          </span>
+          -
+          <span>
+            {formattedDeadline}
+          </span>
+        </div>
       </div>
     </div>
   );
