@@ -202,19 +202,8 @@ const MyTeamSection = () => {
   return (
     <div className="bg-background dark:bg-background-dark min-h-screen">
       {isModalOpen && Modal}
-      <ToastContainer position="top-right" autoClose={5000} />
-      <div className="flex gap-3 justify-between items-center p-4">
-        <h2 className="text-heading dark:text-surface-white font-bold">My Team</h2>
-        <Button 
-          width='fit' 
-          isAddButton={true} 
-          onClick={() => setIsModalOpen(true)}
-        >
-          <FaPlus />
-        </Button>
-      </div>
       {teamMembers.length === 0 ? (
-        <div className="w-full flex flex-col gap-6 justify-center items-center">
+        <div className="absolute inset-0 w-full h-screen flex flex-col gap-6 justify-center items-center">
           <p className="text-body dark:text-surface-white">No team members yet.</p>
           <Button 
             width='fit' 
@@ -225,37 +214,50 @@ const MyTeamSection = () => {
           </Button>
         </div>
       ) : (
-        <div className="flex flex-col">
-          {roleOrder.map(({ key, label }) => {
-            const members = groupedMembers[key] || [];
-            // Only render section if there are team members for that role
-            return members.length > 0 ? (
-              <div key={key} className={`w-[90%] py-6 px-8 my-4 mx-auto overflow-x-auto rounded-4xl shadow-2xl ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
-                <h3 className="text-subheading dark:text-surface-white font-bold mb-2">{label}</h3>
-                <div className="flex flex-nowrap overflow-x-auto gap-8 p-2 pl-0">
-                  {members.map((member) => (
-                    <MemberCard
-                      key={member.id}
-                      onClick={() => handleMemberClick(member.user_id)}
-                      member={member}
-                    />
-                  ))}
-                  {/* Add a Button to add new member at the end of each array of cards */}
-                  <div className="ml-3 sm:ml-8 min-h-full flex justify-center items-center">
-                    <button onClick={() => {setMemberData({...memberData, role: key}); setIsModalOpen(true)}} className={`h-2/3 w-auto aspect-square flex items-center justify-center rounded-full whitespace-nowrap cursor-pointer border-2 ${
-                      label === 'Developers' ? 'hover:bg-gradient-to-r hover:from-blue-700 hover:to-blue-500 border-blue-600 text-blue-600' : 
-                      label === 'Designers' ? 'hover:bg-gradient-to-r hover:from-yellow-700 hover:to-yellow-500 border-yellow-600 text-yellow-600' :
-                      label === 'Administratives' ? 'hover:bg-gradient-to-r hover:from-green-700 hover:to-green-500 border-green-600 text-green-600' :
-                      'bg-gradient-to-r hover:from-red-700 hover:to-red-500 border-red-600 text-red-600'
-                    } from-transparent to-transparent text-heading hover:text-surface-white transition duration-300`}>
-                      <FaPlus />
-                    </button>
+        <>
+          <ToastContainer position="top-right" autoClose={5000} />
+          <div className="flex gap-3 justify-between items-center p-4">
+            <h2 className="text-heading dark:text-surface-white font-bold">My Team</h2>
+            <Button 
+              width='fit' 
+              isAddButton={true} 
+              onClick={() => setIsModalOpen(true)}
+            >
+              <FaPlus />
+            </Button>
+          </div>
+          <div className="flex flex-col">
+            {roleOrder.map(({ key, label }) => {
+              const members = groupedMembers[key] || [];
+              // Only render section if there are team members for that role
+              return members.length > 0 ? (
+                <div key={key} className={`w-[90%] py-6 px-8 my-4 mx-auto overflow-x-auto rounded-4xl shadow-2xl ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
+                  <h3 className="text-subheading dark:text-surface-white font-bold mb-2">{label}</h3>
+                  <div className="flex flex-nowrap overflow-x-auto gap-8 p-2 pl-0">
+                    {members.map((member) => (
+                      <MemberCard
+                        key={member.id}
+                        onClick={() => handleMemberClick(member.user_id)}
+                        member={member}
+                      />
+                    ))}
+                    {/* Add a Button to add new member at the end of each array of cards */}
+                    <div className="ml-3 sm:ml-8 min-h-full flex justify-center items-center">
+                      <button onClick={() => {setMemberData({...memberData, role: key}); setIsModalOpen(true)}} className={`h-2/3 w-auto aspect-square flex items-center justify-center rounded-full whitespace-nowrap cursor-pointer border-2 ${
+                        label === 'Developers' ? 'hover:bg-gradient-to-r hover:from-blue-700 hover:to-blue-500 border-blue-600 text-blue-600' : 
+                        label === 'Designers' ? 'hover:bg-gradient-to-r hover:from-yellow-700 hover:to-yellow-500 border-yellow-600 text-yellow-600' :
+                        label === 'Administratives' ? 'hover:bg-gradient-to-r hover:from-green-700 hover:to-green-500 border-green-600 text-green-600' :
+                        'bg-gradient-to-r hover:from-red-700 hover:to-red-500 border-red-600 text-red-600'
+                      } from-transparent to-transparent text-heading hover:text-surface-white transition duration-300`}>
+                        <FaPlus />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : null;
-          })}
-        </div>
+              ) : null;
+            })}
+          </div>
+        </>
       )}
 
       <div className={`fixed top-0 ${selectedMember ? 'right-0' : '-right-full'} w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 pt-20 overflow-y-scroll transition-all duration-600`}>
