@@ -6,6 +6,7 @@ import profilePic from "../../images/profile-pic.png"
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaPlus, FaCheck, FaTimes } from "react-icons/fa"
+import TaskTitleCard from "../../components/TaskTitleCard";
 
 const MyTeamSection = () => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -264,7 +265,7 @@ const MyTeamSection = () => {
         {selectedMember &&
           <div className="relative flex flex-col justify-start items-start gap-4">
             <div className="w-full flex justify-start items-start gap-2 mt-20 border-2 dark:border-surface-white">
-              <img src={profilePic} alt="" className="w-1/3 h-auto" />
+              <img src={profilePic} alt="" className="w-1/3 h-full" />
               <div className="flex flex-col justify-start items-start gap-2 p-2 whitespace-nowrap overflow-x-auto">
                 <h3 className="text-subheading dark:text-surface-white">{selectedMember.username}</h3>
                 <p className="text-body dark:text-surface-white">{selectedMember.role}</p>
@@ -288,15 +289,7 @@ const MyTeamSection = () => {
                             <div className="flex flex-wrap gap-2 py-2">
                               {
                                 project.tasks.map(task => (
-                                  <div className={
-                                    `text-center text-body text-surface-white py-1 px-3 rounded-md
-                                    ${task.priority === 'High' ? 'bg-gradient-to-r from-red-700 to-red-500' :
-                                      task.priority === 'Medium' ? 'bg-gradient-to-r from-yellow-700 to-yellow-500' :
-                                      'bg-gradient-to-r from-blue-700 to-blue-500'
-                                    } hover:-translate-y-1 transition duration-200 cursor-pointer`
-                                  }>
-                                    {task.title}
-                                  </div>
+                                  <TaskTitleCard task={task} />
                                 ))
                               }
                             </div>

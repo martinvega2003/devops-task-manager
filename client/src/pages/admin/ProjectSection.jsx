@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import api from '../../API/api.interceptors';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import TaskTitleCard from '../../components/TaskTitleCard';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -83,22 +84,6 @@ const ProjectSection = () => {
       setCalendarDays(daysArray);
     }
   }, [project, currentMonth, currentYear]);
-
-  // Check if a given date falls within the project timeline.
-  const isWithinTimeline = (date) => {
-    if (!project) return false;
-    const created = new Date(project.created_at);
-    const deadline = new Date(project.deadline);
-    // In creation month, days before created day get reduced opacity
-    if (currentMonth === created.getMonth() && currentYear === created.getFullYear()) {
-      if (date.getDate() < created.getDate()) return false;
-    }
-    // In deadline month, days after deadline day get reduced opacity
-    if (currentMonth === deadline.getMonth() && currentYear === deadline.getFullYear()) {
-      if (date.getDate() > deadline.getDate()) return false;
-    }
-    return date >= created && date <= deadline;
-  };
 
   // Navigation functions with boundary checks
   const goToPreviousMonth = () => {
@@ -217,7 +202,7 @@ const ProjectSection = () => {
             return (
               <div
                 key={index}
-                className={`h-32 border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto ${
+                className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto ${
                   cell.isCurrentMonth
                     ? (
                         (currentMonth === projectCreated.getMonth() && cell.date.getDate() < projectCreated.getDate()) ||
@@ -226,18 +211,12 @@ const ProjectSection = () => {
                     : 'opacity-30'
                 }`}
               >
-                <div>{cell.date.getDate()}</div>
-                {cellTasks.map(task => (
-                  <div key={task.id} className={
-                    `w-full text-center text-body text-surface-white py-1 px-3 my-1 rounded-md
-                    ${task.priority === 'High' ? 'bg-gradient-to-r from-red-700 to-red-500' :
-                      task.priority === 'Medium' ? 'bg-gradient-to-r from-yellow-700 to-yellow-500' :
-                      'bg-gradient-to-r from-blue-700 to-blue-500'
-                    } hover:-translate-y-1 whitespace-nowrap truncate transition duration-200 cursor-pointer`
-                  }>
-                    {task.title}
-                  </div>
-                ))}
+                {cell.date.getDate()}
+                <div className="flex flex-col gap-1 mt-2">
+                  {cellTasks.map(task => (
+                    <TaskTitleCard task={task} className='truncate' />
+                  ))}
+                </div>
               </div>
             );
           })}
