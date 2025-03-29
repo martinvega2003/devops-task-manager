@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import api from '../../API/api.interceptors';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+// Helper function to check if two dates represent the same calendar day.
+const isSameDay = (d1, d2) =>
+  d1.getFullYear() === d2.getFullYear() &&
+  d1.getMonth() === d2.getMonth() &&
+  d1.getDate() === d2.getDate();
+
 const ProjectSection = () => {
   const { project_id } = useParams();
   const [project, setProject] = useState(null);
+  const [tasks, setTasks] = useState([]);
   // currentMonth and currentYear determine which month is displayed.
   const [currentMonth, setCurrentMonth] = useState(null);
   const [currentYear, setCurrentYear] = useState(null);
@@ -30,6 +37,22 @@ const ProjectSection = () => {
 
     fetchProject();
   }, [project_id]);
+
+  // Fetch tasks for the project
+  useEffect(() => {
+    if (project) {
+      const fetchTasks = async () => {
+        try {
+          const res = await api.get(`/tasks/project/${project.id}`);
+          setTasks(res.data);
+        } catch (error) {
+          console.error('Error fetching tasks:', error);
+        }
+      };
+
+      fetchTasks();
+    }
+  }, [project]);
 
   // Compute the calendar days for the current month view
   useEffect(() => {
@@ -66,15 +89,14 @@ const ProjectSection = () => {
     if (!project) return false;
     const created = new Date(project.created_at);
     const deadline = new Date(project.deadline);
-    // If in creation month, days before the creation date are out
+    // In creation month, days before created day get reduced opacity
     if (currentMonth === created.getMonth() && currentYear === created.getFullYear()) {
       if (date.getDate() < created.getDate()) return false;
     }
-    // If in deadline month, days after the deadline date are out
+    // In deadline month, days after deadline day get reduced opacity
     if (currentMonth === deadline.getMonth() && currentYear === deadline.getFullYear()) {
       if (date.getDate() > deadline.getDate()) return false;
     }
-    // Otherwise, check if the date is between the created and deadline dates
     return date >= created && date <= deadline;
   };
 
@@ -82,7 +104,7 @@ const ProjectSection = () => {
   const goToPreviousMonth = () => {
     if (!project) return;
     const projectCreated = new Date(project.created_at);
-    // Prevent navigating to a month before project's creation month/year
+    // Prevent navigating before the project's creation month/year
     if (currentYear === projectCreated.getFullYear() && currentMonth === projectCreated.getMonth()) {
       return;
     }
@@ -97,7 +119,7 @@ const ProjectSection = () => {
   const goToNextMonth = () => {
     if (!project) return;
     const projectDeadline = new Date(project.deadline);
-    // Prevent navigating to a month after project's deadline month/year
+    // Prevent navigating after the project's deadline month/year
     if (currentYear === projectDeadline.getFullYear() && currentMonth === projectDeadline.getMonth()) {
       return;
     }
@@ -118,7 +140,7 @@ const ProjectSection = () => {
   ];
   const displayMonth = monthNames[currentMonth];
 
-  // Determine arrow opacity based on boundaries
+  // Determine arrow disabled states
   const projectCreated = new Date(project.created_at);
   const projectDeadline = new Date(project.deadline);
   const leftDisabled = currentYear === projectCreated.getFullYear() && currentMonth === projectCreated.getMonth();
@@ -183,25 +205,42 @@ const ProjectSection = () => {
           ))}
         </div>
 
-        {/* Calendar Days Grid */}
-        <div className="min-h-screen grid grid-cols-7">
-          {calendarDays.map((cell, index) => (
-            <div
-              key={index}
-              className={`border border-gray-300 dark:border-gray-600 p-1 text-left text-body ${
-                cell.isCurrentMonth ? 
-                // If in creation month, days before created day get reduced opacity
-                currentMonth === projectCreated.getMonth() && currentYear === projectCreated.getFullYear() && cell.isCurrentMonth && cell.date.getDate() < projectCreated.getDate()
-                  ? 'opacity-30' :
-                  // If in deadline month, days after deadline day get reduced opacity
-                  currentMonth === projectDeadline.getMonth() && currentYear === projectDeadline.getFullYear() && cell.isCurrentMonth && cell.date.getDate() > projectDeadline.getDate()
-                  ? 'opacity-30'
-                  : 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' : 'opacity-30'
-              }`}
-            >
-              {cell.date.getDate()}
-            </div>
-          ))}
+        {/* Calendar Days Grid with Tasks */}
+        <div className="grid grid-cols-7">
+          {calendarDays.map((cell, index) => {
+            // Find tasks that start on this day
+            const cellTasks = tasks.filter(task => {
+              const taskStart = new Date(task.start_time);
+              return isSameDay(taskStart, cell.date);
+            });
+
+            return (
+              <div
+                key={index}
+                className={`h-32 border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto ${
+                  cell.isCurrentMonth
+                    ? (
+                        (currentMonth === projectCreated.getMonth() && cell.date.getDate() < projectCreated.getDate()) ||
+                        (currentMonth === projectDeadline.getMonth() && cell.date.getDate() > projectDeadline.getDate())
+                      ) ? 'opacity-30' : 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer'
+                    : 'opacity-30'
+                }`}
+              >
+                <div>{cell.date.getDate()}</div>
+                {cellTasks.map(task => (
+                  <div key={task.id} className={
+                    `w-full text-center text-body text-surface-white py-1 px-3 my-1 rounded-md
+                    ${task.priority === 'High' ? 'bg-gradient-to-r from-red-700 to-red-500' :
+                      task.priority === 'Medium' ? 'bg-gradient-to-r from-yellow-700 to-yellow-500' :
+                      'bg-gradient-to-r from-blue-700 to-blue-500'
+                    } hover:-translate-y-1 whitespace-nowrap truncate transition duration-200 cursor-pointer`
+                  }>
+                    {task.title}
+                  </div>
+                ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
