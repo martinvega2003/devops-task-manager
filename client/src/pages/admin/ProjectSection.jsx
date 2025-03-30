@@ -16,6 +16,12 @@ const ProjectSection = () => {
   const { project_id } = useParams();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
+
+  // Modal related states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalCell, setModalCell] = useState(null)
+  const [modalCellTasks, setModalCellTasks] = useState([])
+
   // currentMonth and currentYear determine which month is displayed.
   const [currentMonth, setCurrentMonth] = useState(null);
   const [currentYear, setCurrentYear] = useState(null);
@@ -131,8 +137,38 @@ const ProjectSection = () => {
   const leftDisabled = currentYear === projectCreated.getFullYear() && currentMonth === projectCreated.getMonth();
   const rightDisabled = currentYear === projectDeadline.getFullYear() && currentMonth === projectDeadline.getMonth();
 
+  const Modal = (
+    <div className="fixed inset-0 z-10 flex items-center justify-center bg-transparent">
+      <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h3 className="text-body dark:text-surface-white font-bold mb-4">Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}: </h3>
+        <div className="w-full flex flex-col items-start space-x-2">
+          <div className="w-full flex flex-col gap-1 mt-2">
+            {modalCellTasks.map(task => (
+              <TaskTitleCard task={task} className='truncate w-full' />
+            ))}
+          </div>
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="px-4 py-2 mt-2 rounded bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 cursor-pointer"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+
+  const openModal = (cell, cellTasks) => {
+    setModalCell(cell)
+    setModalCellTasks(cellTasks)
+    setIsModalOpen(true)
+  }
+
   return (
     <div className="bg-background dark:bg-background-dark min-h-screen">
+      {isModalOpen && Modal}
+
       {/* Project Header */}
       <div className="p-4">
         <h2 className="text-2xl font-bold mb-2 text-surface-black dark:text-surface-white">
@@ -201,6 +237,7 @@ const ProjectSection = () => {
 
             return (
               <div
+                onClick={() => openModal(cell, cellTasks)}
                 key={index}
                 className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto ${
                   cell.isCurrentMonth
