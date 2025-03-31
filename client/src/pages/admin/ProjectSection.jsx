@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../../API/api.interceptors';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import TaskTitleCard from '../../components/TaskTitleCard';
+import Button from '../../components/Button';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -138,26 +139,76 @@ const ProjectSection = () => {
   const rightDisabled = currentYear === projectDeadline.getFullYear() && currentMonth === projectDeadline.getMonth();
 
   const Modal = (
-    <div className="fixed inset-0 z-10 flex items-center justify-center bg-transparent">
+    <div className="fixed inset-0 z-10 w-full flex items-center justify-center bg-transparent">
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h3 className="text-body dark:text-surface-white font-bold mb-4">Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}: </h3>
-        <div className="w-full flex flex-col items-start space-x-2">
-          <div className="w-full flex flex-col gap-1 mt-2">
-            {modalCellTasks.map(task => (
-              <TaskTitleCard task={task} className='truncate w-full' />
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-2/3 h-[80vh] flex flex-col items-start overflow-hidden">
+        <h3 className="text-body dark:text-surface-white font-bold mb-4">
+          Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
+        </h3>
+        
+        {/* Timeline and Tasks Container */}
+        <div className="relative flex h-fit w-full overflow-auto">
+
+          {/* Vertical Timeline */}
+          <div className="sticky z-30 left-0 h-fit w-full bg-white dark:bg-gray-800 text-caption text-surface-black dark:text-surface-white pr-2 border-r border-gray-300 dark:border-gray-600 flex flex-col items-end">
+            {Array.from({ length: 24 }).map((_, hour) => (
+              <div key={hour} className="py-4 text-right w-12 h-12">
+                <span>{hour}:00</span>
+              </div>
             ))}
           </div>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="px-4 py-2 mt-2 rounded bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 cursor-pointer"
-          >
-            Cancel
-          </button>
+
+          {/* Hours Separating lines */}
+          <div className="absolute w-full z-10 inset-0 top-6 flex flex-col gap-12">
+            {Array.from({ length: 24 }).map((_, hour) => (
+              <div 
+                key={hour}
+                className="w-[2000px] border-t border-dashed border-gray-300 dark:border-gray-600"
+                style={{ position: 'absolute', top: `${hour * 48}px` }}
+              />
+            ))}
+          </div>
+          
+          {/* Tasks Container */}
+          <div className="relative flex justify-start gap-1">
+            {modalCellTasks.map(task => {
+              const taskStart = new Date(task.start_time);
+              const taskEnd = new Date(task.end_time);
+              const startHour = taskStart.getHours();
+              const startMinutes = taskStart.getMinutes();
+              const durationHours = (taskEnd - taskStart) / (1000 * 60 * 60);
+              const topPosition = startHour * 48 + (startMinutes / 60) * 48; // 44px per hour
+              const height = durationHours * 48; // Task height based on duration
+  
+              return (
+                <div
+                  key={task.id}
+                >
+                  <TaskTitleCard 
+                    task={task} 
+                    className="truncate relative z-20 -translate-y-6 hover:-translate-y-7" 
+                    style={{ 
+                      top: `${topPosition}px`, 
+                      height: `${height}px`, 
+                    }} 
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="w-full flex justify-between items-center mt-12">
+          <Button onClick={() => setIsModalOpen(false)} width='fit'>
+            Close
+          </Button>
+
+          <Button isAddButton={true} width='fit' />
         </div>
       </div>
     </div>
-  )
+  );
+  
 
   const openModal = (cell, cellTasks) => {
     setModalCell(cell)
