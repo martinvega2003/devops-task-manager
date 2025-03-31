@@ -199,7 +199,7 @@ const ProjectSection = () => {
         </div>
 
         <div className="w-full flex justify-between items-center mt-12">
-          <Button onClick={() => setIsModalOpen(false)} width='fit'>
+          <Button onClick={() => setIsModalOpen(false)} width='fit' isCloseButton={true}>
             Close
           </Button>
 
