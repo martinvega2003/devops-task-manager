@@ -32,6 +32,16 @@ const ProjectSection = () => {
     })
   }
 
+  const handleDeadlineChange = (e) => {// Copy & Pate from Create project Form
+    const selectedDate = e.target.value; // e.g., "2025-08-01"
+    // Create a Date object at local midnight for the selected date
+    const date = new Date(selectedDate + "T00:00:00");
+    // Convert to an ISO string (this converts local time to UTC)
+    // For example, if you're in UTC-4, local midnight "2025-08-01T00:00:00" becomes "2025-08-01T04:00:00Z"
+    const isoDate = date.toISOString().replace(/\.\d{3}Z$/, 'Z');
+    setUpdatedProject({ ...updatedProject, deadline: isoDate });
+  };  
+
   const handleSubmit = async e => {
     e.preventDefault()
     const payload = {
@@ -279,13 +289,14 @@ const ProjectSection = () => {
               <FaPen />
             </button>
           </div> 
-          ) : (
+        ) : (
           <div className="w-full flex justify-start items-center gap-2 mb-2">
             <input 
               name='name'
               className="w-fit text-subheading font-bold text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
               placeholder='Title cannot be null...'
               onChange={handleChange}
+              required
             />
             <Button onClick={handleSubmit} width='fit'>
               Save
@@ -302,13 +313,14 @@ const ProjectSection = () => {
               <FaPen />
             </button>
           </div> 
-          ) : (
+        ) : (
           <div className="w-full flex justify-start items-center gap-2 mb-4">
             <input 
               name='description'
               className="w-fit text-body font-bold text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
               placeholder='Description cannot be null...'
               onChange={handleChange}
+              required
             />
             <Button onClick={handleSubmit} width='fit'>
               Save
@@ -323,9 +335,29 @@ const ProjectSection = () => {
           <span className="text-caption text-gray-700 dark:text-gray-300">
             Active Members: {project.active_members}
           </span>
-          <span className="text-caption text-gray-700 dark:text-gray-300">
-            Deadline: {new Date(project.deadline).toISOString().split('T')[0]}
-          </span>
+          {!isDeadlineEditing ? (
+            <div className="flex justify-start items-center gap-2">
+              <span className="text-caption text-gray-700 dark:text-gray-300">
+                Deadline: {new Date(project.deadline).toISOString().split('T')[0]}
+              </span>
+              <button onClick={() => setIsDeadlineEditing(true)} className="aspect-square p-2 rounded-full border border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-600 text-caption cursor-pointer">
+                <FaPen />
+              </button>
+            </div>
+          ) : (
+            <div className="w-fit flex justify-start items-center gap-2">
+              <input
+                type="date"
+                name="deadline"
+                onChange={handleDeadlineChange}
+                className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
+                required
+              />
+              <Button onClick={handleSubmit} width='fit'>
+                Save
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
