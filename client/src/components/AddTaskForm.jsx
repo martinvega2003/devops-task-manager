@@ -3,6 +3,7 @@ import api from "../API/api.interceptors";
 import Button from "./Button";
 import { FaCheck } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
+import ErrorContainer from "./ErrorContainer";
 
 const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) => {
   // modalCell is assumed to contain the selected date (a Date object)
@@ -92,26 +93,11 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
     }
   };
 
-  const ErrorContainer = (
-    <div className="fixed h-screen inset-0 z-40 flex items-center justify-center bg-transparent">
-      <div className="absolute h-screen z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-44 md:w-80 lg:w-96 h-fit flex flex-col gap-2 items-center px-6 py-4">
-        <p className="w-full text-left text-body text-error dark:text-error-dark">Error:</p>
-        <p className="max-w-full text-caption md:text-body text-surface-black dark:text-surface-white whitespace-break-spaces">
-          {error}
-        </p>
-        <button onClick={() => setError(null)} className="w-full text-right text-caption text-surface-black dark:text-surface-white cursor-pointer">
-          OK
-        </button>
-      </div>
-    </div>
-  )
-
   return (
     <div className="absolute inset-0 z-40 flex items-center justify-center bg-transparent">
+      {error && <ErrorContainer error={error} setError={setError} />}
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
       <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-[60%] aspect-square overflow-auto">
-        {error && ErrorContainer}
         <h3 className="text-subheading dark:text-surface-white font-bold mb-4">Add New Task</h3>
         <form className="text-body dark:text-surface-white">
           <div className="mb-4">
