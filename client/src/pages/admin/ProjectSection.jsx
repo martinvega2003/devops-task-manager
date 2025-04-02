@@ -31,37 +31,39 @@ const ProjectSection = () => {
 
   // Fetch project information when component mounts
   useEffect(() => {
-    const fetchProject = async () => {
-      try {
-        const res = await api.get(`/projects/${project_id}`);
-        setProject(res.data);
-        // Initialize currentMonth/currentYear to project's created_at month/year
-        const createdDate = new Date(res.data.created_at);
-        setCurrentMonth(createdDate.getMonth());
-        setCurrentYear(createdDate.getFullYear());
-      } catch (error) {
-        console.error('Error fetching project:', error);
-      }
-    };
-
     fetchProject();
   }, [project_id]);
+
+  // Function to fetch the project info
+  const fetchProject = async () => {
+    try {
+      const res = await api.get(`/projects/${project_id}`);
+      setProject(res.data);
+      // Initialize currentMonth/currentYear to project's created_at month/year
+      const createdDate = new Date(res.data.created_at);
+      setCurrentMonth(createdDate.getMonth());
+      setCurrentYear(createdDate.getFullYear());
+    } catch (error) {
+      console.error('Error fetching project:', error);
+    }
+  };
 
   // Fetch tasks for the project
   useEffect(() => {
     if (project) {
-      const fetchTasks = async () => {
-        try {
-          const res = await api.get(`/tasks/project/${project.id}`);
-          setTasks(res.data);
-        } catch (error) {
-          console.error('Error fetching tasks:', error);
-        }
-      };
-
       fetchTasks();
     }
   }, [project]);
+
+  // Function to fetch the tasks from a project
+  const fetchTasks = async () => {
+    try {
+      const res = await api.get(`/tasks/project/${project.id}`);
+      setTasks(res.data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
+  };
 
   // Compute the calendar days for the current month view
   useEffect(() => {
@@ -139,7 +141,7 @@ const ProjectSection = () => {
   const leftDisabled = currentYear === projectCreated.getFullYear() && currentMonth === projectCreated.getMonth();
   const rightDisabled = currentYear === projectDeadline.getFullYear() && currentMonth === projectDeadline.getMonth();
 
-  const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell }) => {
+  const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, setModalCellTasks, tasks, fetchTasks }) => {
     // modalCell is assumed to contain the selected date (a Date object)
     // Initialize startTime and endTime as "HH:MM" strings (24-hour format)
     const [taskData, setTaskData] = useState({
@@ -148,8 +150,8 @@ const ProjectSection = () => {
       priority: "Low",
       status: "Pending",
       projectId: project_id,
-      startTime: "12:00",  
-      endTime: "12:15",  
+      startTime: "00:00",  
+      endTime: "00:00",  
       assignedUsers: []
     });
 
@@ -219,6 +221,12 @@ const ProjectSection = () => {
           endTime: "12:15",  
           assignedUsers: []
         });
+        fetchTasks()
+        const cellTasks = tasks.filter(task => {
+          const taskStart = new Date(task.start_time);
+          return isSameDay(taskStart, cell.date);
+        });
+        setModalCellTasks(cellTasks)
         setIsTaskFormOpen(false);
       } catch (error) {
         console.log(error);
@@ -374,7 +382,7 @@ const ProjectSection = () => {
     <div className="fixed inset-0 z-10 w-full flex items-center justify-center bg-transparent">
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
       <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-2/3 h-[80vh] flex flex-col items-start overflow-hidden">
-        {isTaskFormOpen && <AddTaskForm project_id={project_id} setIsTaskFormOpen={setIsTaskFormOpen} modalCell={modalCell} />}
+        {isTaskFormOpen && <AddTaskForm project_id={project_id} setIsTaskFormOpen={setIsTaskFormOpen} modalCell={modalCell} setModalCellTasks={setModalCellTasks} tasks={tasks} fetchTasks={fetchTasks} />}
         <h3 className="text-body dark:text-surface-white font-bold mb-4">
           Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
         </h3>
@@ -383,7 +391,7 @@ const ProjectSection = () => {
         <div className="relative flex h-fit w-full overflow-auto">
 
           {/* Vertical Timeline */}
-          <div className="sticky z-30 left-0 h-fit w-full bg-white dark:bg-gray-800 text-caption text-surface-black dark:text-surface-white pr-2 border-r border-gray-300 dark:border-gray-600 flex flex-col items-end">
+          <div className="sticky z-30 left-0 h-fit bg-white dark:bg-gray-800 text-caption text-surface-black dark:text-surface-white pr-2 border-r border-gray-300 dark:border-gray-600 flex flex-col items-end">
             {Array.from({ length: 24 }).map((_, hour) => (
               <div key={hour} className="py-4 text-right w-12 h-12">
                 <span>{hour}:00</span>
