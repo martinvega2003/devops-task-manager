@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../API/api.interceptors';
-import { FaChevronLeft, FaChevronRight, FaCheck } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaPen } from 'react-icons/fa';
 import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
 import AddTaskForm from '../../components/AddTaskForm';
@@ -18,6 +18,39 @@ const ProjectSection = () => {
   const { project_id } = useParams();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
+
+  // When Updating a Project
+  const [isTitleEditing, setIsTitleEditing] = useState(false)
+  const [isDescriptionEditing, setIsDescriptionEditing] = useState(false)
+  const [isDeadlineEditing, setIsDeadlineEditing] = useState(false)
+  const [updatedProject, setUpdatedProject] = useState(null)
+
+  const handleChange = e => {
+    setUpdatedProject({
+      ...updatedProject,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+    const payload = {
+      name: updatedProject.name,
+      description: updatedProject.description,
+      deadline: updatedProject.deadline
+    }
+
+    try {
+      await api.put('projects/' + project_id, payload)
+      console.log("project updated")
+      fetchProject()
+      setIsTitleEditing(false)
+      setIsDescriptionEditing(false)
+      setIsDeadlineEditing(false)
+    } catch (error) {
+      alert(error)
+    }
+  }
 
   // Modal related states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,6 +77,7 @@ const ProjectSection = () => {
       const createdDate = new Date(res.data.created_at);
       setCurrentMonth(createdDate.getMonth());
       setCurrentYear(createdDate.getFullYear());
+      setUpdatedProject(res.data)
     } catch (error) {
       console.error('Error fetching project:', error);
     }
@@ -231,17 +265,57 @@ const ProjectSection = () => {
   }
 
   return (
-    <div className="bg-background dark:bg-background-dark min-h-screen">
+    <div className="bg-background dark:bg-background-dark min-h-screen w-full">
       {isModalOpen && Modal}
 
       {/* Project Header */}
       <div className="p-4">
-        <h2 className="text-2xl font-bold mb-2 text-surface-black dark:text-surface-white">
-          {project.name}
-        </h2>
-        <p className="text-body text-gray-700 dark:text-gray-300 mb-4">
-          {project.description}
-        </p>
+        {!isTitleEditing ? (
+          <div className="w-full flex justify-start items-center gap-2 mb-2">
+            <h2 className="text-subheading text-surface-black dark:text-surface-white">
+              {project.name}
+            </h2>
+            <button onClick={() => setIsTitleEditing(true)} className="aspect-square p-2 rounded-full border border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-600 text-body cursor-pointer">
+              <FaPen />
+            </button>
+          </div> 
+          ) : (
+          <div className="w-full flex justify-start items-center gap-2 mb-2">
+            <input 
+              name='name'
+              className="w-fit text-subheading font-bold text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
+              placeholder='Title cannot be null...'
+              onChange={handleChange}
+            />
+            <Button onClick={handleSubmit} width='fit'>
+              Save
+            </Button>
+          </div> 
+        )}
+
+        {!isDescriptionEditing ? (
+          <div className="w-fit flex justify-start items-center gap-2 mb-4">
+            <p className="text-body text-surface-black dark:text-surface-white">
+              {project.description}
+            </p>
+            <button onClick={() => setIsDescriptionEditing(true)} className="aspect-square p-2 rounded-full border border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-600 text-caption cursor-pointer">
+              <FaPen />
+            </button>
+          </div> 
+          ) : (
+          <div className="w-full flex justify-start items-center gap-2 mb-4">
+            <input 
+              name='description'
+              className="w-fit text-body font-bold text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
+              placeholder='Description cannot be null...'
+              onChange={handleChange}
+            />
+            <Button onClick={handleSubmit} width='fit'>
+              Save
+            </Button>
+          </div> 
+        )}
+
         <div className="flex justify-between items-center mb-4">
           <span className="text-caption text-gray-700 dark:text-gray-300">
             Active Tasks: {project.task_counts.pending}
