@@ -8,7 +8,7 @@ const Navbar = () => {
   const { darkMode, setDarkMode } = useContext(ThemeModeContext);
 
   return (
-    <nav className="fixed z-50 top-0 left-0 right-0 w-screen h-16 flex items-center justify-between px-4 py-2 shadow-md bg-white dark:bg-gray-800">
+    <nav className="fixed z-99 top-0 left-0 right-0 w-screen h-16 flex items-center justify-between px-4 py-2 shadow-md bg-white dark:bg-gray-800">
       {/* Left side: Logo */}
       <div className="flex items-center text-primary dark:text-secondary-dark">
         <FaRocket className="text-3xl" />
