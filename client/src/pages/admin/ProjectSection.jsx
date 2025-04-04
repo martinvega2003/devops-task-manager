@@ -5,6 +5,7 @@ import { FaChevronLeft, FaChevronRight, FaPen } from 'react-icons/fa';
 import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
 import AddTaskForm from '../../components/AddTaskForm';
+import TaskPage from '../TaskPage';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -67,6 +68,9 @@ const ProjectSection = () => {
   const [modalCell, setModalCell] = useState(null)
   const [modalCellTasks, setModalCellTasks] = useState([])
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false)
+
+  //Task Data Modal related states
+  const [selectedTask, setSelectedTask] = useState(null)
 
   // currentMonth and currentYear determine which month is displayed.
   const [currentMonth, setCurrentMonth] = useState(null);
@@ -246,6 +250,7 @@ const ProjectSection = () => {
                 >
                   <TaskTitleCard 
                     task={task} 
+                    onClick={() => setSelectedTask(task)}
                     className="truncate relative z-20 -translate-y-6 hover:-translate-y-7" 
                     style={{ 
                       top: `${topPosition}px`, 
@@ -266,7 +271,6 @@ const ProjectSection = () => {
       </div>
     </div>
   );
-  
 
   const openModal = (cell, cellTasks) => {
     setModalCell(cell)
@@ -276,6 +280,9 @@ const ProjectSection = () => {
 
   return (
     <div className="bg-background dark:bg-background-dark min-h-screen w-full">
+      {/* Modal for Task Page */}
+      <TaskPage selectedTask={selectedTask} setSelectedTask={setSelectedTask} />
+      {/* Modal for Task Creation */}
       {isModalOpen && Modal}
 
       {/* Project Header */}
