@@ -1,8 +1,9 @@
 import React from 'react'
 
-const TaskTitleCard = ({task, className, style}) => {
+const TaskTitleCard = ({task, className, style, onClick = null}) => {
   return (
     <div 
+      onClick={onClick}
       className={
         `text-center text-caption text-surface-white py-1 px-3 rounded-md
         ${task.priority === 'High' ? 'bg-gradient-to-r from-red-700 to-red-500' :
