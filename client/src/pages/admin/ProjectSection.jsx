@@ -429,7 +429,7 @@ const ProjectSection = () => {
                 {cell.date.getDate()}
                 <div className="flex flex-col gap-1 mt-2">
                   {cellTasks.map(task => (
-                    <TaskTitleCard task={task} className='truncate' />
+                    <TaskTitleCard key={task.id} task={task} className='truncate' />
                   ))}
                 </div>
               </div>
