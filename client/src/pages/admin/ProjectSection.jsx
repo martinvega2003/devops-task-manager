@@ -20,6 +20,10 @@ const ProjectSection = () => {
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
 
+  //When hovering over Project data in heading
+  const [isHoveringTasks, setIsHoveringTasks] = useState(false);
+  const [isHoveringMembers, setIsHoveringMembers] = useState(false);
+
   // When Updating a Project
   const [isTitleEditing, setIsTitleEditing] = useState(false)
   const [isDescriptionEditing, setIsDescriptionEditing] = useState(false)
@@ -336,13 +340,43 @@ const ProjectSection = () => {
           </div> 
         )}
 
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-caption text-gray-700 dark:text-gray-300">
-            Active Tasks: {project.task_counts.pending}
-          </span>
-          <span className="text-caption text-gray-700 dark:text-gray-300">
-            Active Members: {project.active_members}
-          </span>
+        <div className="relative flex justify-between items-center mb-4">
+          <div 
+            className="relative"
+            onMouseEnter={() => setIsHoveringTasks(true)}
+            onMouseLeave={() => setIsHoveringTasks(false)}
+          >
+            <span className="text-caption text-gray-700 dark:text-gray-300 cursor-pointer">
+              Active Tasks: {project.task_counts.pending}
+            </span>
+            {isHoveringTasks && (
+              <div className="absolute top-full left-0 mt-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg p-4 w-64 flex flex-wrap gap-2 z-50">
+                {tasks.map(task => (
+                  <TaskTitleCard key={task.id} task={task} className="truncate" />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div
+            className="relative"
+            onMouseEnter={() => setIsHoveringMembers(true)}
+            onMouseLeave={() => setIsHoveringMembers(false)}
+          >
+            <span className="text-caption text-gray-700 dark:text-gray-300 cursor-pointer">
+              Active Members: {project.active_members}
+            </span>
+            {isHoveringMembers && (
+              <div className="absolute top-full left-0 mt-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg p-4 w-64 flex flex-wrap gap-2 z-50">
+                {project.members.map(member => (
+                  <div key={member.id} className="text-caption text-gray-700 px-2 py-1 border border-gray-700 rounded-sm dark:text-gray-300 dark:border-gray-300">
+                    {member.username}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           {!isDeadlineEditing ? (
             <div className="flex justify-start items-center gap-2">
               <span className="text-caption text-gray-700 dark:text-gray-300">
