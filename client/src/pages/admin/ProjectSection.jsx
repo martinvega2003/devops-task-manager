@@ -415,7 +415,12 @@ const ProjectSection = () => {
 
             return (
               <div
-                onClick={() => openModal(cell, cellTasks)}
+                {...(cell.isCurrentMonth &&
+                  !(
+                    (currentMonth === projectCreated.getMonth() && cell.date.getDate() < projectCreated.getDate()) ||
+                    (currentMonth === projectDeadline.getMonth() && cell.date.getDate() > projectDeadline.getDate())
+                  ) && { onClick: () => openModal(cell, cellTasks) 
+                })}
                 key={index}
                 className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto ${
                   cell.isCurrentMonth
