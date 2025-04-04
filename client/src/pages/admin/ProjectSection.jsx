@@ -109,6 +109,7 @@ const ProjectSection = () => {
     try {
       const res = await api.get(`/tasks/project/${project.id}`);
       setTasks(res.data);
+      fetchProject()
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
