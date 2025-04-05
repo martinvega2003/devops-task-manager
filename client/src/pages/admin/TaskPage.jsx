@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../../components/Button';
 import { FaCheck, FaPen } from 'react-icons/fa';
 
@@ -16,7 +16,28 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
   };
 
   // Handle input changes for editing
-  const [updatedTask, setUpdatedTask] = useState(selectedTask)
+
+  // Initialize updatedTask with selectedTask or default values
+  // If selectedTask is null, set default values
+  const [updatedTask, setUpdatedTask] = useState(selectedTask || {
+    title: '',
+    description: '',
+    priority: 'Low',
+    status: 'Pending',
+    start_time: '',
+    end_time: '',
+    assigned_users: [],
+  })
+
+  useEffect(() => {
+    if (selectedTask) {
+      setUpdatedTask({
+        ...selectedTask,
+        start_time: new Date(selectedTask.start_time).toISOString().split('T')[0],
+        end_time: new Date(selectedTask.end_time).toISOString().split('T')[0],
+      });
+    }
+  }, [selectedTask]);
 
   const handleChange = e => {
     setUpdatedTask({
@@ -59,6 +80,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
                   name='title'
                   className="w-fit text-subheading font-bold text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
                   placeholder='Title cannot be null...'
+                  value={updatedTask.title}
                   onChange={handleChange}
                   required
                 />
@@ -75,23 +97,47 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
                   name='description'
                   className="w-full text-body font-medium text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
                   placeholder='Description cannot be null...'
+                  value={updatedTask.description}
                   onChange={handleChange}
                   required
                 />
               )}
               
               {/* Task Priority */}
-              <div
-                className={`text-center text-caption text-surface-white py-1 px-3 rounded-md ${
-                  selectedTask.priority === 'High'
-                    ? 'bg-gradient-to-r from-red-700 to-red-500'
-                    : selectedTask.priority === 'Medium'
-                    ? 'bg-gradient-to-r from-yellow-700 to-yellow-500'
-                    : 'bg-gradient-to-r from-blue-700 to-blue-500'
-                } hover:-translate-y-1 transition duration-200 cursor-pointer`}
-              >
-                {selectedTask.priority} 
-              </div>
+              {/* If not editing, show the priority as a badge */}
+              {!isEditing ? (
+                <div
+                  className={`text-center text-caption text-surface-white py-1 px-3 rounded-md ${
+                    selectedTask.priority === 'High'
+                      ? 'bg-gradient-to-r from-red-700 to-red-500'
+                      : selectedTask.priority === 'Medium'
+                      ? 'bg-gradient-to-r from-yellow-700 to-yellow-500'
+                      : 'bg-gradient-to-r from-blue-700 to-blue-500'
+                  } hover:-translate-y-1 transition duration-200 cursor-pointer`}
+                >
+                  {selectedTask.priority} 
+                </div>
+              ) : (
+                <div className='flex flex-wrap items-center gap-2'>
+                  {[
+                    { priority: 'Low', bg: 'bg-gradient-to-r from-blue-700 to-blue-500' },
+                    { priority: 'Medium', bg: 'bg-gradient-to-r from-yellow-700 to-yellow-500' },
+                    { priority: 'High', bg: 'bg-gradient-to-r from-red-700 to-red-500' },
+                  ].map((card, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setUpdatedTask({ ...updatedTask, priority: card.priority })}
+                      className={`text-caption text-surface-white py-1 px-3 rounded-sm ${card.bg} hover:scale-105 ${card.priority === updatedTask.priority ? "scale-105" : ""} cursor-pointer`}
+                    >
+                      <div className="flex flex-nowrap gap-2 items-center">
+                        {card.priority}
+                        {card.priority === updatedTask.priority ? <FaCheck /> : null}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Task Status */}
               <button className={`${selectedTask.status !== "Completed" ? 'border border-gray-700 dark:border-gray-300 text-surface-black dark:text-surface-white' : 'border-success bg-success dark:bg-success-dark text-surface-white flex items-center gap-2'} text-caption px-4 py-1 rounded-md`}>
