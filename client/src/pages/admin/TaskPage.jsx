@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Button from '../../components/Button';
-import { FaCheck } from 'react-icons/fa';
+import { FaCheck, FaPen } from 'react-icons/fa';
 
 const TaskPage = ({ selectedTask, setSelectedTask }) => {
   const [isClosing, setIsClosing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Start the closing animation with the task data (Avoid the page to go blank before closing)
   const handleClose = () => {
@@ -21,12 +22,23 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
       } w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 overflow-y-scroll cursor-pointer transition-all duration-600`}
     >
       {selectedTask && (
-        <div className="relative flex flex-col justify-start items-start gap-6">
+        <div className="relative flex flex-col justify-start items-start gap-2 pt-20">
+          {/* Editing Button */}
+          <Button
+            onClick={() => setIsEditing(!isEditing)}
+            width="fit"
+          >
+            <div className={`${isEditing ? '' : 'flex items-center gap-2'}`}>
+              {isEditing ? 'Save' : 'Edit '}
+              {isEditing ? '' : <FaPen />}
+            </div>
+          </Button>
+
           {/* Task Title and Description */}
-          <div className="w-full flex justify-start items-start gap-2 mt-20">
+          <div className="w-full flex justify-start items-start gap-2 mt-4">
             <div className="flex flex-col justify-start items-start gap-2 p-2">
               <h3 className="text-subheading dark:text-surface-white">
-                {selectedTask.title}
+                {selectedTask.title} 
               </h3>
               <p className="text-body dark:text-surface-white">
                 {selectedTask.description}
