@@ -15,6 +15,16 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
     }, 600);
   };
 
+  // Handle input changes for editing
+  const [updatedTask, setUpdatedTask] = useState(selectedTask)
+
+  const handleChange = e => {
+    setUpdatedTask({
+      ...updatedTask,
+      [e.target.name]: e.target.value
+    })
+  }
+
   return (
     <div
       className={`fixed z-60 top-0 ${
@@ -37,12 +47,40 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
           {/* Task Title and Description */}
           <div className="w-full flex justify-start items-start gap-2 mt-4">
             <div className="flex flex-col justify-start items-start gap-2 p-2">
-              <h3 className="text-subheading dark:text-surface-white">
-                {selectedTask.title} 
-              </h3>
-              <p className="text-body dark:text-surface-white">
-                {selectedTask.description}
-              </p>
+
+              {/* Task Title */}
+              {/* If not editing, show the title as a heading */}
+              {!isEditing ? (
+                <h3 className="text-subheading dark:text-surface-white">
+                  {selectedTask.title} 
+                </h3>
+              ) : (
+                <input 
+                  name='title'
+                  className="w-fit text-subheading font-bold text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
+                  placeholder='Title cannot be null...'
+                  onChange={handleChange}
+                  required
+                />
+              )}
+
+              {/* Task Description */}
+              {/* If not editing, show the description as a paragraph */}
+              {!isEditing ? (
+                <p className="text-body dark:text-surface-white">
+                  {selectedTask.description}
+                </p>
+              ) : (
+                <textarea 
+                  name='description'
+                  className="w-full text-body font-medium text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
+                  placeholder='Description cannot be null...'
+                  onChange={handleChange}
+                  required
+                />
+              )}
+              
+              {/* Task Priority */}
               <div
                 className={`text-center text-caption text-surface-white py-1 px-3 rounded-md ${
                   selectedTask.priority === 'High'
