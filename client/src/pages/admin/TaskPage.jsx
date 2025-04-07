@@ -150,6 +150,9 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
         <div className="relative flex flex-col justify-start items-start gap-2 pt-20">
           {/* Editing and Delete Buttons */}
           <div className="flex gap-2">
+            {/* Close Button */}
+            <Button onClick={handleClose} width="fit" isCloseButton={true} />
+            
             <Button
               onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
               width="fit"
@@ -163,6 +166,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
             <Button
               onClick={handleDelete}
               width="fit"
+              isDeleteButton={true}
             >
               <div className='flex items-center gap-2'>
                 Delete Task <FaTrash />
@@ -356,9 +360,6 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
                   </div>
                 )}
               </div>
-
-              {/* Close Button */}
-              <Button onClick={handleClose} width="fit" isCloseButton={true} />
             </div>
           </div>
         </div>
