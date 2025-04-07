@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../API/api.interceptors';
 import Button from '../../components/Button';
+import ErrorContainer from '../../components/ErrorContainer';
 import { FaCheck, FaPen } from 'react-icons/fa';
 
 const TaskPage = ({ selectedTask, setSelectedTask }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState(null);
 
   // Start the closing animation with the task data (Avoid the page to go blank before closing)
   const handleClose = () => {
@@ -85,6 +87,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
         selectedTask && !isClosing ? 'right-0' : '-right-full'
       } w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 overflow-y-scroll cursor-pointer transition-all duration-600`}
     >
+      {error && <ErrorContainer error={error} setError={setError} />}
       {selectedTask && (
         <div className="relative flex flex-col justify-start items-start gap-2 pt-20">
           {/* Editing Button */}
