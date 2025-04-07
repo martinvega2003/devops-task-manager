@@ -26,8 +26,22 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
 
   useEffect(() => {
     if (selectedTask) {
+      // Extract the local time for startTime and endTime
+      const startTime = new Date(selectedTask.start_time).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      const endTime = new Date(selectedTask.end_time).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+
       setUpdatedTask({
         ...selectedTask,
+        startTime,
+        endTime,
       });
     }
   }, [selectedTask]);
@@ -45,8 +59,8 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
     // Combine the selected date with the times
     alert(selectedTask.start_time)
     const dateStr = selectedTask.start_time.split('T')[0]; // e.g., "2025-06-06"
-    const startTimeCombined = `${dateStr}T${selectedTask.start_time.split('T')[1]}`;
-    const endTimeCombined = `${dateStr}T${selectedTask.end_time.split('T')[1]}`;
+    const startTimeCombined = `${dateStr}T${updatedTask.startTime}:00`;
+    const endTimeCombined = `${dateStr}T${updatedTask.endTime}:00`;
 
     // Validate duration: at least 15 minutes, no more than 8 hours (480 minutes)
     const start = new Date(startTimeCombined);
@@ -73,7 +87,11 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
     try {
       await api.put('tasks/' + selectedTask.id, payload)
       console.log("project updated")
-      setSelectedTask(payload)
+      setSelectedTask({
+        ...payload,
+        start_time: startTimeCombined,
+        end_time: endTimeCombined,
+      })
       setIsEditing(false)
       alert('Task updated successfully')
     } catch (error) {
@@ -190,17 +208,47 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
                     <span className="text-caption font-semibold text-gray-600 dark:text-gray-400">
                       Start Time
                     </span>
-                    <span className="text-body font-medium text-surface-black dark:text-surface-white">
-                      {new Date(selectedTask.start_time).toLocaleString()}
-                    </span>
+                    {!isEditing ? (
+                      <span className="text-body font-medium text-surface-black dark:text-surface-white">
+                        {new Date(selectedTask.start_time).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    ) : (
+                      <input
+                        type="time"
+                        id="startTime"
+                        name="startTime"
+                        value={updatedTask.startTime}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
+                        required
+                      />
+                    )}
                   </div>
                   <div className="flex flex-col items-start">
                     <span className="text-caption font-semibold text-gray-600 dark:text-gray-400">
                       End Time
                     </span>
-                    <span className="text-body font-medium text-surface-black dark:text-surface-white">
-                      {new Date(selectedTask.end_time).toLocaleString()}
-                    </span>
+                    {!isEditing ? (
+                      <span className="text-body font-medium text-surface-black dark:text-surface-white">
+                        {new Date(selectedTask.end_time).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    ) : (
+                      <input
+                        type="time"
+                        id="endTime"
+                        name="endTime"
+                        value={updatedTask.endTime}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
+                        required
+                      />
+                    )}
                   </div>
                 </div>
               </div>
