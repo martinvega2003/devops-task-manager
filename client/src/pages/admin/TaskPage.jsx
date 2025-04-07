@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import api from '../../API/api.interceptors';
 import Button from '../../components/Button';
 import { FaCheck, FaPen } from 'react-icons/fa';
 
@@ -19,22 +20,12 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
 
   // Initialize updatedTask with selectedTask or default values
   // If selectedTask is null, set default values
-  const [updatedTask, setUpdatedTask] = useState(selectedTask || {
-    title: '',
-    description: '',
-    priority: 'Low',
-    status: 'Pending',
-    start_time: '',
-    end_time: '',
-    assigned_users: [],
-  })
+  const [updatedTask, setUpdatedTask] = useState({...selectedTask})
 
   useEffect(() => {
     if (selectedTask) {
       setUpdatedTask({
         ...selectedTask,
-        start_time: new Date(selectedTask.start_time).toISOString().split('T')[0],
-        end_time: new Date(selectedTask.end_time).toISOString().split('T')[0],
       });
     }
   }, [selectedTask]);
@@ -44,6 +35,48 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
       ...updatedTask,
       [e.target.name]: e.target.value
     })
+  }
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+
+    // Combine the selected date with the times
+    alert(selectedTask.start_time)
+    const dateStr = selectedTask.start_time.split('T')[0]; // e.g., "2025-06-06"
+    const startTimeCombined = `${dateStr}T${selectedTask.start_time.split('T')[1]}`;
+    const endTimeCombined = `${dateStr}T${selectedTask.end_time.split('T')[1]}`;
+
+    // Validate duration: at least 15 minutes, no more than 8 hours (480 minutes)
+    const start = new Date(startTimeCombined);
+    const end = new Date(endTimeCombined);
+    const diffMinutes = (end - start) / (1000 * 60);
+    if (diffMinutes < 15) {
+      setError("Task duration must be at least 15 minutes.");
+      return;
+    }
+    if (diffMinutes > 480) {
+      setError("Task duration cannot exceed 8 hours.");
+      return;
+    }
+
+    // Prepare data to send
+    const payload = {
+      ...updatedTask,
+      startTime: startTimeCombined,
+      endTime: endTimeCombined,
+    };
+  
+    alert(JSON.stringify(payload)); // Debugging
+
+    try {
+      await api.put('tasks/' + selectedTask.id, payload)
+      console.log("project updated")
+      setSelectedTask(payload)
+      setIsEditing(false)
+      alert('Task updated successfully')
+    } catch (error) {
+      alert(error)
+    }
   }
 
   return (
@@ -56,7 +89,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
         <div className="relative flex flex-col justify-start items-start gap-2 pt-20">
           {/* Editing Button */}
           <Button
-            onClick={() => setIsEditing(!isEditing)}
+            onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
             width="fit"
           >
             <div className={`${isEditing ? '' : 'flex items-center gap-2'}`}>
@@ -175,7 +208,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
                   Assigned Users ({selectedTask.assigned_users_count}):
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {selectedTask.assigned_users.map(user => (
+                  {selectedTask.assigned_users[0].id !== null && selectedTask.assigned_users.map(user => (
                     <div
                       key={user.id}
                       className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-700"
