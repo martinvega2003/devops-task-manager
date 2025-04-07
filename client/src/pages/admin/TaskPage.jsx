@@ -110,6 +110,24 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
     }
   }
 
+  const toggleTaskStatus = async () => {
+    try {
+      let status;
+      selectedTask.status === "Completed" ? status = "Pending" : status = "Completed"
+      const payload = {
+        status,
+      }
+      // Send the updated status to the server
+      const response = await api.patch(`tasks/${selectedTask.id}/status`, payload);
+      setSelectedTask({
+        ...selectedTask,
+        status: response.data.status
+      });
+    } catch (error) {
+      setError(error.response?.data?.msg || "Failed to toggle task status");
+    }
+  }
+
   return (
     <div
       className={`fixed z-60 top-0 ${
@@ -205,7 +223,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
               )}
 
               {/* Task Status */}
-              <button className={`${selectedTask.status !== "Completed" ? 'border border-gray-700 dark:border-gray-300 text-surface-black dark:text-surface-white' : 'border-success bg-success dark:bg-success-dark text-surface-white flex items-center gap-2'} text-caption px-4 py-1 rounded-md`}>
+              <button onClick={toggleTaskStatus} className={`${selectedTask.status !== "Completed" ? 'border border-gray-700 dark:border-gray-300 text-surface-black dark:text-surface-white' : 'border-success bg-success dark:bg-success-dark text-surface-white flex items-center gap-2'} text-caption px-4 py-1 rounded-md cursor-pointer hover:scale-105 transition duration-200`}>
                 {selectedTask.status} {selectedTask.status === "Completed" ? <FaCheck /> : null}
               </button>
 
