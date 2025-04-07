@@ -8,6 +8,20 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState(null);
+  const [teamMembers, setTeamMembers] = useState([]);
+
+  // Fetch team members for the assignedUsers editing field
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        const res = await api.get('team/team-members');
+        setTeamMembers(res.data.teamMembers);
+      } catch (error) {
+        setError(error.response?.data?.msg || "Failed to fetch team members");
+      }
+    };
+    fetchTeamMembers();
+  }, []);
 
   // Start the closing animation with the task data (Avoid the page to go blank before closing)
   const handleClose = () => {
@@ -42,6 +56,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
         ...selectedTask,
         startTime,
         endTime,
+        assignedUsers: selectedTask.assigned_users.map(user => user.id) // Initialize assignedUsers with selectedTask's assigned users IDs,
       });
     }
   }, [selectedTask]);
@@ -85,13 +100,9 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
     alert(JSON.stringify(payload)); // Debugging
 
     try {
-      await api.put('tasks/' + selectedTask.id, payload)
+      const response = await api.put('tasks/' + selectedTask.id, payload)
       console.log("project updated")
-      setSelectedTask({
-        ...payload,
-        start_time: startTimeCombined,
-        end_time: endTimeCombined,
-      })
+      setSelectedTask(response.data)
       setIsEditing(false)
       alert('Task updated successfully')
     } catch (error) {
@@ -258,22 +269,52 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
                 <h4 className="text-body font-semibold dark:text-surface-white">
                   Assigned Users ({selectedTask.assigned_users_count}):
                 </h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedTask.assigned_users[0].id !== null && selectedTask.assigned_users.map(user => (
-                    <div
-                      key={user.id}
-                      className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-700"
-                    >
-                      <p className="text-body font-semibold dark:text-surface-white">
-                        {user.name}
-                      </p>
-                      <p className="text-caption dark:text-gray-300">{user.email}</p>
-                      <p className="text-caption italic dark:text-gray-400">
-                        Role: {user.role}
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                {!isEditing ? (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTask.assigned_users[0].id !== null && selectedTask.assigned_users.map(user => (
+                      <div
+                        key={user.id}
+                        className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-700"
+                      >
+                        <p className="text-body font-semibold dark:text-surface-white">
+                          {user.name}
+                        </p>
+                        <p className="text-caption dark:text-gray-300">{user.email}</p>
+                        <p className="text-caption italic dark:text-gray-400">
+                          Role: {user.role}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {teamMembers.map((member, i) => {
+                      const isSelected = updatedTask.assignedUsers.includes(member.user_id);
+                      return (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => {
+                            if (isSelected) {
+                              setUpdatedTask({
+                                ...updatedTask,
+                                assignedUsers: updatedTask.assignedUsers.filter(id => id !== member.user_id)
+                              });
+                            } else {
+                              setUpdatedTask({
+                                ...updatedTask,
+                                assignedUsers: [...updatedTask.assignedUsers, member.user_id]
+                              });
+                            }
+                          }}
+                          className={`text-caption py-2 px-4 rounded-sm ${isSelected ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'} hover:scale-105 cursor-pointer`}
+                        >
+                          {member.username}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Close Button */}
