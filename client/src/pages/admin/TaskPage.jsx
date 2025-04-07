@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../API/api.interceptors';
 import Button from '../../components/Button';
 import ErrorContainer from '../../components/ErrorContainer';
-import { FaCheck, FaPen } from 'react-icons/fa';
+import { FaCheck, FaPen, FaTrash } from 'react-icons/fa';
 
 const TaskPage = ({ selectedTask, setSelectedTask }) => {
   const [isClosing, setIsClosing] = useState(false);
@@ -128,6 +128,17 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
     }
   }
 
+  const handleDelete = async () => {
+    try {
+      await api.delete(`tasks/${selectedTask.id}`);
+      setSelectedTask(null);
+      handleClose();
+      alert('Task deleted successfully');
+    } catch (error) {
+      setError(error.response?.data?.msg || "Failed to delete task");
+    }
+  }
+
   return (
     <div
       className={`fixed z-60 top-0 ${
@@ -137,16 +148,27 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
       {error && <ErrorContainer error={error} setError={setError} />}
       {selectedTask && (
         <div className="relative flex flex-col justify-start items-start gap-2 pt-20">
-          {/* Editing Button */}
-          <Button
-            onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
-            width="fit"
-          >
-            <div className={`${isEditing ? '' : 'flex items-center gap-2'}`}>
-              {isEditing ? 'Save' : 'Edit '}
-              {isEditing ? '' : <FaPen />}
-            </div>
-          </Button>
+          {/* Editing and Delete Buttons */}
+          <div className="flex gap-2">
+            <Button
+              onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
+              width="fit"
+            >
+              <div className={`${isEditing ? '' : 'flex items-center gap-2'}`}>
+                {isEditing ? 'Save' : 'Edit '}
+                {isEditing ? '' : <FaPen />}
+              </div>
+            </Button>
+
+            <Button
+              onClick={handleDelete}
+              width="fit"
+            >
+              <div className='flex items-center gap-2'>
+                Delete Task <FaTrash />
+              </div>
+            </Button>
+          </div>
 
           {/* Task Title and Description */}
           <div className="w-full flex justify-start items-start gap-2 mt-4">
