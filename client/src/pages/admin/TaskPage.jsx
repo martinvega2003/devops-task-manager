@@ -135,6 +135,29 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
     link.click();
   };
 
+  // Handle file upload
+  const handleAssetUpload = async (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      await api.post(`tasks/${selectedTask.id}/assets/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      alert("File uploaded successfully");
+      // Fetch the updated list of assets
+      const response = await api.get(`tasks/${selectedTask.id}/assets/`);
+      setAssets(response.data);
+    } catch (error) {
+      setError(error.response?.data?.msg || "Failed to upload file");
+    }
+  };
+
   const toggleTaskStatus = async () => {
     try {
       let status;
@@ -398,7 +421,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
                     <p className="text-caption text-gray-500 dark:text-gray-400">
                       No assets available.
                     </p>
-                    <Button width="fit" isAddButton={true} />
+                    <Button width="fit" isAddButton={true} onClick={() => document.getElementById("fileInput").click()} />
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -428,9 +451,17 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
                   </div>
                 )}
                 {assets.length > 0 && (
-                  <Button width="fit" isAddButton={true} />
+                  <Button width="fit" isAddButton={true} onClick={() => document.getElementById("fileInput").click()} />
                 )}
               </div>
+
+              {/* Hidden File Input */}
+              <input
+                type="file"
+                id="fileInput"
+                style={{ display: "none" }}
+                onChange={handleAssetUpload}
+              />
             </div>
           </div>
         </div>
