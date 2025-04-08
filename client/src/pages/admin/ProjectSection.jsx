@@ -91,11 +91,13 @@ const ProjectSection = () => {
     try {
       const res = await api.get(`/projects/${project_id}`);
       setProject(res.data);
-      // Initialize currentMonth/currentYear to project's created_at month/year
-      const createdDate = new Date(res.data.created_at);
-      setCurrentMonth(createdDate.getMonth());
-      setCurrentYear(createdDate.getFullYear());
       setUpdatedProject(res.data)
+      // Initialize currentMonth and currentYear only if they are null
+      if (currentMonth === null && currentYear === null) {
+        const createdDate = new Date(res.data.created_at);
+        setCurrentMonth(createdDate.getMonth());
+        setCurrentYear(createdDate.getFullYear());
+      }
     } catch (error) {
       console.error('Error fetching project:', error);
     }
@@ -113,7 +115,7 @@ const ProjectSection = () => {
     try {
       const res = await api.get(`/tasks/project/${project.id}`);
       setTasks(res.data);
-      fetchProject()
+      fetchProject(); 
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
