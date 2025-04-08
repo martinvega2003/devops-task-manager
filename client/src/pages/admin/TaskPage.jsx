@@ -128,12 +128,10 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
     const baseUrl = "http://localhost:5001"; // Replace with your server's base URL
     const fullUrl = `${baseUrl}${fileUrl}`;
 
-    // Open the file in a new tab
-    window.open(fullUrl, '_blank');
-
     const link = document.createElement('a');
+    link.target = '_blank'; // Open in a new tab
     link.href = fullUrl;
-    link.download = filename;
+    link.download = filename; 
     link.click();
   };
 
