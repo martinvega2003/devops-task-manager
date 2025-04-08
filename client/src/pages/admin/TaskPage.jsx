@@ -147,31 +147,33 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
     >
       {error && <ErrorContainer error={error} setError={setError} />}
       {selectedTask && (
-        <div className="relative flex flex-col justify-start items-start gap-2 pt-20">
+        <div className="relative w-full flex flex-col justify-start items-start gap-2 pt-20">
           {/* Editing and Delete Buttons */}
-          <div className="flex gap-2">
+          <div className="w-full flex justify-between gap-2">
             {/* Close Button */}
             <Button onClick={handleClose} width="fit" isCloseButton={true} />
             
-            <Button
-              onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
-              width="fit"
-            >
-              <div className={`${isEditing ? '' : 'flex items-center gap-2'}`}>
-                {isEditing ? 'Save' : 'Edit '}
-                {isEditing ? '' : <FaPen />}
-              </div>
-            </Button>
+            <div className='flex gap-2'>
+              <Button
+                onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
+                width="fit"
+              >
+                <div className={`${isEditing ? '' : 'flex items-center gap-2'}`}>
+                  {isEditing ? 'Save' : 'Edit '}
+                  {isEditing ? '' : <FaPen />}
+                </div>
+              </Button>
 
-            <Button
-              onClick={handleDelete}
-              width="fit"
-              isDeleteButton={true}
-            >
-              <div className='flex items-center gap-2'>
-                Delete Task <FaTrash />
-              </div>
-            </Button>
+              <Button
+                onClick={handleDelete}
+                width="fit"
+                isDeleteButton={true}
+              >
+                <div className='flex items-center gap-2'>
+                  Delete Task <FaTrash />
+                </div>
+              </Button>
+            </div>
           </div>
 
           {/* Task Title and Description */}
