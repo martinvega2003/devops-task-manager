@@ -201,7 +201,7 @@ const MyTeamSection = () => {
   )
 
   return (
-    <div className="bg-background dark:bg-background-dark min-h-screen">
+    <div className="bg-background dark:bg-background-dark min-h-screen pb-16">
       {isModalOpen && Modal}
       {teamMembers.length === 0 ? (
         <div className="absolute inset-0 w-full h-screen flex flex-col gap-6 justify-center items-center">
@@ -227,12 +227,12 @@ const MyTeamSection = () => {
               <FaPlus />
             </Button>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col px-4">
             {roleOrder.map(({ key, label }) => {
               const members = groupedMembers[key] || [];
               // Only render section if there are team members for that role
               return members.length > 0 ? (
-                <div key={key} className={`w-[90%] py-6 px-8 my-4 mx-auto overflow-x-auto rounded-4xl shadow-2xl ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
+                <div key={key} className={`w-full py-6 px-8 my-2 overflow-x-auto border dark:border-surface-white rounded-tl-2xl rounded-br-4xl shadow-4xl ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
                   <h3 className="text-subheading dark:text-surface-white font-bold mb-2">{label}</h3>
                   <div className="flex flex-nowrap overflow-x-auto gap-8 p-2 pl-0">
                     {members.map((member) => (
