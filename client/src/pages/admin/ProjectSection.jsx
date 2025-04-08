@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight, FaPen } from 'react-icons/fa';
 import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
 import AddTaskForm from '../../components/AddTaskForm';
-import TaskPage from '../TaskPage';
+import TaskPage from './TaskPage';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
