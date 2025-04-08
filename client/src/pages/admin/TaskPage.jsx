@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import api from '../../API/api.interceptors';
 import Button from '../../components/Button';
 import ErrorContainer from '../../components/ErrorContainer';
-import { FaCheck, FaPen, FaTrash } from 'react-icons/fa';
+import { FaCheck, FaPen, FaTrash, FaDownload } from 'react-icons/fa';
 
 const TaskPage = ({ selectedTask, setSelectedTask }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
+  const [assets, setAssets] = useState([]);
 
   // Fetch team members for the assignedUsers editing field
   useEffect(() => {
@@ -39,6 +40,16 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
   const [updatedTask, setUpdatedTask] = useState({...selectedTask})
 
   useEffect(() => {
+
+    const fetchAssets = async () => {
+      try {
+        const response = await api.get(`tasks/${selectedTask.id}/assets/`);
+        setAssets(response.data);
+      } catch (error) {
+        setError(error.response?.data?.msg || "Failed to fetch assets");
+      }
+    };
+
     if (selectedTask) {
       // Extract the local time for startTime and endTime
       const startTime = new Date(selectedTask.start_time).toLocaleTimeString([], {
@@ -58,6 +69,8 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
         endTime,
         assignedUsers: selectedTask.assigned_users.map(user => user.id) // Initialize assignedUsers with selectedTask's assigned users IDs,
       });
+
+      fetchAssets();
     }
   }, [selectedTask]);
 
@@ -109,6 +122,20 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
       alert(error)
     }
   }
+
+  // Handle asset download
+  const handleAssetDownload = (fileUrl, filename) => {
+    const baseUrl = "http://localhost:5001"; // Replace with your server's base URL
+    const fullUrl = `${baseUrl}${fileUrl}`;
+
+    // Open the file in a new tab
+    window.open(fullUrl, '_blank');
+
+    const link = document.createElement('a');
+    link.href = fullUrl;
+    link.download = filename;
+    link.click();
+  };
 
   const toggleTaskStatus = async () => {
     try {
@@ -360,6 +387,50 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
                       );
                     })}
                   </div>
+                )}
+              </div>
+
+              {/* Assets Section */}
+              <div className="w-full flex flex-col gap-4 mt-4">
+                <h4 className="text-body font-semibold dark:text-surface-white">
+                  Assets:
+                </h4>
+                {assets.length === 0 ? (
+                  <div className="flex justify-between items-center">
+                    <p className="text-caption text-gray-500 dark:text-gray-400">
+                      No assets available.
+                    </p>
+                    <Button width="fit" isAddButton={true} />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {assets.map(asset => (
+                      <div
+                        key={asset.id}
+                        className="p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-700 flex flex-col justify-between"
+                      >
+                        <div className='mb-2'>
+                          <h5 className="text-body font-semibold dark:text-surface-white truncate">
+                            {asset.filename}
+                          </h5>
+                          <p className="text-caption dark:text-gray-300">
+                            Uploaded by: {asset.uploaded_by.name} ({asset.uploaded_by.role})
+                          </p>
+                        </div>
+                        <Button
+                          width="fit"
+                          onClick={() => handleAssetDownload(asset.file_url, asset.filename)}
+                        >
+                          <div className="flex gap-2 items-center">
+                            <FaDownload /> Download
+                          </div>
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {assets.length > 0 && (
+                  <Button width="fit" isAddButton={true} />
                 )}
               </div>
             </div>
