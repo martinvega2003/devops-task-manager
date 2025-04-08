@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { AuthContext } from '../../context/authContext';
 import api from '../../API/api.interceptors';
 import Button from '../../components/Button';
 import ErrorContainer from '../../components/ErrorContainer';
 import { FaCheck, FaPen, FaTrash, FaDownload } from 'react-icons/fa';
 
 const TaskPage = ({ selectedTask, setSelectedTask }) => {
+
+  const {user} = useContext(AuthContext)
+
   const [isClosing, setIsClosing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState(null);
@@ -155,6 +159,19 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
       setAssets(response.data);
     } catch (error) {
       setError(error.response?.data?.msg || "Failed to upload file");
+    }
+  };
+
+  // Handle asset delete
+  const handleAssetDelete = async (assetId) => {
+    try {
+      await api.delete(`tasks/${selectedTask.id}/assets/${assetId}`);
+      alert("Asset deleted successfully");
+      // Fetch the updated list of assets
+      const response = await api.get(`tasks/${selectedTask.id}/assets/`);
+      setAssets(response.data);
+    } catch (error) {
+      setError(error.response?.data?.msg || "Failed to delete asset");
     }
   };
 
@@ -438,14 +455,27 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
                             Uploaded by: {asset.uploaded_by.name} ({asset.uploaded_by.role})
                           </p>
                         </div>
-                        <Button
-                          width="fit"
-                          onClick={() => handleAssetDownload(asset.file_url, asset.filename)}
-                        >
-                          <div className="flex gap-2 items-center">
-                            <FaDownload /> Download
-                          </div>
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            width="fit"
+                            onClick={() => handleAssetDownload(asset.file_url, asset.filename)}
+                          >
+                            <FaDownload /> 
+                          </Button>
+                          {(user.role === "Admin" || asset.uploaded_by.id === user.id) ? (
+                            <Button
+                              width="fit"
+                              isDeleteButton={true}
+                              onClick={() => handleAssetDelete(asset.id)}
+                            >
+                              <FaTrash />
+                            </Button>
+                          ) : (
+                            <div className="text-caption text-gray-500 dark:text-gray-400">
+                              Cannot delete
+                            </div>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
