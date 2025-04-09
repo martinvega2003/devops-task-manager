@@ -225,6 +225,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
               <Button
                 onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
                 width="fit"
+                className={`${selectedTask.status === "Completed" ? 'hidden' : ''}`}
               >
                 <div className={`${isEditing ? '' : 'flex items-center gap-2'}`}>
                   {isEditing ? 'Save' : 'Edit '}
