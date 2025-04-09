@@ -5,7 +5,7 @@ import Button from '../../components/Button';
 import ErrorContainer from '../../components/ErrorContainer';
 import { FaCheck, FaPen, FaTrash, FaDownload } from 'react-icons/fa';
 
-const TaskPage = ({ selectedTask, setSelectedTask }) => {
+const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
   const {user} = useContext(AuthContext)
 
@@ -120,6 +120,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
       const response = await api.put('tasks/' + selectedTask.id, payload)
       console.log("project updated")
       setSelectedTask(response.data)
+      fetchTasks();
       setIsEditing(false)
       alert('Task updated successfully')
     } catch (error) {
@@ -188,6 +189,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
         ...selectedTask,
         status: response.data.status
       });
+      fetchTasks(); 
     } catch (error) {
       setError(error.response?.data?.msg || "Failed to toggle task status");
     }
@@ -197,6 +199,7 @@ const TaskPage = ({ selectedTask, setSelectedTask }) => {
     try {
       await api.delete(`tasks/${selectedTask.id}`);
       setSelectedTask(null);
+      fetchTasks();
       handleClose();
       alert('Task deleted successfully');
     } catch (error) {

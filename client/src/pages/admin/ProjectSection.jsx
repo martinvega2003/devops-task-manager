@@ -115,7 +115,6 @@ const ProjectSection = () => {
     try {
       const res = await api.get(`/tasks/project/${project.id}`);
       setTasks(res.data);
-      fetchProject(); 
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
@@ -288,7 +287,7 @@ const ProjectSection = () => {
   return (
     <div className="bg-background dark:bg-background-dark min-h-screen w-full">
       {/* Modal for Task Page */}
-      <TaskPage selectedTask={selectedTask} setSelectedTask={setSelectedTask} />
+      <TaskPage selectedTask={selectedTask} setSelectedTask={setSelectedTask} fetchTasks={fetchTasks}/>
       {/* Modal for Task Creation */}
       {isModalOpen && Modal}
 
