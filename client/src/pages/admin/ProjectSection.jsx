@@ -19,6 +19,7 @@ const ProjectSection = () => {
   const { project_id } = useParams();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   //When hovering over Project data in heading
   const [isHoveringTasks, setIsHoveringTasks] = useState(false);
@@ -449,6 +450,9 @@ const ProjectSection = () => {
               return isSameDay(taskStart, cell.date);
             });
 
+            // Check if the cell represents the current day
+            const isToday = isSameDay(cell.date, currentDate);
+
             return (
               <div
                 {...(cell.isCurrentMonth &&
@@ -458,12 +462,13 @@ const ProjectSection = () => {
                   ) && { onClick: () => openModal(cell, cellTasks) 
                 })}
                 key={index}
-                className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto ${
+                className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto rounded-lg m-[2px] ${
+                  isToday ? 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' :
                   cell.isCurrentMonth
                     ? (
                         (currentMonth === projectCreated.getMonth() && cell.date.getDate() < projectCreated.getDate()) ||
                         (currentMonth === projectDeadline.getMonth() && cell.date.getDate() > projectDeadline.getDate())
-                      ) ? 'opacity-30' : 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer'
+                      ) ? 'opacity-30' : 'bg-blue-300 dark:bg-blue-950 text-surface-white cursor-pointer'
                     : 'opacity-30'
                 }`}
               >
