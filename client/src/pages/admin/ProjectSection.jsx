@@ -32,9 +32,16 @@ const ProjectSection = () => {
   const [updatedProject, setUpdatedProject] = useState(null)
 
   const handleChange = e => {
+
+    // To avoid timezone convertion conflicts in the deadline
+    const selectedDate = updatedProject.deadline.split('T')[0]; // e.g., "2025-08-01"
+    const date = new Date(selectedDate + "T00:00:00");
+    const isoDate = date.toISOString().replace(/\.\d{3}Z$/, 'Z');
+
     setUpdatedProject({
       ...updatedProject,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
+      deadline: isoDate
     })
   }
 
@@ -50,6 +57,14 @@ const ProjectSection = () => {
 
   const handleSubmit = async e => {
     e.preventDefault()
+
+    if (updatedProject === project) {
+      setIsDeadlineEditing(false); 
+      setIsDescriptionEditing(false); 
+      setIsTitleEditing(false);
+      return
+    }
+    
     const payload = {
       name: updatedProject.name,
       description: updatedProject.description,
