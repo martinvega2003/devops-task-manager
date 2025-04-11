@@ -7,6 +7,8 @@ import { FaPlus, FaCheck } from 'react-icons/fa';
 
 const MyProjectsSection = () => {
   const [projects, setProjects] = useState([]);
+  const [sortBy, setSortBy] = useState('created_at'); // Default sorting field
+  const [order, setOrder] = useState('ASC'); // Default sorting order
   const [projectData, setProjectData] = useState({
     name: '',
     description: '',
@@ -16,11 +18,23 @@ const MyProjectsSection = () => {
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [sortBy, order]);
 
   const fetchProjects = async () => {
-    const response = await api.get('/projects');
-    if (response.data.length > 0) setProjects(response.data);
+    try {
+      const response = await api.get(`/projects?sortBy=${sortBy}&order=${order}`);
+      if (response.data.length > 0) setProjects(response.data);
+    } catch (error) {
+      console.error('Failed to fetch projects:', error);
+    }
+  };
+
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
+  const handleOrderChange = (e) => {
+    setOrder(e.target.value);
   };
 
   const handleChange = (e) => {
@@ -133,9 +147,7 @@ const MyProjectsSection = () => {
             width='fit'
             isAddButton={true}
             onClick={() => setIsModalOpen(true)}
-          >
-            <FaPlus size={24} />
-          </Button>
+          />
         </div>
       ) : (
         <>
@@ -146,9 +158,31 @@ const MyProjectsSection = () => {
               width='fit' 
               isAddButton={true} 
               onClick={() => setIsModalOpen(true)}
-            >
-              <FaPlus />
-            </Button>
+            />
+          </div>
+          <div className="flex gap-4 items-center p-4">
+            <div>
+              <label className="block text-gray-700 dark:text-gray-200 mb-1">Sort By</label>
+              <select
+                value={sortBy}
+                onChange={handleSortChange}
+                className="border border-gray-300 dark:border-gray-600 p-2 rounded"
+              >
+                <option value="created_at">Creation Date</option>
+                <option value="deadline">Deadline</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-gray-700 dark:text-gray-200 mb-1">Order</label>
+              <select
+                value={order}
+                onChange={handleOrderChange}
+                className="border border-gray-300 dark:border-gray-600 p-2 rounded"
+              >
+                <option value="ASC">Ascending</option>
+                <option value="DESC">Descending</option>
+              </select>
+            </div>
           </div>
           <div className="px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {
