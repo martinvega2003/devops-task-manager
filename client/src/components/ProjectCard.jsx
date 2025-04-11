@@ -25,6 +25,18 @@ const ProjectCard = ({ project, fetchProjects }) => {
     }
   };
 
+  const deleteProject = async (e) => {
+    e.stopPropagation(); // Prevent the click event from propagating to the parent div onClick function
+    
+    try {
+      await api.delete(`/projects/${project.id}`);
+      fetchProjects();
+    } catch (error) {
+      console.error('Failed to delete project:', error);
+      alert('Failed to delete project. Please try again.');
+    }
+  }
+
   return (
     <div
       className={`relative bg-white dark:bg-gray-800 h-full border dark:border-surface-white shadow-md p-4 cursor-pointer`}
@@ -66,12 +78,20 @@ const ProjectCard = ({ project, fetchProjects }) => {
       </div>
 
       {/* Status Toggle Button */}
-      <div className="mt-4">
+      <div className="mt-4 flex justify-between items-center gap-2">
         <Button
           onClick={toggleProjectStatus}
           className={project.status === 'Active' ? '' : 'relative z-20'}
         >
           {project.status === 'Active' ? 'Deactivate' : 'Activate'}
+        </Button>
+
+        <Button
+          onClick={deleteProject}
+          isDeleteButton={true}
+          className={project.status === 'Active' ? '' : 'relative z-20'}
+        >
+          Delete
         </Button>
       </div>
     </div>
