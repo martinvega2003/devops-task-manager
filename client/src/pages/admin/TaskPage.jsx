@@ -55,17 +55,20 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
     };
 
     if (selectedTask) {
-      // Extract the local time for startTime and endTime
-      const startTime = new Date(selectedTask.start_time).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-      const endTime = new Date(selectedTask.end_time).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
+      // Adjust for DST by subtracting one hour
+      const adjustForDST = (isoString) => {
+        const date = new Date(isoString);
+        date.setHours(date.getHours() - 1); // Subtract one hour
+        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+      };
+
+      const startTime = selectedTask.start_time
+        ? adjustForDST(selectedTask.start_time)
+        : "00:00"; // Default to "00:00" if start_time is invalid
+
+      const endTime = selectedTask.end_time
+        ? adjustForDST(selectedTask.end_time)
+        : "00:00"; // Default to "00:00" if end_time is invalid
 
       setUpdatedTask({
         ...selectedTask,
@@ -89,7 +92,6 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
     e.preventDefault()
 
     // Combine the selected date with the times
-    alert(selectedTask.start_time)
     const dateStr = selectedTask.start_time.split('T')[0]; // e.g., "2025-06-06"
     const startTimeCombined = `${dateStr}T${updatedTask.startTime}:00`;
     const endTimeCombined = `${dateStr}T${updatedTask.endTime}:00`;
@@ -113,8 +115,6 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
       startTime: startTimeCombined,
       endTime: endTimeCombined,
     };
-  
-    alert(JSON.stringify(payload)); // Debugging
 
     try {
       const response = await api.put('tasks/' + selectedTask.id, payload)
@@ -249,16 +249,21 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
           <div className="w-full flex justify-start items-start gap-2 mt-4">
             <div className="flex flex-col justify-start items-start gap-2 p-2">
 
+              {/* Task Status */}
+              <button onClick={toggleTaskStatus} className={`${selectedTask.status !== "Completed" ? 'border border-gray-700 dark:border-gray-300 text-surface-black dark:text-surface-white' : 'border-success bg-success dark:bg-success-dark text-surface-white flex items-center gap-2'} text-caption px-4 py-1 rounded-md cursor-pointer hover:scale-105 transition duration-200`}>
+                {selectedTask.status} {selectedTask.status === "Completed" ? <FaCheck /> : null}
+              </button>
+
               {/* Task Title */}
               {/* If not editing, show the title as a heading */}
               {!isEditing ? (
-                <h3 className="text-subheading dark:text-surface-white">
-                  {selectedTask.title} 
+                <h3 className={`text-subheading dark:text-surface-white ${selectedTask.status === "Completed" ? 'line-through flex items-center gap-2' : ''}`}>
+                  {selectedTask.title} {selectedTask.status === "Completed" ? <FaCheck className='text-success dark:text-success-dark' /> : null}
                 </h3>
               ) : (
                 <input 
                   name='title'
-                  className="w-fit text-subheading font-bold text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
+                  className="w-full text-subheading font-bold text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-2 outline-primary dark:outline-primary-dark rounded-md p-2" 
                   placeholder='Title cannot be null...'
                   value={updatedTask.title}
                   onChange={handleChange}
@@ -275,7 +280,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
               ) : (
                 <textarea 
                   name='description'
-                  className="w-full text-body font-medium text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
+                  className="w-full h-40 text-body font-medium text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-2 outline-primary dark:outline-primary-dark rounded-md p-2" 
                   placeholder='Description cannot be null...'
                   value={updatedTask.description}
                   onChange={handleChange}
@@ -286,16 +291,21 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
               {/* Task Priority */}
               {/* If not editing, show the priority as a badge */}
               {!isEditing ? (
-                <div
-                  className={`text-center text-caption text-surface-white py-1 px-3 rounded-md ${
-                    selectedTask.priority === 'High'
-                      ? 'bg-gradient-to-r from-red-700 to-red-500'
-                      : selectedTask.priority === 'Medium'
-                      ? 'bg-gradient-to-r from-yellow-700 to-yellow-500'
-                      : 'bg-gradient-to-r from-blue-700 to-blue-500'
-                  } hover:-translate-y-1 transition duration-200 cursor-pointer`}
-                >
-                  {selectedTask.priority} 
+                <div className="flex items-center justify-start gap-2">
+                  <p className="text-caption text-surface-black dark:text-surface-white">
+                    Priority:
+                  </p>
+                  <div
+                    className={`text-center text-caption text-surface-white py-1 px-3 rounded-md ${
+                      selectedTask.priority === 'High'
+                        ? 'bg-gradient-to-r from-red-700 to-red-500'
+                        : selectedTask.priority === 'Medium'
+                        ? 'bg-gradient-to-r from-yellow-700 to-yellow-500'
+                        : 'bg-gradient-to-r from-blue-700 to-blue-500'
+                    } hover:-translate-y-1 transition duration-200 cursor-pointer`}
+                  >
+                    {selectedTask.priority} 
+                  </div>
                 </div>
               ) : (
                 <div className='flex flex-wrap items-center gap-2'>
@@ -319,27 +329,16 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                 </div>
               )}
 
-              {/* Task Status */}
-              <button onClick={toggleTaskStatus} className={`${selectedTask.status !== "Completed" ? 'border border-gray-700 dark:border-gray-300 text-surface-black dark:text-surface-white' : 'border-success bg-success dark:bg-success-dark text-surface-white flex items-center gap-2'} text-caption px-4 py-1 rounded-md cursor-pointer hover:scale-105 transition duration-200`}>
-                {selectedTask.status} {selectedTask.status === "Completed" ? <FaCheck /> : null}
-              </button>
-
               {/* Task Duration */}
-              <div className="w-full flex flex-col gap-2">
-                <h4 className="text-body font-semibold dark:text-surface-white">
-                  Duration:
-                </h4>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700">
+              <div className="min-w-full flex flex-col gap-2">
+                <div className="min-w-full flex items-center gap-4 p-4 border border-gray-300 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-700">
                   <div className="flex flex-col items-start">
-                    <span className="text-caption font-semibold text-gray-600 dark:text-gray-400">
+                    <span className="text-caption font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">
                       Start Time
                     </span>
                     {!isEditing ? (
                       <span className="text-body font-medium text-surface-black dark:text-surface-white">
-                        {new Date(selectedTask.start_time).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {updatedTask.startTime}
                       </span>
                     ) : (
                       <input
@@ -353,16 +352,14 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                       />
                     )}
                   </div>
+                  <div className="w-full mx-1 border border-dashed" />
                   <div className="flex flex-col items-start">
-                    <span className="text-caption font-semibold text-gray-600 dark:text-gray-400">
+                    <span className="text-caption font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">
                       End Time
                     </span>
                     {!isEditing ? (
                       <span className="text-body font-medium text-surface-black dark:text-surface-white">
-                        {new Date(selectedTask.end_time).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {updatedTask.endTime}
                       </span>
                     ) : (
                       <input
@@ -382,14 +379,19 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
               {/* Assigned Users */}
               <div className="w-full flex flex-col gap-2">
                 <h4 className="text-body font-semibold dark:text-surface-white">
-                  Assigned Users ({selectedTask.assigned_users_count}):
+                  Assigned To:
                 </h4>
                 {!isEditing ? (
                   <div className="flex flex-wrap gap-2">
                     {selectedTask.assigned_users[0].id !== null && selectedTask.assigned_users.map(user => (
                       <div
                         key={user.id}
-                        className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-700"
+                        className={`p-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                          ${user.role === "developer" ? "bg-blue-200 dark:bg-blue-900" : 
+                            user.role === "designer" ? "bg-yellow-200 dark:bg-yellow-900" : 
+                            user.role === "administrative" ? "bg-green-200 dark:bg-green-900" : 
+                            "bg-red-200 dark:bg-red-900"} hover:-translate-y-1 transition duration-300 cursor-pointer`
+                        }
                       >
                         <p className="text-body font-semibold dark:text-surface-white">
                           {user.name}
@@ -400,6 +402,12 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                         </p>
                       </div>
                     ))}
+
+                    {selectedTask.assigned_users[0].id === null && (
+                      <p className="text-caption text-gray-500 dark:text-gray-400">
+                        No users assigned.
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
