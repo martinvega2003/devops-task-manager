@@ -189,10 +189,10 @@ const CalendarPage = () => {
     }
   };
 
-  const projectCreated = new Date(Math.min(...tasks.map((task) => new Date(task.start_time))));
-  const projectDeadline = new Date(Math.max(...tasks.map((task) => new Date(task.end_time))));
-  const leftDisabled = currentYear === projectCreated.getFullYear() && currentMonth === projectCreated.getMonth();
-  const rightDisabled = currentYear === projectDeadline.getFullYear() && currentMonth === projectDeadline.getMonth();
+  const firstTask = new Date(Math.min(...tasks.map((task) => new Date(task.start_time))));
+  const lastTask = new Date(Math.max(...tasks.map((task) => new Date(task.end_time))));
+  const leftDisabled = currentYear === firstTask.getFullYear() && currentMonth === firstTask.getMonth();
+  const rightDisabled = currentYear === lastTask.getFullYear() && currentMonth === lastTask.getMonth();
 
   return (
     <div className="bg-background dark:bg-background-dark min-h-screen w-full">
@@ -257,29 +257,36 @@ const CalendarPage = () => {
 
         {/* Calendar */}
         <div className="w-3/4">
-          <div className="sticky flex justify-between items-center mb-4 p-2 rounded-lg border dark:bg-gray-800">
-            <h3 className="text-body text-surface-black dark:text-surface-white">
-              {monthNames[currentMonth]} {currentYear}
-            </h3>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => handleMonthChange('prev')}
-                disabled={leftDisabled}
-                className={`p-2 rounded-full text-surface-black dark:text-surface-white ${
-                  leftDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
-                }`}
-              >
-                <FaChevronLeft />
-              </button>
-              <button
-                onClick={() => handleMonthChange('next')}
-                disabled={rightDisabled}
-                className={`p-2 rounded-full text-surface-black dark:text-surface-white ${
-                  rightDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
-                }`}
-              >
-                <FaChevronRight />
-              </button>
+          {/* Calendar Header */}
+          <div className="flex flex-col gap-2 p-2 mb-4 rounded-lg border dark:bg-gray-800">
+            {/* Project Scope Message */}
+            <div className="text-left text-caption italic font-semibold text-surface-black dark:text-surface-white">
+              You have Tasks from <strong>{monthNames[firstTask.getMonth()]} {firstTask.getFullYear()}</strong> to <strong>{monthNames[lastTask.getMonth()]} {lastTask.getFullYear()}</strong>
+            </div>
+            <div className="flex justify-between items-center">
+              <h3 className="text-body text-surface-black dark:text-surface-white">
+                {monthNames[currentMonth]} {currentYear}
+              </h3>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleMonthChange('prev')}
+                  disabled={leftDisabled}
+                  className={`p-2 rounded-full text-surface-black dark:text-surface-white ${
+                    leftDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                  }`}
+                >
+                  <FaChevronLeft />
+                </button>
+                <button
+                  onClick={() => handleMonthChange('next')}
+                  disabled={rightDisabled}
+                  className={`p-2 rounded-full text-surface-black dark:text-surface-white ${
+                    rightDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'
+                  }`}
+                >
+                  <FaChevronRight />
+                </button>
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-7 gap-1">
