@@ -122,13 +122,53 @@ const CalendarPage = () => {
     setSelectedProject(projectId);
   };
 
-  const handleFilterChange = (e) => {
+  const handleFilterChange = async (e) => {
     const { name, value } = e.target;
+    const priority = name === 'priority' ? value : filters.priority;
+    const status = name === 'status' ? value : filters.status;
+  
+    // Update the filters state
     setFilters((prev) => ({
       ...prev,
       [name]: value,
     }));
-    fetchAllTasks(name === 'priority' ? value : filters.priority, name === 'status' ? value : filters.status);
+  
+    try {
+      // Step 1: Fetch all tasks without filters to determine the scope
+      let allTasks = [];
+      for (const project of projects) {
+        const response = await api.get(`/tasks/project/${project.id}`);
+        allTasks = [...allTasks, ...response.data];
+      }
+  
+      // Update the scope based on all tasks
+      const taskDates = allTasks.map((task) => new Date(task.start_time));
+      const firstTaskDate = new Date(Math.min(...taskDates));
+      const lastTaskDate = new Date(Math.max(...taskDates));
+      setCurrentMonth(firstTaskDate.getMonth());
+      setCurrentYear(firstTaskDate.getFullYear());
+  
+      // Step 2: Fetch tasks with the applied filters
+      let filteredTasks = [];
+      for (const project of projects) {
+        const endpoint =
+        priority === 'all' && status === 'all'
+          ? `/tasks/project/${project.id}` :
+          priority !== 'all' && status === 'all' ?
+          `/tasks/project/${project.id}?priority=${priority}` :
+          status !== 'all' && priority === 'all' ?
+          `/tasks/project/${project.id}?status=${status}` :
+          `/tasks/project/${project.id}?priority=${priority}&status=${status}`;
+        const response = await api.get(endpoint);
+        filteredTasks = [...filteredTasks, ...response.data];
+      }
+  
+      // Update the tasks and filtered tasks state
+      setTasks(allTasks);
+      setFilteredTasks(filteredTasks);
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error);
+    }
   };
 
   const handleMonthChange = (direction) => {
@@ -215,7 +255,7 @@ const CalendarPage = () => {
 
         {/* Calendar */}
         <div className="w-3/4">
-          <div className="flex justify-between items-center mb-4 p-2 rounded-lg border dark:bg-gray-800">
+          <div className="sticky flex justify-between items-center mb-4 p-2 rounded-lg border dark:bg-gray-800">
             <h3 className="text-body text-surface-black dark:text-surface-white">
               {monthNames[currentMonth]} {currentYear}
             </h3>
