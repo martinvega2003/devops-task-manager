@@ -199,31 +199,9 @@ const CalendarPage = () => {
       <div className="flex flex-col md:flex-row gap-4 px-4 sm:px-8 py-8 sm:py-16">
         {/* Sidebar */}
         <div className="w-1/4 bg-background border dark:bg-gray-800 p-6 rounded-lg">
-          <h3 className="text-body font-bold mb-4 text-surface-black dark:text-surface-white">Projects</h3>
-          <ul className='text-surface-black dark:text-surface-white'>
-            <li
-              className={`cursor-pointer p-2 ${
-                selectedProject === 'all' ? 'bg-blue-500 dark:bg-primary-dark text-surface-white' : ''
-              }`}
-              onClick={() => handleProjectFilter('all')}
-            >
-              All Tasks
-            </li>
-            {projects.map((project) => (
-              <li
-                key={project.id}
-                className={`cursor-pointer p-2 ${
-                  selectedProject === project.id ? 'bg-blue-500 dark:bg-primary-dark text-surface-white' : ''
-                }`}
-                onClick={() => handleProjectFilter(project.id)}
-              >
-                {project.name}
-              </li>
-            ))}
-          </ul>
-
-          {/* Filters */}
-          <h3 className="text-body text-surface-black dark:text-surface-white font-bold mt-6">Filters</h3>
+          
+          {/* Status & Priority Filters */}
+          <h3 className="text-body text-surface-black dark:text-surface-white font-bold">Filters</h3>
           <div className="mt-2">
             <label className="text-surface-black dark:text-surface-white block mb-1">Priority</label>
             <select
@@ -251,6 +229,30 @@ const CalendarPage = () => {
               <option value="Completed">Completed</option>
             </select>
           </div>
+
+          {/* Project Filter */}
+          <h3 className="text-body font-bold mb-4 text-surface-black dark:text-surface-white mt-6">Projects</h3>
+          <ul className='text-surface-black dark:text-surface-white'>
+            <li
+              className={`text-body p-2 rounded-lg whitespace-nowrap truncate ${
+                selectedProject === 'all' ? 'bg-blue-500 dark:bg-primary-dark text-surface-white' : ''
+              } cursor-pointer`}
+              onClick={() => handleProjectFilter('all')}
+            >
+              All Tasks
+            </li>
+            {projects.map((project) => (
+              <li
+                key={project.id}
+                className={`text-body p-2 rounded-lg whitespace-nowrap truncate ${
+                  selectedProject === project.id ? 'bg-blue-500 dark:bg-primary-dark text-surface-white' : ''
+                } cursor-pointer`}
+                onClick={() => handleProjectFilter(project.id)}
+              >
+                {project.name}
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Calendar */}
