@@ -421,7 +421,7 @@ const ProjectSection = () => {
       </div>
 
       {/* Timeline Calendar View */}
-      <div className="bg-white dark:bg-gray-800 text-surface-black dark:text-surface-white shadow border-t">
+      <div className="bg-white dark:bg-gray-800 text-surface-black dark:text-surface-white shadow border-t pb-16">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
             <p className="text-body font-semibold">Calendar View:</p>

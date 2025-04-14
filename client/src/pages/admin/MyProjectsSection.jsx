@@ -136,7 +136,7 @@ const MyProjectsSection = () => {
   )
 
   return (
-    <div className="bg-background dark:bg-background-dark min-h-screen">
+    <div className="bg-background dark:bg-background-dark min-h-screen pb-16">
       {isModalOpen && Modal}
       {projects.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-screen">
@@ -166,7 +166,7 @@ const MyProjectsSection = () => {
               <select
                 value={sortBy}
                 onChange={handleSortChange}
-                className="border border-gray-300 dark:border-gray-600 p-2 rounded"
+                className="bg-primary dark:bg-primary-dark text-surface-white border border-gray-300 dark:border-gray-600 p-2 rounded"
               >
                 <option value="created_at">Creation Date</option>
                 <option value="deadline">Deadline</option>
@@ -177,7 +177,7 @@ const MyProjectsSection = () => {
               <select
                 value={order}
                 onChange={handleOrderChange}
-                className="border border-gray-300 dark:border-gray-600 p-2 rounded"
+                className="bg-primary dark:bg-primary-dark text-surface-white border border-gray-300 dark:border-gray-600 p-2 rounded"
               >
                 <option value="ASC">Ascending</option>
                 <option value="DESC">Descending</option>
