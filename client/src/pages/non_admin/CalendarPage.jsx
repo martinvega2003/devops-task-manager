@@ -63,18 +63,16 @@ const CalendarPage = () => {
   const fetchAllTasks = async (priority = 'all', status = 'all') => {
     try {
       let allTasks = [];
-      for (const project of projects) {
-        const endpoint =
-        priority === 'all' && status === 'all'
-          ? `/tasks/project/${project.id}` :
-          priority !== 'all' && status === 'all' ?
-          `/tasks/project/${project.id}?priority=${priority}` :
-          status !== 'all' && priority === 'all' ?
-          `/tasks/project/${project.id}?status=${status}` :
-          `/tasks/project/${project.id}?priority=${priority}&status=${status}`;
-        const response = await api.get(endpoint);
-        allTasks = [...allTasks, ...response.data];
-      }
+      const endpoint =
+      priority === 'all' && status === 'all'
+        ? `/tasks/user/assigned` :
+        priority !== 'all' && status === 'all' ?
+        `/tasks/user/assigned?priority=${priority}` :
+        status !== 'all' && priority === 'all' ?
+        `/tasks/user/assigned?status=${status}` :
+        `/tasks/user/assigned?priority=${priority}&status=${status}`;
+      const response = await api.get(endpoint);
+      allTasks = [...allTasks, ...response.data];
       setTasks(allTasks);
       setFilteredTasks(allTasks);
     } catch (error) {
@@ -157,18 +155,16 @@ const CalendarPage = () => {
   
       // Step 2: Fetch tasks with the applied filters
       let filteredTasks = [];
-      for (const project of projects) {
-        const endpoint =
-        priority === 'all' && status === 'all'
-          ? `/tasks/project/${project.id}` :
-          priority !== 'all' && status === 'all' ?
-          `/tasks/project/${project.id}?priority=${priority}` :
-          status !== 'all' && priority === 'all' ?
-          `/tasks/project/${project.id}?status=${status}` :
-          `/tasks/project/${project.id}?priority=${priority}&status=${status}`;
-        const response = await api.get(endpoint);
-        filteredTasks = [...filteredTasks, ...response.data];
-      }
+      const endpoint =
+      priority === 'all' && status === 'all'
+        ? `/tasks/user/assigned` :
+        priority !== 'all' && status === 'all' ?
+        `/tasks/user/assigned?priority=${priority}` :
+        status !== 'all' && priority === 'all' ?
+        `/tasks/user/assigned?status=${status}` :
+        `/tasks/user/assigned?priority=${priority}&status=${status}`;
+      const response = await api.get(endpoint);
+      filteredTasks = [...filteredTasks, ...response.data];
   
       // Update the tasks and filtered tasks state
       setTasks(allTasks);
