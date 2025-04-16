@@ -3,6 +3,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import api from '../../API/api.interceptors';
 import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
+import TaskPage from './TaskPage';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = [
@@ -284,6 +285,9 @@ const CalendarPage = () => {
 
   return (
     <div className="bg-background dark:bg-background-dark min-h-screen w-full">
+      {/* Modal for Task Page */}
+      {selectedTask && <TaskPage taskId={selectedTask.id} fetchTasks={fetchAllTasks}/>}
+
       {/* Modal for Task Creation */}
       {isModalOpen && Modal}
 
