@@ -173,7 +173,10 @@ const ProjectSection = () => {
         const taskStart = new Date(task.start_time);
         return isSameDay(taskStart, modalCell.date);
       });
-      setModalCellTasks(newCellTasks);
+      // Only update state if the tasks have changed
+      if (JSON.stringify(newCellTasks) !== JSON.stringify(modalCellTasks)) {
+        setModalCellTasks(newCellTasks);
+      }
     }
   }, [tasks, modalCell]);  
 
