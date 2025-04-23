@@ -273,10 +273,11 @@ const ProjectSection = () => {
                   <TaskTitleCard 
                     task={task} 
                     onClick={() => setSelectedTask(task)}
-                    className="truncate relative z-20 -translate-y-6 hover:-translate-y-7" 
+                    className="truncate relative z-20 -translate-y-6 hover:-translate-y-7 transition-transform" 
                     style={{ 
                       top: `${topPosition}px`, 
                       height: `${height}px`, 
+                      position: 'absolute',
                     }} 
                   />
                 </div>
