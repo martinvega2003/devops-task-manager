@@ -286,7 +286,7 @@ const CalendarPage = () => {
   return (
     <div className="bg-background dark:bg-background-dark min-h-screen w-full">
       {/* Modal for Task Page */}
-      {selectedTask && <TaskPage taskId={selectedTask.id} fetchTasks={fetchAllTasks}/>}
+      {selectedTask && <TaskPage taskId={selectedTask.id} setSelectedTask={setSelectedTask} fetchTasks={fetchAllTasks}/>}
 
       {/* Modal for Task Creation */}
       {isModalOpen && Modal}
