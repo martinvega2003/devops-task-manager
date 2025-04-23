@@ -195,6 +195,17 @@ const CalendarPage = () => {
 
   //Modal related functions
 
+  // Re-render daily timeline after a Task is added
+  useEffect(() => {
+    if (modalCell) {
+      const newCellTasks = tasks.filter(task => {
+        const taskStart = new Date(task.start_time);
+        return isSameDay(taskStart, modalCell.date);
+      });
+      setModalCellTasks(newCellTasks);
+    }
+  }, [tasks, modalCell]);  
+
   // Open the timeline modal for a specific day
   const openModal = (cell, cellTasks) => {
     setModalCell(cell);
