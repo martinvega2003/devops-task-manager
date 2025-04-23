@@ -280,7 +280,8 @@ const CalendarPage = () => {
                     onClick={selectedProject !== 'all' && task.project_id !== selectedProject ? null : () => setSelectedTask(task)}
                     className={
                       `truncate relative z-20 -translate-y-6 hover:-translate-y-7 transition-transform
-                      ${selectedProject !== 'all' && task.project_id !== selectedProject ? 'opacity-50 truncate' : 'truncate'}`
+                      ${selectedProject !== 'all' && task.project_id !== selectedProject ? 
+                        task.status === "Completed" ? 'hidden' : 'opacity-50 truncate' : 'truncate'}`
                     } 
                     style={{ 
                       top: `${topPosition}px`, 
@@ -428,7 +429,8 @@ const CalendarPage = () => {
                       <TaskTitleCard
                         key={task.id}
                         task={task}
-                        className={selectedProject !== 'all' && task.project_id !== selectedProject ? 'opacity-50 truncate' : 'truncate'}
+                        className={selectedProject !== 'all' && task.project_id !== selectedProject ? 
+                          task.status === "Completed" ? 'hidden' : 'opacity-50 truncate' : 'truncate'}
                       />
                     ))}
                   </div>
