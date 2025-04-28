@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import api from '../../API/api.interceptors';
 import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
 import TaskPage from './TaskPage';
+import { AuthContext } from '../../context/authContext';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = [
@@ -18,6 +19,8 @@ const isSameDay = (d1, d2) =>
   d1.getDate() === d2.getDate();
 
 const CalendarPage = () => {
+  const { user } = useContext(AuthContext)
+
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
@@ -142,9 +145,16 @@ const CalendarPage = () => {
     try {
       // Step 1: Fetch all tasks without filters to determine the scope
       let allTasks = [];
+      const currentUserId = user.id; // Get the current user's ID from AuthContext
+
       for (const project of projects) {
         const response = await api.get(`/tasks/project/${project.id}`);
         allTasks = [...allTasks, ...response.data];
+        
+        // Filter tasks to include only those assigned to the current user
+        allTasks = allTasks.filter((task) =>
+          task.assigned_users.some((user) => user.id === currentUserId)
+      );
       }
   
       // Update the scope based on all tasks
@@ -198,7 +208,7 @@ const CalendarPage = () => {
   // Re-render daily timeline after a Task is added
   useEffect(() => {
     if (modalCell) {
-      const newCellTasks = tasks.filter(task => {
+      const newCellTasks = filteredTasks.filter(task => {
         const taskStart = new Date(task.start_time);
         return isSameDay(taskStart, modalCell.date);
       });
@@ -207,7 +217,7 @@ const CalendarPage = () => {
         setModalCellTasks(newCellTasks);
       }
     }
-  }, [tasks, modalCell]);  
+  }, [filteredTasks, modalCell]);  
 
   // Open the timeline modal for a specific day
   const openModal = (cell, cellTasks) => {
