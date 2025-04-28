@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import Navbar from './components/Navbar.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import NotFoundRoute from './components/NotFoundRoute.jsx';
 import HomePage from './pages/HomePage.jsx';
 
 //React-tostify:
@@ -34,6 +35,9 @@ const App = () => {
             <Route path='/user' element={<NonAdminRoute />}>
               <Route path="/user/home" element={<HomePage />} />
             </Route>
+            
+            {/* Catch-All Route for Undefined Paths */}
+            <Route path="*" element={<NotFoundRoute />} />
           </Routes>
           <Sidebar />
           <Navbar />

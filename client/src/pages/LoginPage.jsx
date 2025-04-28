@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import mainImage from "../images/login-page-image.png";
 import { AuthContext } from '../context/authContext';
@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   // Login context
-  const { login } = useContext(AuthContext)
+  const { login, user } = useContext(AuthContext)
 
   // State to control whether we're in login mode or register mode
   const [isLogin, setIsLogin] = useState(true);
@@ -22,6 +22,17 @@ const LoginPage = () => {
   });
 
   const navigate = useNavigate() // navigate function to redirect the user
+
+  // Redirect if the user is already logged in
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') {
+        navigate('/home/my-team'); // Redirect admin users
+      } else {
+        navigate('/user/home'); // Redirect non-admin users
+      }
+    }
+  }, [user, navigate]);
 
   // Handle input changes
   const handleChange = (e) => {
