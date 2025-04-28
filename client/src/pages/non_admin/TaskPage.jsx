@@ -141,7 +141,7 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
 
           {/* Task Content */}
           <div className="w-full flex justify-start items-start gap-2 mt-4">
-            <div className="flex flex-col justify-start items-start gap-2 p-2">
+            <div className="w-full flex flex-col justify-start items-start gap-2 p-2">
 
               {/* Task Status */}
               <button onClick={toggleTaskStatus} className={`${task.status !== "Completed" ? 'border border-gray-700 dark:border-gray-300 text-surface-black dark:text-surface-white' : 'border-success bg-success dark:bg-success-dark text-surface-white flex items-center gap-2'} text-caption px-4 py-1 rounded-md cursor-pointer hover:scale-105 transition duration-200`}>
@@ -239,7 +239,7 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
                   Assets:
                 </h4>
                 {assets.length === 0 ? (
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-4">
                     <p className="text-caption text-gray-500 dark:text-gray-400">
                       No assets available.
                     </p>
