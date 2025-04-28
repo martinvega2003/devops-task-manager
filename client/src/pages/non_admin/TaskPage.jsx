@@ -2,8 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import api from '../../API/api.interceptors';
 import Button from '../../components/Button';
-import ErrorContainer from '../../components/ErrorContainer';
 import { FaCheck, FaTrash, FaDownload } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
 
@@ -11,7 +11,6 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
 
   const [task, setTask] = useState(null);
   const [isClosing, setIsClosing] = useState(false);
-  const [error, setError] = useState(null);
   const [assets, setAssets] = useState([]);
 
   useEffect(() => {
@@ -26,7 +25,7 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
       const response = await api.get(`tasks/${taskId}/`);
       setTask(response.data);
     } catch (error) {
-      setError(error.response?.data?.msg || "Failed to fetch task");
+      toast.error(error.response?.data?.msg || "Failed to fetch task");
     }
   };
 
@@ -48,20 +47,25 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
       const response = await api.get(`tasks/${task.id}/assets/`);
       setAssets(response.data);
     } catch (error) {
-      setError(error.response?.data?.msg || "Failed to fetch assets");
+      toast.error(error.response?.data?.msg || "Failed to fetch assets");
     }
   };
 
   // Handle asset download
   const handleAssetDownload = (fileUrl, filename) => {
-    const baseUrl = "http://localhost:5001"; // Replace with your server's base URL
-    const fullUrl = `${baseUrl}${fileUrl}`;
+    try {
+      const baseUrl = "http://localhost:5001"; // Replace with your server's base URL
+      const fullUrl = `${baseUrl}${fileUrl}`;
 
-    const link = document.createElement('a');
-    link.target = '_blank'; // Open in a new tab
-    link.href = fullUrl;
-    link.download = filename; 
-    link.click();
+      const link = document.createElement('a');
+      link.target = '_blank'; // Open in a new tab
+      link.href = fullUrl;
+      link.download = filename; 
+      link.click();
+      toast.success('Asset downloaded successfully')
+    } catch (error) {
+      toast.error(error.response?.data?.msg || 'Failed to download asset')
+    }
   };
 
   // Handle file upload
@@ -78,11 +82,11 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      alert("File uploaded successfully");
+      toast.success("File uploaded successfully");
       // Fetch the updated list of assets
       fetchAssets();
     } catch (error) {
-      setError(error.response?.data?.msg || "Failed to upload file");
+      toast.error(error.response?.data?.msg || "Failed to upload file");
     }
   };
 
@@ -90,12 +94,12 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
   const handleAssetDelete = async (assetId) => {
     try {
       await api.delete(`tasks/${task.id}/assets/${assetId}`);
-      alert("Asset deleted successfully");
+      toast.success("Asset deleted successfully");
       // Fetch the updated list of assets
       const response = await api.get(`tasks/${task.id}/assets/`);
       setAssets(response.data);
     } catch (error) {
-      setError(error.response?.data?.msg || "Failed to delete asset");
+      toast.error(error.response?.data?.msg || "Failed to delete asset");
     }
   };
 
@@ -114,7 +118,7 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
       });
       fetchTasks(); 
     } catch (error) {
-      setError(error.response?.data?.msg || "Failed to toggle task status");
+      toast.error(error.response?.data?.msg || "Failed to toggle task status");
     }
   }
 
@@ -130,7 +134,6 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
         task && !isClosing ? 'right-0' : '-right-full'
       } w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 overflow-y-scroll cursor-pointer transition-all duration-600`}
     >
-      {error && <ErrorContainer error={error} setError={setError} />}
       {task && (
         <div className="relative w-full flex flex-col justify-start items-start gap-2 pt-20">
           {/* Button Container */}

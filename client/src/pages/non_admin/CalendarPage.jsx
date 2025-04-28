@@ -5,6 +5,7 @@ import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
 import TaskPage from './TaskPage';
 import { AuthContext } from '../../context/authContext';
+import { toast } from 'react-toastify';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = [
@@ -60,7 +61,7 @@ const CalendarPage = () => {
       const response = await api.get('/projects/user/assigned');
       setProjects(response.data);
     } catch (error) {
-      console.error('Failed to fetch projects:', error);
+      toast.error(error.response?.data?.msg || 'Failed to fetch projects');
     }
   };
 
@@ -80,7 +81,7 @@ const CalendarPage = () => {
       setTasks(allTasks);
       setFilteredTasks(allTasks);
     } catch (error) {
-      console.error('Failed to fetch tasks:', error);
+      toast.error(error.response?.data?.msg || 'Failed to fetch tasks');
     }
   };
 
@@ -181,7 +182,7 @@ const CalendarPage = () => {
       setTasks(allTasks);
       setFilteredTasks(filteredTasks);
     } catch (error) {
-      console.error('Failed to fetch tasks:', error);
+      toast.error(error.response?.data?.msg || 'Failed to fetch filtered tasks');
     }
   };
 

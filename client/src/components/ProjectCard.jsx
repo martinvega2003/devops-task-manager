@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../API/api.interceptors';
 import Button from './Button';
+import { toast } from 'react-toastify';
 
 const ProjectCard = ({ project, fetchProjects }) => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const ProjectCard = ({ project, fetchProjects }) => {
       await api.patch(`/projects/${project.id}/status`, { status: newStatus });
       fetchProjects(); // Refresh the project list after status change
     } catch (error) {
-      console.error('Failed to update project status:', error);
+      toast.error('Failed to update project status:', error);
     }
   };
 
@@ -31,9 +32,9 @@ const ProjectCard = ({ project, fetchProjects }) => {
     try {
       await api.delete(`/projects/${project.id}`);
       fetchProjects();
+      toast.success('Project deleted successfully')
     } catch (error) {
-      console.error('Failed to delete project:', error);
-      alert('Failed to delete project. Please try again.');
+      toast.error('Failed to delete project:', error);
     }
   }
 

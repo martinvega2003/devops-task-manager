@@ -4,6 +4,7 @@ import mainImage from "../images/login-page-image.png";
 import { AuthContext } from '../context/authContext';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const LoginPage = () => {
   // Login context
@@ -47,7 +48,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     if (!isLogin && formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
 
@@ -61,7 +62,7 @@ const LoginPage = () => {
 
         // Save token in localStorage
         login(response.data.token, response.data.user)
-        console.log('Successfully logged:', response.data);
+        toast.success('Successfully logged');
         navigate('/home/my-team')
       } else {
         const endpoint = "http://localhost:5001/api/auth/register"
@@ -73,11 +74,11 @@ const LoginPage = () => {
 
         // Save token in localStorage
         login(response.data.token, response.data.user)
-        console.log('Successfully registered:', response.data);
+        toast.success('Successfully registered');
         navigate('/home')
       }
     } catch (error) {
-      console.error('Error:', error.response ? error.response.data : error.message);
+      toast.error(error.response?.data?.msg || 'Error:', error.response ? error.response.data : error.message);
       // Handle error (e.g., display error message)
     }
   };

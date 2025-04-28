@@ -3,10 +3,10 @@ import api from "../../API/api.interceptors";
 import Button from "../../components/Button";
 import MemberCard from "../../components/MemberCard";
 import profilePic from "../../images/profile-pic.png"
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaPlus, FaCheck, FaTimes } from "react-icons/fa"
 import TaskTitleCard from "../../components/TaskTitleCard";
+import { toast } from "react-toastify";
 
 const MyTeamSection = () => {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -63,8 +63,9 @@ const MyTeamSection = () => {
       await api.post('/team/invite', memberData)
       setMemberData({ name: '', email: '', password: '', role: '' });
       setIsModalOpen(false)
+      toast.success('Member added successfully')
     } catch (error) {
-      console.log(error)
+      toast.error(error.response?.data?.msg || 'Failed to add team member')
     }
     fetchTeamMembers();
   };
@@ -75,7 +76,7 @@ const MyTeamSection = () => {
       const member = response.data
       setSelectedMember(member);
     } catch (error) {
-      console.error(error)
+      toast.error(error.response?.data?.msg || "Could not get member's information")
     }
   };
 
@@ -216,7 +217,6 @@ const MyTeamSection = () => {
         </div>
       ) : (
         <>
-          <ToastContainer position="top-right" autoClose={5000} />
           <div className="flex gap-3 justify-between items-center p-4">
             <h2 className="text-heading dark:text-surface-white font-bold">My Team</h2>
             <Button 

@@ -6,6 +6,7 @@ import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
 import AddTaskForm from '../../components/AddTaskForm';
 import TaskPage from './TaskPage';
+import { toast } from 'react-toastify';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -73,13 +74,13 @@ const ProjectSection = () => {
 
     try {
       await api.put('projects/' + project_id, payload)
-      console.log("project updated")
+      toast.success("project updated")
       fetchProject()
       setIsTitleEditing(false)
       setIsDescriptionEditing(false)
       setIsDeadlineEditing(false)
     } catch (error) {
-      alert(error)
+      toast.error(error.response?.data?.msg || 'Could not Update Project')
     }
   }
 
@@ -115,7 +116,7 @@ const ProjectSection = () => {
         setCurrentYear(createdDate.getFullYear());
       }
     } catch (error) {
-      console.error('Error fetching project:', error);
+      toast.error(error.response?.data?.msg || 'Error fetching project:');
     }
   };
 
@@ -132,7 +133,7 @@ const ProjectSection = () => {
       const res = await api.get(`/tasks/project/${project.id}`);
       setTasks(res.data);
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      toast.error(error.response?.data?.msg || 'Error fetching tasks:');
     }
   };
 
@@ -211,7 +212,7 @@ const ProjectSection = () => {
     }
   };
 
-  if (!project) return <p>Loading project information...</p>;
+  if (!project) return toast.loading("Loading Project's information");
 
   // Format month/year for display (e.g., "August 2025")
   const monthNames = [

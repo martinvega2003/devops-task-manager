@@ -2,8 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import api from '../../API/api.interceptors';
 import Button from '../../components/Button';
-import ErrorContainer from '../../components/ErrorContainer';
 import { FaCheck, FaPen, FaTrash, FaDownload } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
@@ -11,7 +11,6 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
   const [isClosing, setIsClosing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [assets, setAssets] = useState([]);
 
@@ -22,7 +21,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
         const res = await api.get('team/team-members');
         setTeamMembers(res.data.teamMembers);
       } catch (error) {
-        setError(error.response?.data?.msg || "Failed to fetch team members");
+        toast.error(error.response?.data?.msg || "Failed to fetch team members");
       }
     };
     fetchTeamMembers();
@@ -50,7 +49,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
         const response = await api.get(`tasks/${selectedTask.id}/assets/`);
         setAssets(response.data);
       } catch (error) {
-        setError(error.response?.data?.msg || "Failed to fetch assets");
+        toast.error(error.response?.data?.msg || "Failed to fetch assets");
       }
     };
 
@@ -101,11 +100,11 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
     const end = new Date(endTimeCombined);
     const diffMinutes = (end - start) / (1000 * 60);
     if (diffMinutes < 15) {
-      setError("Task duration must be at least 15 minutes.");
+      toast.error("Task duration must be at least 15 minutes.");
       return;
     }
     if (diffMinutes > 480) {
-      setError("Task duration cannot exceed 8 hours.");
+      toast.error("Task duration cannot exceed 8 hours.");
       return;
     }
 
@@ -118,26 +117,29 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
     try {
       const response = await api.put('tasks/' + selectedTask.id, payload)
-      console.log("project updated")
       setSelectedTask(response.data)
       fetchTasks();
       setIsEditing(false)
-      alert('Task updated successfully')
+      toast.success('Task updated successfully')
     } catch (error) {
-      alert(error)
+      toast.error(error.response?.data?.msg || 'Could not update task')
     }
   }
 
   // Handle asset download
   const handleAssetDownload = (fileUrl, filename) => {
-    const baseUrl = "http://localhost:5001"; // Replace with your server's base URL
-    const fullUrl = `${baseUrl}${fileUrl}`;
+    try {
+      const baseUrl = "http://localhost:5001"; // Replace with your server's base URL
+      const fullUrl = `${baseUrl}${fileUrl}`;
 
-    const link = document.createElement('a');
-    link.target = '_blank'; // Open in a new tab
-    link.href = fullUrl;
-    link.download = filename; 
-    link.click();
+      const link = document.createElement('a');
+      link.target = '_blank'; // Open in a new tab
+      link.href = fullUrl;
+      link.download = filename; 
+      link.click();
+    } catch (error) {
+      toast.error('Could not download Asset')
+    }
   };
 
   // Handle file upload
@@ -154,12 +156,12 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      alert("File uploaded successfully");
+      toast.success("File uploaded successfully");
       // Fetch the updated list of assets
       const response = await api.get(`tasks/${selectedTask.id}/assets/`);
       setAssets(response.data);
     } catch (error) {
-      setError(error.response?.data?.msg || "Failed to upload file");
+      toast.error(error.response?.data?.msg || "Failed to upload file");
     }
   };
 
@@ -167,12 +169,12 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
   const handleAssetDelete = async (assetId) => {
     try {
       await api.delete(`tasks/${selectedTask.id}/assets/${assetId}`);
-      alert("Asset deleted successfully");
+      toast.success("Asset deleted successfully");
       // Fetch the updated list of assets
       const response = await api.get(`tasks/${selectedTask.id}/assets/`);
       setAssets(response.data);
     } catch (error) {
-      setError(error.response?.data?.msg || "Failed to delete asset");
+      toast.error(error.response?.data?.msg || "Failed to delete asset");
     }
   };
 
@@ -191,7 +193,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
       });
       fetchTasks(); 
     } catch (error) {
-      setError(error.response?.data?.msg || "Failed to toggle task status");
+      toast.error(error.response?.data?.msg || "Failed to toggle task status");
     }
   }
 
@@ -201,9 +203,9 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
       setSelectedTask(null);
       fetchTasks();
       handleClose();
-      alert('Task deleted successfully');
+      toast.success('Task deleted successfully');
     } catch (error) {
-      setError(error.response?.data?.msg || "Failed to delete task");
+      toast.error(error.response?.data?.msg || "Failed to delete task");
     }
   }
 
@@ -213,7 +215,6 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
         selectedTask && !isClosing ? 'right-0' : '-right-full'
       } w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 overflow-y-scroll cursor-pointer transition-all duration-600`}
     >
-      {error && <ErrorContainer error={error} setError={setError} />}
       {selectedTask && (
         <div className="relative w-full flex flex-col justify-start items-start gap-2 pt-20">
           {/* Editing and Delete Buttons */}

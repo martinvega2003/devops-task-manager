@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../API/api.interceptors';
 import ProjectCard from '../../components/ProjectCard';
 import Button from '../../components/Button';
-import { ToastContainer, toast } from 'react-toastify';
-import { FaPlus, FaCheck } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const MyProjectsSection = () => {
   const [projects, setProjects] = useState([]);
@@ -25,7 +24,7 @@ const MyProjectsSection = () => {
       const response = await api.get(`/projects?sortBy=${sortBy}&order=${order}`);
       if (response.data.length > 0) setProjects(response.data);
     } catch (error) {
-      console.error('Failed to fetch projects:', error);
+      toast.error('Failed to fetch projects:', error.response?.data?.msg);
     }
   };
 
@@ -60,8 +59,9 @@ const MyProjectsSection = () => {
       await api.post('/projects', projectData)
       setProjectData({ name: '', description: '', deadline: '' });
       setIsModalOpen(false)
+      toast.success('Project added successfully')
     } catch (error) {
-      console.log(error)
+      toast.error(error.response?.data?.msg  || 'Failed to add project')
     }
     fetchProjects();
   };
@@ -151,7 +151,6 @@ const MyProjectsSection = () => {
         </div>
       ) : (
         <>
-          <ToastContainer position="top-right" autoClose={5000} />
           <div className="flex gap-3 justify-between items-center p-4">
             <h2 className="text-heading dark:text-surface-white font-bold">My Projects</h2>
             <Button 

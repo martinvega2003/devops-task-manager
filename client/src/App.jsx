@@ -24,7 +24,7 @@ const App = () => {
     <AuthProvider>
       <ThemeModeProvider>
         <BrowserRouter>
-          <ToastContainer position="top-right" autoClose={5000} />
+          <ToastContainer position="top-right" autoClose={3000} />
           <Routes>
             <Route path='/login' element={<LoginPage />} />
             <Route path='/home' element={<AdminRoute />}>
