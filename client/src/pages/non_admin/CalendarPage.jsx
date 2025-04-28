@@ -312,40 +312,42 @@ const CalendarPage = () => {
 
       <div className="flex flex-col md:flex-row gap-4 px-4 sm:px-8 py-8 sm:py-16">
         {/* Sidebar */}
-        <div className="w-1/4 bg-background border dark:bg-gray-800 p-6 rounded-lg">
+        <div className="w-full md:w-1/4 bg-background border dark:bg-gray-800 p-6 rounded-lg">
           
           {/* Status & Priority Filters */}
-          <h3 className="text-body text-surface-black dark:text-surface-white font-bold">Filters</h3>
-          <div className="mt-2">
-            <label className="text-surface-black dark:text-surface-white block mb-1">Priority</label>
-            <select
-              name="priority"
-              value={filters.priority}
-              onChange={handleFilterChange}
-              className="bg-primary dark:bg-primary-dark text-surface-white w-full border p-2 rounded"
-            >
-              <option value="all">All</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-          </div>
-          <div className="mt-2">
-            <label className="text-surface-black dark:text-surface-white block mb-1">Status</label>
-            <select
-              name="status"
-              value={filters.status}
-              onChange={handleFilterChange}
-              className="bg-primary dark:bg-primary-dark text-surface-white w-full border p-2 rounded"
-            >
-              <option value="all">All</option>
-              <option value="Pending">Pending</option>
-              <option value="Completed">Completed</option>
-            </select>
+          <h3 className="text-heading md:text-body text-surface-black dark:text-surface-white font-bold">Filters</h3>
+          <div className="w-full flex md:block justify-center items-center mt-2 md:mt-0">
+            <div className="w-1/2 md:w-full md:mt-2 mr-2 md:mr-0">
+              <label className="text-surface-black dark:text-surface-white block mb-1">Priority</label>
+              <select
+                name="priority"
+                value={filters.priority}
+                onChange={handleFilterChange}
+                className="bg-primary dark:bg-primary-dark text-surface-white w-full border p-2 rounded"
+              >
+                <option value="all">All</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+            <div className="w-1/2 md:w-full md:mt-2 ml-2 md:ml-0">
+              <label className="text-surface-black dark:text-surface-white block mb-1">Status</label>
+              <select
+                name="status"
+                value={filters.status}
+                onChange={handleFilterChange}
+                className="bg-primary dark:bg-primary-dark text-surface-white w-full border p-2 rounded"
+              >
+                <option value="all">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
           </div>
 
           {/* Project Filter */}
-          <h3 className="text-body font-bold mb-4 text-surface-black dark:text-surface-white mt-6">Projects</h3>
+          <h3 className="text-body font-bold md:mb-4 text-surface-black dark:text-surface-white mt-6">Projects</h3>
           <ul className='text-surface-black dark:text-surface-white'>
             <li
               className={`text-body p-2 rounded-lg whitespace-nowrap truncate ${
@@ -370,7 +372,7 @@ const CalendarPage = () => {
         </div>
 
         {/* Calendar */}
-        <div className="w-3/4">
+        <div className="w-full md:w-3/4">
           {/* Calendar Header */}
           <div className="flex flex-col gap-2 p-2 mb-4 rounded-lg border dark:bg-gray-800">
             {/* Project Scope Message */}
