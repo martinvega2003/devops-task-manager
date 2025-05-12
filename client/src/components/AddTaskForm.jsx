@@ -2,8 +2,7 @@ import React, {useState, useEffect} from "react";
 import api from "../API/api.interceptors";
 import Button from "./Button";
 import { FaCheck } from "react-icons/fa";
-import { ToastContainer, toast } from "react-toastify";
-import ErrorContainer from "./ErrorContainer";
+import { toast } from "react-toastify";
 
 const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) => {
   // modalCell is assumed to contain the selected date (a Date object)
@@ -20,7 +19,6 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
   });
 
   const [teamMembers, setTeamMembers] = useState([]);
-  const [error, setError] = useState(null)
 
   // Fetch team members for the assignedUsers field
   useEffect(() => {
@@ -29,7 +27,7 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
         const res = await api.get('team/team-members');
         setTeamMembers(res.data.teamMembers);
       } catch (error) {
-        setError(error.response?.data?.msg || "Failed to fetch team members");
+        toast.error(error.response?.data?.msg || "Failed to fetch team members");
       }
     };
     fetchTeamMembers();
@@ -46,7 +44,7 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!modalCell) {
-      setError("No Date Selected");
+      toast.error("No Date Selected");
       return;
     }
     // Combine the selected date with the times
@@ -59,11 +57,11 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
     const end = new Date(endTimeCombined);
     const diffMinutes = (end - start) / (1000 * 60);
     if (diffMinutes < 15) {
-      setError("Task duration must be at least 15 minutes.");
+      toast.error("Task duration must be at least 15 minutes.");
       return;
     }
     if (diffMinutes > 480) {
-      setError("Task duration cannot exceed 8 hours.");
+      toast.error("Task duration cannot exceed 8 hours.");
       return;
     }
 
@@ -88,14 +86,14 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
       });
       fetchTasks()
       setIsTaskFormOpen(false);
+      toast.success('Task added successfully')
     } catch (error) {
-      setError(error.response?.data?.msg || "Failed to Add Task");
+      toast.error(error.response?.data?.msg || "Failed to Add Task");
     }
   };
 
   return (
     <div className="absolute inset-0 z-40 flex items-center justify-center bg-transparent">
-      {error && <ErrorContainer error={error} setError={setError} />}
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
       <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-[60%] aspect-square overflow-auto">
         <h3 className="text-subheading dark:text-surface-white font-bold mb-4">Add New Task</h3>

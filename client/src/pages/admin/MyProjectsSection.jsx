@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import api from '../../API/api.interceptors';
 import ProjectCard from '../../components/ProjectCard';
 import Button from '../../components/Button';
-import { ToastContainer, toast } from 'react-toastify';
-import { FaPlus, FaCheck } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const MyProjectsSection = () => {
   const [projects, setProjects] = useState([]);
+  const [sortBy, setSortBy] = useState('created_at'); // Default sorting field
+  const [order, setOrder] = useState('ASC'); // Default sorting order
   const [projectData, setProjectData] = useState({
     name: '',
     description: '',
@@ -16,11 +17,23 @@ const MyProjectsSection = () => {
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [sortBy, order]);
 
   const fetchProjects = async () => {
-    const response = await api.get('/projects');
-    if (response.data.length > 0) setProjects(response.data);
+    try {
+      const response = await api.get(`/projects?sortBy=${sortBy}&order=${order}`);
+      if (response.data.length > 0) setProjects(response.data);
+    } catch (error) {
+      toast.error('Failed to fetch projects:', error.response?.data?.msg);
+    }
+  };
+
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
+  const handleOrderChange = (e) => {
+    setOrder(e.target.value);
   };
 
   const handleChange = (e) => {
@@ -46,8 +59,9 @@ const MyProjectsSection = () => {
       await api.post('/projects', projectData)
       setProjectData({ name: '', description: '', deadline: '' });
       setIsModalOpen(false)
+      toast.success('Project added successfully')
     } catch (error) {
-      console.log(error)
+      toast.error(error.response?.data?.msg  || 'Failed to add project')
     }
     fetchProjects();
   };
@@ -122,7 +136,7 @@ const MyProjectsSection = () => {
   )
 
   return (
-    <div className="bg-background dark:bg-background-dark min-h-screen">
+    <div className="bg-background dark:bg-background-dark min-h-screen pb-16">
       {isModalOpen && Modal}
       {projects.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-screen">
@@ -133,27 +147,46 @@ const MyProjectsSection = () => {
             width='fit'
             isAddButton={true}
             onClick={() => setIsModalOpen(true)}
-          >
-            <FaPlus size={24} />
-          </Button>
+          />
         </div>
       ) : (
         <>
-          <ToastContainer position="top-right" autoClose={5000} />
           <div className="flex gap-3 justify-between items-center p-4">
             <h2 className="text-heading dark:text-surface-white font-bold">My Projects</h2>
             <Button 
               width='fit' 
               isAddButton={true} 
               onClick={() => setIsModalOpen(true)}
-            >
-              <FaPlus />
-            </Button>
+            />
+          </div>
+          <div className="flex gap-4 items-center p-4">
+            <div>
+              <label className="block text-gray-700 dark:text-gray-200 mb-1">Sort By</label>
+              <select
+                value={sortBy}
+                onChange={handleSortChange}
+                className="bg-primary dark:bg-primary-dark text-surface-white border border-gray-300 dark:border-gray-600 p-2 rounded"
+              >
+                <option value="created_at">Creation Date</option>
+                <option value="deadline">Deadline</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-gray-700 dark:text-gray-200 mb-1">Order</label>
+              <select
+                value={order}
+                onChange={handleOrderChange}
+                className="bg-primary dark:bg-primary-dark text-surface-white border border-gray-300 dark:border-gray-600 p-2 rounded"
+              >
+                <option value="ASC">Ascending</option>
+                <option value="DESC">Descending</option>
+              </select>
+            </div>
           </div>
           <div className="px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {
               projects && projects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+                <ProjectCard key={project.id} project={project} fetchProjects={fetchProjects} />
               ))
             }
           </div>

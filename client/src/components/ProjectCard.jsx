@@ -1,7 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../API/api.interceptors';
+import Button from './Button';
+import { toast } from 'react-toastify';
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, fetchProjects }) => {
   const navigate = useNavigate();
 
   const formattedCreatedDate = new Date(project.created_at).toISOString().split('T')[0];
@@ -11,11 +14,36 @@ const ProjectCard = ({ project }) => {
     navigate(`/home/my-projects/${project.id}`);
   };
 
+  const toggleProjectStatus = async (e) => {
+    e.stopPropagation(); // Prevent the click event from propagating to the parent div onClick function
+
+    const newStatus = project.status === 'Active' ? 'Deactive' : 'Active';
+    try {
+      await api.patch(`/projects/${project.id}/status`, { status: newStatus });
+      fetchProjects(); // Refresh the project list after status change
+    } catch (error) {
+      toast.error('Failed to update project status:', error);
+    }
+  };
+
+  const deleteProject = async (e) => {
+    e.stopPropagation(); // Prevent the click event from propagating to the parent div onClick function
+    
+    try {
+      await api.delete(`/projects/${project.id}`);
+      fetchProjects();
+      toast.success('Project deleted successfully')
+    } catch (error) {
+      toast.error('Failed to delete project:', error);
+    }
+  }
+
   return (
     <div
-      className="bg-white dark:bg-gray-800 h-full border dark:border-surface-white shadow-md p-4 cursor-pointer"
-      onClick={handleCardClick}
+      className={`relative bg-white dark:bg-gray-800 h-full border dark:border-surface-white shadow-md p-4 cursor-pointer`}
+      onClick={project.status === "Active" ? handleCardClick : () => alert("You must activate the project to view its details.")}
     >
+      <div className={`absolute z-10 inset-0 bg-white dark:bg-gray-800 ${project.status === 'Active' ? 'hidden' : 'opacity-70'}`} />
       <h3 className="text-body font-bold text-surface-black dark:text-surface-white truncate">
         {project.name}
       </h3>
@@ -48,6 +76,24 @@ const ProjectCard = ({ project }) => {
         <span className="text-body text-gray-700 dark:text-gray-300 ml-2 whitespace-nowrap">
           {formattedDeadline}
         </span>
+      </div>
+
+      {/* Status Toggle Button */}
+      <div className="mt-4 flex justify-between items-center gap-2">
+        <Button
+          onClick={toggleProjectStatus}
+          className={project.status === 'Active' ? '' : 'relative z-20'}
+        >
+          {project.status === 'Active' ? 'Deactivate' : 'Activate'}
+        </Button>
+
+        <Button
+          onClick={deleteProject}
+          isDeleteButton={true}
+          className={project.status === 'Active' ? '' : 'relative z-20'}
+        >
+          Delete
+        </Button>
       </div>
     </div>
   );

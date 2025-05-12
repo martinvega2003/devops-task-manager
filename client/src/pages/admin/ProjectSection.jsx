@@ -5,7 +5,8 @@ import { FaChevronLeft, FaChevronRight, FaPen } from 'react-icons/fa';
 import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
 import AddTaskForm from '../../components/AddTaskForm';
-import TaskPage from '../TaskPage';
+import TaskPage from './TaskPage';
+import { toast } from 'react-toastify';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -19,6 +20,7 @@ const ProjectSection = () => {
   const { project_id } = useParams();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   //When hovering over Project data in heading
   const [isHoveringTasks, setIsHoveringTasks] = useState(false);
@@ -31,9 +33,16 @@ const ProjectSection = () => {
   const [updatedProject, setUpdatedProject] = useState(null)
 
   const handleChange = e => {
+
+    // To avoid timezone convertion conflicts in the deadline
+    const selectedDate = updatedProject.deadline.split('T')[0]; // e.g., "2025-08-01"
+    const date = new Date(selectedDate + "T00:00:00");
+    const isoDate = date.toISOString().replace(/\.\d{3}Z$/, 'Z');
+
     setUpdatedProject({
       ...updatedProject,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
+      deadline: isoDate
     })
   }
 
@@ -49,6 +58,14 @@ const ProjectSection = () => {
 
   const handleSubmit = async e => {
     e.preventDefault()
+
+    if (updatedProject === project) {
+      setIsDeadlineEditing(false); 
+      setIsDescriptionEditing(false); 
+      setIsTitleEditing(false);
+      return
+    }
+    
     const payload = {
       name: updatedProject.name,
       description: updatedProject.description,
@@ -57,13 +74,13 @@ const ProjectSection = () => {
 
     try {
       await api.put('projects/' + project_id, payload)
-      console.log("project updated")
+      toast.success("project updated")
       fetchProject()
       setIsTitleEditing(false)
       setIsDescriptionEditing(false)
       setIsDeadlineEditing(false)
     } catch (error) {
-      alert(error)
+      toast.error(error.response?.data?.msg || 'Could not Update Project')
     }
   }
 
@@ -89,15 +106,26 @@ const ProjectSection = () => {
   // Function to fetch the project info
   const fetchProject = async () => {
     try {
+      const loadingToastID = toast.loading("Loading Project's information");
       const res = await api.get(`/projects/${project_id}`);
       setProject(res.data);
-      // Initialize currentMonth/currentYear to project's created_at month/year
-      const createdDate = new Date(res.data.created_at);
-      setCurrentMonth(createdDate.getMonth());
-      setCurrentYear(createdDate.getFullYear());
       setUpdatedProject(res.data)
+      toast.dismiss(loadingToastID)
+
+      // Initialize currentMonth and currentYear only if they are null
+      if (currentMonth === null && currentYear === null) {
+        const createdDate = new Date(res.data.created_at);
+        setCurrentMonth(createdDate.getMonth());
+        setCurrentYear(createdDate.getFullYear());
+      }
     } catch (error) {
-      console.error('Error fetching project:', error);
+      // Update the loading toast to show an error message
+      toast.update(loadingToastId, {
+        render: error.response?.data?.msg || 'Error fetching project',
+        type: 'error',
+        isLoading: false,
+        autoClose: 5000,
+      });
     }
   };
 
@@ -113,9 +141,8 @@ const ProjectSection = () => {
     try {
       const res = await api.get(`/tasks/project/${project.id}`);
       setTasks(res.data);
-      fetchProject()
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      toast.error(error.response?.data?.msg || 'Error fetching tasks:');
     }
   };
 
@@ -156,7 +183,10 @@ const ProjectSection = () => {
         const taskStart = new Date(task.start_time);
         return isSameDay(taskStart, modalCell.date);
       });
-      setModalCellTasks(newCellTasks);
+      // Only update state if the tasks have changed
+      if (JSON.stringify(newCellTasks) !== JSON.stringify(modalCellTasks)) {
+        setModalCellTasks(newCellTasks);
+      }
     }
   }, [tasks, modalCell]);  
 
@@ -191,7 +221,7 @@ const ProjectSection = () => {
     }
   };
 
-  if (!project) return <p>Loading project information...</p>;
+  if (!project) return null;
 
   // Format month/year for display (e.g., "August 2025")
   const monthNames = [
@@ -256,10 +286,11 @@ const ProjectSection = () => {
                   <TaskTitleCard 
                     task={task} 
                     onClick={() => setSelectedTask(task)}
-                    className="truncate relative z-20 -translate-y-6 hover:-translate-y-7" 
+                    className="truncate relative z-20 -translate-y-6 hover:-translate-y-7 transition-transform" 
                     style={{ 
                       top: `${topPosition}px`, 
                       height: `${height}px`, 
+                      position: 'relative',
                     }} 
                   />
                 </div>
@@ -286,7 +317,7 @@ const ProjectSection = () => {
   return (
     <div className="bg-background dark:bg-background-dark min-h-screen w-full">
       {/* Modal for Task Page */}
-      <TaskPage selectedTask={selectedTask} setSelectedTask={setSelectedTask} />
+      <TaskPage selectedTask={selectedTask} setSelectedTask={setSelectedTask} fetchTasks={fetchTasks}/>
       {/* Modal for Task Creation */}
       {isModalOpen && Modal}
 
@@ -404,7 +435,7 @@ const ProjectSection = () => {
       </div>
 
       {/* Timeline Calendar View */}
-      <div className="bg-white dark:bg-gray-800 text-surface-black dark:text-surface-white shadow border-t">
+      <div className="bg-white dark:bg-gray-800 text-surface-black dark:text-surface-white shadow border-t pb-16">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
             <p className="text-body font-semibold">Calendar View:</p>
@@ -448,6 +479,9 @@ const ProjectSection = () => {
               return isSameDay(taskStart, cell.date);
             });
 
+            // Check if the cell represents the current day
+            const isToday = isSameDay(cell.date, currentDate);
+
             return (
               <div
                 {...(cell.isCurrentMonth &&
@@ -457,12 +491,13 @@ const ProjectSection = () => {
                   ) && { onClick: () => openModal(cell, cellTasks) 
                 })}
                 key={index}
-                className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto ${
+                className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto rounded-lg m-[2px] ${
+                  isToday ? 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' :
                   cell.isCurrentMonth
                     ? (
                         (currentMonth === projectCreated.getMonth() && cell.date.getDate() < projectCreated.getDate()) ||
                         (currentMonth === projectDeadline.getMonth() && cell.date.getDate() > projectDeadline.getDate())
-                      ) ? 'opacity-30' : 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer'
+                      ) ? 'opacity-30' : 'bg-blue-300 dark:bg-blue-950 text-surface-white cursor-pointer'
                     : 'opacity-30'
                 }`}
               >
