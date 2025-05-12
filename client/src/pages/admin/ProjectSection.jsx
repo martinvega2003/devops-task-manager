@@ -290,7 +290,7 @@ const ProjectSection = () => {
                     style={{ 
                       top: `${topPosition}px`, 
                       height: `${height}px`, 
-                      position: 'absolute',
+                      position: 'relative',
                     }} 
                   />
                 </div>
