@@ -106,9 +106,12 @@ const ProjectSection = () => {
   // Function to fetch the project info
   const fetchProject = async () => {
     try {
+      const loadingToastID = toast.loading("Loading Project's information");
       const res = await api.get(`/projects/${project_id}`);
       setProject(res.data);
       setUpdatedProject(res.data)
+      toast.dismiss(loadingToastID)
+
       // Initialize currentMonth and currentYear only if they are null
       if (currentMonth === null && currentYear === null) {
         const createdDate = new Date(res.data.created_at);
@@ -116,7 +119,13 @@ const ProjectSection = () => {
         setCurrentYear(createdDate.getFullYear());
       }
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Error fetching project:');
+      // Update the loading toast to show an error message
+      toast.update(loadingToastId, {
+        render: error.response?.data?.msg || 'Error fetching project',
+        type: 'error',
+        isLoading: false,
+        autoClose: 5000,
+      });
     }
   };
 
@@ -212,7 +221,7 @@ const ProjectSection = () => {
     }
   };
 
-  if (!project) return toast.loading("Loading Project's information");
+  if (!project) return null;
 
   // Format month/year for display (e.g., "August 2025")
   const monthNames = [
