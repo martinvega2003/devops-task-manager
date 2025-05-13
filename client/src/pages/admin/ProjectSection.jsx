@@ -74,13 +74,17 @@ const ProjectSection = () => {
 
     try {
       await api.put('projects/' + project_id, payload)
-      toast.success("project updated")
+      toast.success("project updated", {
+        toastId: 'project-update-success'
+      })
       fetchProject()
       setIsTitleEditing(false)
       setIsDescriptionEditing(false)
       setIsDeadlineEditing(false)
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Could not Update Project')
+      toast.error(error.response?.data?.msg || 'Could not Update Project', {
+        toastId: 'project-update-error'
+      })
     }
   }
 
@@ -142,7 +146,9 @@ const ProjectSection = () => {
       const res = await api.get(`/tasks/project/${project.id}`);
       setTasks(res.data);
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Error fetching tasks:');
+      toast.error(error.response?.data?.msg || 'Error fetching tasks:', {
+        toastId: 'tasks-fetch-error'
+      });
     }
   };
 

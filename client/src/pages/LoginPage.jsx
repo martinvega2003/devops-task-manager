@@ -48,7 +48,9 @@ const LoginPage = () => {
     e.preventDefault();
 
     if (!isLogin && formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match!");
+      toast.error("Passwords do not match!", {
+        toastId: 'register-password-matching-error'
+      });
       return;
     }
 
@@ -62,7 +64,9 @@ const LoginPage = () => {
 
         // Save token in localStorage
         login(response.data.token, response.data.user)
-        toast.success('Successfully logged');
+        toast.success('Successfully logged', {
+          toastId: 'login-success'
+        });
         navigate('/home/my-team')
       } else {
         const endpoint = "http://localhost:5001/api/auth/register"
@@ -74,12 +78,15 @@ const LoginPage = () => {
 
         // Save token in localStorage
         login(response.data.token, response.data.user)
-        toast.success('Successfully registered');
+        toast.success('Successfully registered', {
+          toastId: 'register-success'
+        });
         navigate('/home')
       }
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Error:', error.response ? error.response.data : error.message);
-      // Handle error (e.g., display error message)
+      toast.error(error.response?.data?.msg || 'Error:', error.response ? error.response.data : error.message, {
+        toastId: 'auth-error'
+      });
     }
   };
 

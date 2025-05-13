@@ -21,7 +21,9 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
         const res = await api.get('team/team-members');
         setTeamMembers(res.data.teamMembers);
       } catch (error) {
-        toast.error(error.response?.data?.msg || "Failed to fetch team members");
+        toast.error(error.response?.data?.msg || "Failed to fetch team members", {
+          toastId: 'team-members-fetch-error'
+        });
       }
     };
     fetchTeamMembers();
@@ -49,7 +51,9 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
         const response = await api.get(`tasks/${selectedTask.id}/assets/`);
         setAssets(response.data);
       } catch (error) {
-        toast.error(error.response?.data?.msg || "Failed to fetch assets");
+        toast.error(error.response?.data?.msg || "Failed to fetch assets", {
+          toastId: 'assets-fetch-error'
+        });
       }
     };
 
@@ -100,11 +104,15 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
     const end = new Date(endTimeCombined);
     const diffMinutes = (end - start) / (1000 * 60);
     if (diffMinutes < 15) {
-      toast.error("Task duration must be at least 15 minutes.");
+      toast.error("Task duration must be at least 15 minutes.", {
+        toastId: 'task-min-duration-error'
+      });
       return;
     }
     if (diffMinutes > 480) {
-      toast.error("Task duration cannot exceed 8 hours.");
+      toast.error("Task duration cannot exceed 8 hours.", {
+        toastId: 'task-max-duration-error'
+      });
       return;
     }
 
@@ -120,9 +128,13 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
       setSelectedTask(response.data)
       fetchTasks();
       setIsEditing(false)
-      toast.success('Task updated successfully')
+      toast.success('Task updated successfully', {
+        toastId: 'task-update-success'
+      })
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Could not update task')
+      toast.error(error.response?.data?.msg || 'Could not update task', {
+        toastId: 'task-update-error'
+      })
     }
   }
 
@@ -138,7 +150,9 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
       link.download = filename; 
       link.click();
     } catch (error) {
-      toast.error('Could not download Asset')
+      toast.error('Could not download Asset', {
+        toastId: 'asset-download-error'
+      })
     }
   };
 
@@ -156,12 +170,16 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      toast.success("File uploaded successfully");
+      toast.success("File uploaded successfully", {
+        toastId: 'asset-upload-success'
+      });
       // Fetch the updated list of assets
       const response = await api.get(`tasks/${selectedTask.id}/assets/`);
       setAssets(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to upload file");
+      toast.error(error.response?.data?.msg || "Failed to upload file", {
+        toastId: 'asset-upload-error'
+      });
     }
   };
 
@@ -169,12 +187,16 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
   const handleAssetDelete = async (assetId) => {
     try {
       await api.delete(`tasks/${selectedTask.id}/assets/${assetId}`);
-      toast.success("Asset deleted successfully");
+      toast.success("Asset deleted successfully", {
+        toastId: 'asset-delete-success'
+      });
       // Fetch the updated list of assets
       const response = await api.get(`tasks/${selectedTask.id}/assets/`);
       setAssets(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to delete asset");
+      toast.error(error.response?.data?.msg || "Failed to delete asset", {
+        toastId: 'asset-delete-error'
+      });
     }
   };
 
@@ -193,7 +215,9 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
       });
       fetchTasks(); 
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to toggle task status");
+      toast.error(error.response?.data?.msg || "Failed to toggle task status", {
+        toastId: 'task-status-toggle-error'
+      });
     }
   }
 
@@ -203,9 +227,13 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
       setSelectedTask(null);
       fetchTasks();
       handleClose();
-      toast.success('Task deleted successfully');
+      toast.success('Task deleted successfully', {
+        toastId: 'task-delete-success'
+      });
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to delete task");
+      toast.error(error.response?.data?.msg || "Failed to delete task", {
+        toastId: 'task-delete-error'
+      });
     }
   }
 

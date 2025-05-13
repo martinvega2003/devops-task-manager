@@ -25,7 +25,9 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
       const response = await api.get(`tasks/${taskId}/`);
       setTask(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to fetch task");
+      toast.error(error.response?.data?.msg || "Failed to fetch task", {
+        toastId: 'task-fetch-error'
+      });
     }
   };
 
@@ -47,7 +49,9 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
       const response = await api.get(`tasks/${task.id}/assets/`);
       setAssets(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to fetch assets");
+      toast.error(error.response?.data?.msg || "Failed to fetch assets", {
+        toastId: 'asset-fetch-error'
+      });
     }
   };
 
@@ -62,9 +66,13 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
       link.href = fullUrl;
       link.download = filename; 
       link.click();
-      toast.success('Asset downloaded successfully')
+      toast.success('Asset downloaded successfully', {
+        toastId: 'asset-download-success'
+      })
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Failed to download asset')
+      toast.error(error.response?.data?.msg || 'Failed to download asset', {
+        toastId: 'asset-download-error'
+      })
     }
   };
 
@@ -82,11 +90,15 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      toast.success("File uploaded successfully");
+      toast.success("File uploaded successfully", {
+        toastId: 'upload-asset-success'
+      });
       // Fetch the updated list of assets
       fetchAssets();
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to upload file");
+      toast.error(error.response?.data?.msg || "Failed to upload file", {
+        toastId: 'upload-asset-error'
+      });
     }
   };
 
@@ -94,12 +106,16 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
   const handleAssetDelete = async (assetId) => {
     try {
       await api.delete(`tasks/${task.id}/assets/${assetId}`);
-      toast.success("Asset deleted successfully");
+      toast.success("Asset deleted successfully", {
+        toastId: 'asset-delete-success'
+      });
       // Fetch the updated list of assets
       const response = await api.get(`tasks/${task.id}/assets/`);
       setAssets(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to delete asset");
+      toast.error(error.response?.data?.msg || "Failed to delete asset", {
+        toastId: 'asset-delete-error'
+      });
     }
   };
 
@@ -118,7 +134,9 @@ const TaskPage = ({ taskId, fetchTasks, setSelectedTask }) => {
       });
       fetchTasks(); 
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to toggle task status");
+      toast.error(error.response?.data?.msg || "Failed to toggle task status", {
+        toastId: 'task-status-toggle-error'
+      });
     }
   }
 

@@ -24,7 +24,9 @@ const MyProjectsSection = () => {
       const response = await api.get(`/projects?sortBy=${sortBy}&order=${order}`);
       if (response.data.length > 0) setProjects(response.data);
     } catch (error) {
-      toast.error('Failed to fetch projects:', error.response?.data?.msg);
+      toast.error('Failed to fetch projects:', error.response?.data?.msg, {
+        toastId: 'project-fetch-error'
+      });
     }
   };
 
@@ -59,9 +61,13 @@ const MyProjectsSection = () => {
       await api.post('/projects', projectData)
       setProjectData({ name: '', description: '', deadline: '' });
       setIsModalOpen(false)
-      toast.success('Project added successfully')
+      toast.success('Project added successfully', {
+        toastId: 'project-submit-success'
+      })
     } catch (error) {
-      toast.error(error.response?.data?.msg  || 'Failed to add project')
+      toast.error(error.response?.data?.msg  || 'Failed to add project', {
+        toastId: 'project-submit-error'
+      })
     }
     fetchProjects();
   };

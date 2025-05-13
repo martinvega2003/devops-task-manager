@@ -22,7 +22,9 @@ const ProjectCard = ({ project, fetchProjects }) => {
       await api.patch(`/projects/${project.id}/status`, { status: newStatus });
       fetchProjects(); // Refresh the project list after status change
     } catch (error) {
-      toast.error('Failed to update project status:', error);
+      toast.error('Failed to update project status:', error, {
+        toastId: 'project-status-toggle-error'
+      });
     }
   };
 
@@ -32,9 +34,13 @@ const ProjectCard = ({ project, fetchProjects }) => {
     try {
       await api.delete(`/projects/${project.id}`);
       fetchProjects();
-      toast.success('Project deleted successfully')
+      toast.success('Project deleted successfully', {
+        toastId: 'project-delete-success'
+      })
     } catch (error) {
-      toast.error('Failed to delete project:', error);
+      toast.error('Failed to delete project:', error, {
+        toastId: 'project-delete-error'
+      });
     }
   }
 

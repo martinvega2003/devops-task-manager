@@ -27,7 +27,9 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
         const res = await api.get('team/team-members');
         setTeamMembers(res.data.teamMembers);
       } catch (error) {
-        toast.error(error.response?.data?.msg || "Failed to fetch team members");
+        toast.error(error.response?.data?.msg || "Failed to fetch team members", {
+          toastId: 'team-members-fetch-error'
+        });
       }
     };
     fetchTeamMembers();
@@ -44,7 +46,9 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!modalCell) {
-      toast.error("No Date Selected");
+      toast.error("No Date Selected", {
+        toastId: 'no-date-error'
+      });
       return;
     }
     // Combine the selected date with the times
@@ -57,11 +61,15 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
     const end = new Date(endTimeCombined);
     const diffMinutes = (end - start) / (1000 * 60);
     if (diffMinutes < 15) {
-      toast.error("Task duration must be at least 15 minutes.");
+      toast.error("Task duration must be at least 15 minutes.", {
+        toastId: 'task-min-duration-error'
+      });
       return;
     }
     if (diffMinutes > 480) {
-      toast.error("Task duration cannot exceed 8 hours.");
+      toast.error("Task duration cannot exceed 8 hours.", {
+        toastId: 'task-max-duration-error'
+      });
       return;
     }
 
@@ -86,9 +94,13 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
       });
       fetchTasks()
       setIsTaskFormOpen(false);
-      toast.success('Task added successfully')
+      toast.success('Task added successfully', {
+        toastId: 'task-submit-success'
+      })
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to Add Task");
+      toast.error(error.response?.data?.msg || "Failed to Add Task", {
+        toastId: 'task-submit-error'
+      });
     }
   };
 

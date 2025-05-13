@@ -28,7 +28,9 @@ const MyTeamSection = () => {
       const response = await api.get("/team/team-members");
       setTeamMembers(response.data.teamMembers);
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to fetch team members");
+      toast.error(error.response?.data?.msg || "Failed to fetch team members", {
+        toastId: 'team-members-fetch-error'
+      });
     }
   };
 
@@ -63,9 +65,13 @@ const MyTeamSection = () => {
       await api.post('/team/invite', memberData)
       setMemberData({ name: '', email: '', password: '', role: '' });
       setIsModalOpen(false)
-      toast.success('Member added successfully')
+      toast.success('Member added successfully', {
+        toastId: 'team-member-submit-success'
+      })
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Failed to add team member')
+      toast.error(error.response?.data?.msg || 'Failed to add team member', {
+        toastId: 'team-member-submit-error'
+      })
     }
     fetchTeamMembers();
   };
@@ -76,7 +82,9 @@ const MyTeamSection = () => {
       const member = response.data
       setSelectedMember(member);
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Could not get member's information")
+      toast.error(error.response?.data?.msg || "Could not get member's information", {
+        toastId: 'single-team-member-fetch-error'
+      })
     }
   };
 
@@ -85,9 +93,13 @@ const MyTeamSection = () => {
       await api.put(`/team/deactivate/${id}`);
       handleMemberClick(id)
       fetchTeamMembers();
-      toast.success("Member status updated");
+      toast.success("Member status updated", {
+        toastId: 'team-member-status-success'
+      });
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to update status");
+      toast.error(error.response?.data?.msg || "Failed to update status", {
+        toastId: 'team-member-status-error'
+      });
     }
     fetchTeamMembers();
   };
@@ -97,9 +109,13 @@ const MyTeamSection = () => {
       await api.delete(`/team/delete/${id}`);
       setSelectedMember(null)
       fetchTeamMembers();
-      toast.success("Member deleted");
+      toast.success("Member deleted", {
+        toastId: 'team-member-delete-success'
+      });
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to delete member");
+      toast.error(error.response?.data?.msg || "Failed to delete member", {
+        toastId: 'team-member-delete-error'
+      });
     }
     fetchTeamMembers();
   };

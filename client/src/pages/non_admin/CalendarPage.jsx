@@ -61,7 +61,9 @@ const CalendarPage = () => {
       const response = await api.get('/projects/user/assigned');
       setProjects(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Failed to fetch projects');
+      toast.error(error.response?.data?.msg || 'Failed to fetch projects', {
+        toastId: 'project-fetch-error'
+      });
     }
   };
 
@@ -81,7 +83,9 @@ const CalendarPage = () => {
       setTasks(allTasks);
       setFilteredTasks(allTasks);
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Failed to fetch tasks');
+      toast.error(error.response?.data?.msg || 'Failed to fetch tasks', {
+        toastId: 'tasks-fetch-error'
+      });
     }
   };
 
@@ -182,7 +186,9 @@ const CalendarPage = () => {
       setTasks(allTasks);
       setFilteredTasks(filteredTasks);
     } catch (error) {
-      toast.error(error.response?.data?.msg || 'Failed to fetch filtered tasks');
+      toast.error(error.response?.data?.msg || 'Failed to fetch filtered tasks', {
+        toastId: 'filtered-tasks-fetch-error'
+      });
     }
   };
 
