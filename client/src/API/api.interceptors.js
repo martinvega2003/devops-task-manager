@@ -1,9 +1,12 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
+//Import server url from .env file
+const url = import.meta.env.VITE_API_URL;
+
 // Create an Axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:5001/api', // Server base URL
+  baseURL: url, // Server base URL
 });
 
 // Request interceptor to attach token from localStorage
@@ -23,7 +26,9 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && ([400, 401, 403, 404].includes(error.response.status))) {
-      toast.error(error.response.data.msg || "An error Occurred");
+      toast.error(error.response?.data?.msg || "An error Occurred", {
+        toastId: 'server-connection-error'
+      });
     }
     return Promise.reject(error);
   }
