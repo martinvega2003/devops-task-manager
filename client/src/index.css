@@ -1,0 +1,197 @@
+/* ===================== */
+/* Import and Base Setup */
+/* ===================== */
+
+/* Importing Roboto font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap');
+
+/* Importing Tailwind CSS */
+@import "tailwindcss";
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Body Styles */
+body {
+  padding-top: 4rem;
+}
+
+/* ===================== */
+/* Design Tokens */
+/* ===================== */
+
+/* Light Mode Design Tokens */
+@theme {
+  /* Colors */
+  --color-primary: #1976d2;
+  --color-secondary: #ff9800;
+  --color-error: #f44336;
+  --color-warning: #ffb74d;
+  --color-info: #2196f3;
+  --color-success: #4caf50;
+  --color-background: #f4f6f8;
+  --color-surface-white: #ffffff;
+  --color-surface-black: #1e1e1e;
+}
+
+/* Dark Mode Design Tokens */
+@theme {
+  /* Dark Colors */
+  --color-primary-dark: #1565c0;
+  --color-secondary-dark: #fb8c00;
+  --color-error-dark: #d32f2f;
+  --color-warning-dark: #ff9800;
+  --color-info-dark: #1976d2;
+  --color-success-dark: #388e3c;
+  --color-background-dark: #121212;
+}
+
+/* Typography Tokens (Base values) */
+@theme {
+  --font-family-base: 'Roboto', sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+  --line-height-base: 1.5;
+  --heading-font-weight: 700;
+  --heading-line-height: 1.2;
+  /* Default base sizes (will be overridden responsively) */
+  --heading-font-size-xs: 1.75rem;
+  --heading-font-size-sm: 2rem;
+  --heading-font-size-md: 2.5rem;
+  --heading-font-size-lg: 3rem;
+  --heading-font-size-xl: 3.5rem;
+
+  --subheading-font-size-xs: 1.5rem;
+  --subheading-font-size-sm: 1.75rem;
+  --subheading-font-size-md: 2rem;
+  --subheading-font-size-lg: 2.25rem;
+  --subheading-font-size-xl: 2.5rem;
+
+  --body-font-size-xs: 0.875rem;
+  --body-font-size-sm: 1rem;
+  --body-font-size-md: 1rem;
+  --body-font-size-lg: 1.125rem;
+  --body-font-size-xl: 1.125rem;
+
+  --caption-font-size-xs: 0.625rem;
+  --caption-font-size-sm: 0.75rem;
+  --caption-font-size-md: 0.75rem;
+  --caption-font-size-lg: 0.875rem;
+  --caption-font-size-xl: 0.875rem;
+}
+
+/* ===================== */
+/* Custom Typography Utility Classes */
+/* ===================== */
+
+/* Heading Utility Class */
+.text-heading {
+  font-family: var(--font-family-base);
+  font-weight: var(--heading-font-weight);
+  line-height: var(--heading-line-height);
+  font-size: var(--heading-font-size-xs);
+}
+
+/* Responsive adjustments for .text-heading */
+@media (min-width: 640px) {
+  .text-heading {
+    font-size: var(--heading-font-size-sm);
+  }
+}
+@media (min-width: 768px) {
+  .text-heading {
+    font-size: var(--heading-font-size-md);
+  }
+}
+@media (min-width: 1024px) {
+  .text-heading {
+    font-size: var(--heading-font-size-lg);
+  }
+}
+@media (min-width: 1280px) {
+  .text-heading {
+    font-size: var(--heading-font-size-xl);
+  }
+}
+
+/* Subheading Utility Class */
+.text-subheading {
+  font-family: var(--font-family-base);
+  font-weight: var(--heading-font-weight);
+  line-height: var(--heading-line-height);
+  font-size: var(--subheading-font-size-xs);
+}
+@media (min-width: 640px) {
+  .text-subheading {
+    font-size: var(--subheading-font-size-sm);
+  }
+}
+@media (min-width: 768px) {
+  .text-subheading {
+    font-size: var(--subheading-font-size-md);
+  }
+}
+@media (min-width: 1024px) {
+  .text-subheading {
+    font-size: var(--subheading-font-size-lg);
+  }
+}
+@media (min-width: 1280px) {
+  .text-subheading {
+    font-size: var(--subheading-font-size-xl);
+  }
+}
+
+/* Body Text Utility Class */
+.text-body {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-base);
+  font-size: var(--body-font-size-xs);
+}
+@media (min-width: 640px) {
+  .text-body {
+    font-size: var(--body-font-size-sm);
+  }
+}
+@media (min-width: 768px) {
+  .text-body {
+    font-size: var(--body-font-size-md);
+  }
+}
+@media (min-width: 1024px) {
+  .text-body {
+    font-size: var(--body-font-size-lg);
+  }
+}
+@media (min-width: 1280px) {
+  .text-body {
+    font-size: var(--body-font-size-xl);
+  }
+}
+
+/* Caption Text Utility Class */
+.text-caption {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.2;
+  font-size: var(--caption-font-size-xs);
+}
+@media (min-width: 640px) {
+  .text-caption {
+    font-size: var(--caption-font-size-sm);
+  }
+}
+@media (min-width: 768px) {
+  .text-caption {
+    font-size: var(--caption-font-size-md);
+  }
+}
+@media (min-width: 1024px) {
+  .text-caption {
+    font-size: var(--caption-font-size-lg);
+  }
+}
+@media (min-width: 1280px) {
+  .text-caption {
+    font-size: var(--caption-font-size-xl);
+  }
+}
