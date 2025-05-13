@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import api from '../API/api.interceptors';
 import mainImage from "../images/login-page-image.png";
 import { AuthContext } from '../context/authContext';
 import Button from '../components/Button';
@@ -56,8 +56,7 @@ const LoginPage = () => {
 
     try {
       if (isLogin) {
-        const endpoint = "http://localhost:5001/api/auth/login"
-        const response = await axios.post(endpoint, {
+        const response = await api.post("auth/login", {
           email: formData.email,
           password: formData.password,
         });
@@ -69,8 +68,7 @@ const LoginPage = () => {
         });
         navigate('/home/my-team')
       } else {
-        const endpoint = "http://localhost:5001/api/auth/register"
-        const response = await axios.post(endpoint, {
+        const response = await api.post("auth/register", {
           name: formData.username,
           email: formData.email,
           password: formData.password,
