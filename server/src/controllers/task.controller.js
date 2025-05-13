@@ -358,11 +358,23 @@ export const uploadAsset = async (req, res) => {
         return res.status(400).json({ msg: "No file uploaded." });
       }
 
+      // Check if the file is already associated with the task
+      const existingAsset = await pool.query(
+        `SELECT * FROM task_assets WHERE task_id = $1 AND filename = $2`,
+        [taskId, file.originalname]
+      );
+
+      if (existingAsset.rows.length > 0) {
+        // Delete the uploaded file to avoid leaving it in the uploads folder
+        deleteFile(file.filename);
+        return res.status(400).json({ msg: "This file is already uploaded for this task." });
+      }
+
       // Store file details in the database
       const result = await pool.query(
         `INSERT INTO task_assets (task_id, uploaded_by, filename, file_url)
          VALUES ($1, $2, $3, $4) RETURNING *`,
-        [taskId, userId, file.filename, `/uploads/${file.filename}`]
+        [taskId, userId, file.originalname, `/uploads/${file.filename}`]
       );
 
       res.status(201).json({

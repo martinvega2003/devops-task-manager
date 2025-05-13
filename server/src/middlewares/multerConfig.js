@@ -23,14 +23,10 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const sanitizedFilename = file.originalname.replace(/\s+/g, "_");
-    const uploadPath = path.join(uploadDir, sanitizedFilename);
-
-    // Check if a file with the same name exists
-    if (fs.existsSync(uploadPath)) {
-      return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE", "A file with this name already exists. Please rename your file and try again."));
-    }
-
-    cb(null, sanitizedFilename);
+    const taskId = req.params.taskId; // Get the task ID from the request params
+    const uniqueSuffix = `${taskId}_${Date.now()}`; // Append task ID and timestamp
+    const finalFilename = `${uniqueSuffix}_${sanitizedFilename}`;
+    cb(null, finalFilename);
   },
 });
 
