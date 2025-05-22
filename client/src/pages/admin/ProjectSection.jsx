@@ -298,6 +298,7 @@ const ProjectSection = () => {
                       height: `${height}px`, 
                       position: 'relative',
                     }} 
+                    timeBlockView={true}
                   />
                 </div>
               );

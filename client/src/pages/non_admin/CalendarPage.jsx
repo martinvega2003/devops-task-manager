@@ -305,6 +305,7 @@ const CalendarPage = () => {
                       height: `${height}px`, 
                       position: 'absolute',
                     }} 
+                    timeBlockView={true}
                   />
                 </div>
               );
