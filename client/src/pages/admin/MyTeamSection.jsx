@@ -208,6 +208,7 @@ const MyTeamSection = () => {
             <Button
               width="fit"
               onClick={handleSubmit}
+              isTransparent={false}
             >
               Add Member
             </Button>
@@ -318,19 +319,17 @@ const MyTeamSection = () => {
               }
             </div>
             <div className="w-full flex justify-between gap-4 my-6">
-              <Button onClick={() => toggleMemberStatus(selectedMember.id)}>
+              <Button onClick={() => toggleMemberStatus(selectedMember.id)} isTransparent={false}>
                 {selectedMember.active ? "Deactivate" : "Activate"}
               </Button>
-              <Button variant="destructive" onClick={() => deleteMember(selectedMember.id)}>
+              <Button isDeleteButton={true} onClick={() => deleteMember(selectedMember.id)} isTransparent={false}>
                 Delete
               </Button>
             </div>
-            <button 
+            <Button
               onClick={() => setSelectedMember(null)}  
-              className="absolute top-0 left-0 py-1 px-6 bg-red-400 dark:bg-red-800 hover:bg-transparent text-white hover:text-red-400 dark:hover:text-red-800 flex items-center gap-1 border-2 border-red-400 dark:border-red-800 rounded-lg cursor-pointer transition duration-300"
-            >
-              <FaTimes /> Close
-            </button>
+              isCloseButton={true}
+            />
           </div>
         }
       </div>

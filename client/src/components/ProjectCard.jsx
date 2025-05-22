@@ -89,6 +89,7 @@ const ProjectCard = ({ project, fetchProjects }) => {
         <Button
           onClick={toggleProjectStatus}
           className={project.status === 'Active' ? '' : 'relative z-20'}
+          isTransparent={false}
         >
           {project.status === 'Active' ? 'Deactivate' : 'Activate'}
         </Button>
@@ -97,6 +98,7 @@ const ProjectCard = ({ project, fetchProjects }) => {
           onClick={deleteProject}
           isDeleteButton={true}
           className={project.status === 'Active' ? '' : 'relative z-20'}
+          isTransparent={false}
         >
           Delete
         </Button>

@@ -263,6 +263,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                 onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
                 width="fit"
                 className={`${selectedTask.status === "Completed" ? 'hidden' : ''}`}
+                isTransparent={false}
               >
                 <div className={`${isEditing ? '' : 'flex items-center gap-2'}`}>
                   {isEditing ? 'Save' : 'Edit '}
@@ -274,6 +275,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                 onClick={handleDelete}
                 width="fit"
                 isDeleteButton={true}
+                isTransparent={false}
               >
                 <div className='flex items-center gap-2'>
                   Delete <FaTrash />
@@ -508,6 +510,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                           <Button
                             width="fit"
                             onClick={() => handleAssetDownload(asset.file_url, asset.filename)}
+                            isTransparent={false}
                           >
                             <FaDownload /> 
                           </Button>
@@ -516,6 +519,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                               width="fit"
                               isDeleteButton={true}
                               onClick={() => handleAssetDelete(asset.id)}
+                              isTransparent={false}
                             >
                               <FaTrash />
                             </Button>
