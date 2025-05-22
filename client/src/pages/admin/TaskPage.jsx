@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import api from '../../API/api.interceptors';
 import Button from '../../components/Button';
-import { FaCheck, FaPen, FaTrash, FaDownload } from 'react-icons/fa';
+import { FaCheck, FaPen, FaTrash, FaDownload, FaArrowLeft } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
@@ -250,6 +250,15 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
             <Button onClick={handleClose} width="fit" isCloseButton={true} />
             
             <div className='flex gap-2'>
+              {isEditing && (
+                <Button
+                  onClick={() => setIsEditing(false)}
+                  width='fit'
+                  className='flex items-center gap-2'
+                >
+                  <FaArrowLeft /> Back
+                </Button>
+              )}
               <Button
                 onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
                 width="fit"
@@ -267,7 +276,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                 isDeleteButton={true}
               >
                 <div className='flex items-center gap-2'>
-                  Delete Task <FaTrash />
+                  Delete <FaTrash />
                 </div>
               </Button>
             </div>
