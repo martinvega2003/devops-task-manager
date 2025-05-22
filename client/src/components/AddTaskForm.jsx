@@ -76,8 +76,8 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
     // Prepare data to send
     const payload = {
       ...taskData,
-      startTime: startTimeCombined,
-      endTime: endTimeCombined,
+      startTime: start.toISOString(),
+      endTime: end.toISOString(),
     };
 
     try {

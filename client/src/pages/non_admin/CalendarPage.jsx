@@ -296,7 +296,7 @@ const CalendarPage = () => {
                     task={task} 
                     onClick={selectedProject !== 'all' && task.project_id !== selectedProject ? null : () => setSelectedTask(task)}
                     className={
-                      `truncate relative z-20 -translate-y-6 hover:-translate-y-7 transition-transform
+                      `truncate relative z-20 translate-y-6 hover:translate-y-5 transition-transform
                       ${selectedProject !== 'all' && task.project_id !== selectedProject ? 
                         task.status === "Completed" ? 'hidden' : 'opacity-50 truncate' : 'truncate'}`
                     } 

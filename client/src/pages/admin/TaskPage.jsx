@@ -58,19 +58,18 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
     };
 
     if (selectedTask) {
-      // Adjust for DST by subtracting one hour
-      const adjustForDST = (isoString) => {
+      // Format time
+      const formatTime = (isoString) => {
         const date = new Date(isoString);
-        date.setHours(date.getHours() - 1); // Subtract one hour
-        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
       };
 
       const startTime = selectedTask.start_time
-        ? adjustForDST(selectedTask.start_time)
+        ? formatTime(selectedTask.start_time)
         : "00:00"; // Default to "00:00" if start_time is invalid
 
       const endTime = selectedTask.end_time
-        ? adjustForDST(selectedTask.end_time)
+        ? formatTime(selectedTask.end_time)
         : "00:00"; // Default to "00:00" if end_time is invalid
 
       setUpdatedTask({
@@ -119,8 +118,8 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
     // Prepare data to send
     const payload = {
       ...updatedTask,
-      startTime: startTimeCombined,
-      endTime: endTimeCombined,
+      startTime: start.toISOString(),
+      endTime: end.toISOString(),
     };
 
     try {
