@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import api from '../../API/api.interceptors';
 import Button from '../../components/Button';
-import { FaCheck, FaPen, FaTrash, FaDownload } from 'react-icons/fa';
+import { FaCheck, FaPen, FaTrash, FaDownload, FaArrowLeft } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
@@ -58,19 +58,18 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
     };
 
     if (selectedTask) {
-      // Adjust for DST by subtracting one hour
-      const adjustForDST = (isoString) => {
+      // Format time
+      const formatTime = (isoString) => {
         const date = new Date(isoString);
-        date.setHours(date.getHours() - 1); // Subtract one hour
-        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
       };
 
       const startTime = selectedTask.start_time
-        ? adjustForDST(selectedTask.start_time)
+        ? formatTime(selectedTask.start_time)
         : "00:00"; // Default to "00:00" if start_time is invalid
 
       const endTime = selectedTask.end_time
-        ? adjustForDST(selectedTask.end_time)
+        ? formatTime(selectedTask.end_time)
         : "00:00"; // Default to "00:00" if end_time is invalid
 
       setUpdatedTask({
@@ -119,8 +118,8 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
     // Prepare data to send
     const payload = {
       ...updatedTask,
-      startTime: startTimeCombined,
-      endTime: endTimeCombined,
+      startTime: start.toISOString(),
+      endTime: end.toISOString(),
     };
 
     try {
@@ -251,10 +250,20 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
             <Button onClick={handleClose} width="fit" isCloseButton={true} />
             
             <div className='flex gap-2'>
+              {isEditing && (
+                <Button
+                  onClick={() => setIsEditing(false)}
+                  width='fit'
+                  className='flex items-center gap-2'
+                >
+                  <FaArrowLeft /> Back
+                </Button>
+              )}
               <Button
                 onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
                 width="fit"
                 className={`${selectedTask.status === "Completed" ? 'hidden' : ''}`}
+                isTransparent={false}
               >
                 <div className={`${isEditing ? '' : 'flex items-center gap-2'}`}>
                   {isEditing ? 'Save' : 'Edit '}
@@ -266,9 +275,10 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                 onClick={handleDelete}
                 width="fit"
                 isDeleteButton={true}
+                isTransparent={false}
               >
                 <div className='flex items-center gap-2'>
-                  Delete Task <FaTrash />
+                  Delete <FaTrash />
                 </div>
               </Button>
             </div>
@@ -276,7 +286,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
           {/* Task Title and Description */}
           <div className="w-full flex justify-start items-start gap-2 mt-4">
-            <div className="flex flex-col justify-start items-start gap-2 p-2">
+            <div className="w-full flex flex-col justify-start items-start gap-2 p-2">
 
               {/* Task Status */}
               <button onClick={toggleTaskStatus} className={`${selectedTask.status !== "Completed" ? 'border border-gray-700 dark:border-gray-300 text-surface-black dark:text-surface-white' : 'border-success bg-success dark:bg-success-dark text-surface-white flex items-center gap-2'} text-caption px-4 py-1 rounded-md cursor-pointer hover:scale-105 transition duration-200`}>
@@ -500,6 +510,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                           <Button
                             width="fit"
                             onClick={() => handleAssetDownload(asset.file_url, asset.filename)}
+                            isTransparent={false}
                           >
                             <FaDownload /> 
                           </Button>
@@ -508,6 +519,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                               width="fit"
                               isDeleteButton={true}
                               onClick={() => handleAssetDelete(asset.id)}
+                              isTransparent={false}
                             >
                               <FaTrash />
                             </Button>

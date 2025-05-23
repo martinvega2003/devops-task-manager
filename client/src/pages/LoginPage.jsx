@@ -185,7 +185,7 @@ const LoginPage = () => {
                 />
               </div>
             )}
-            <Button link="/home" onClick={handleSubmit}>
+            <Button link="/home" onClick={handleSubmit} isTransparent={false}>
               {isLogin ? 'Login' : 'Register'}
             </Button>
             <p className="text-caption text-surface-black dark:text-surface-white mt-4 text-center">

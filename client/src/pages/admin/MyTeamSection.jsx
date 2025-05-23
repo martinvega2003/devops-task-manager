@@ -4,11 +4,12 @@ import Button from "../../components/Button";
 import MemberCard from "../../components/MemberCard";
 import profilePic from "../../images/profile-pic.png"
 import "react-toastify/dist/ReactToastify.css";
-import { FaPlus, FaCheck, FaTimes } from "react-icons/fa"
+import { FaPlus, FaCheck } from "react-icons/fa"
 import TaskTitleCard from "../../components/TaskTitleCard";
 import { toast } from "react-toastify";
 
 const MyTeamSection = () => {
+  const [isClosing, setIsClosing] = useState(false); // Closing state
   const [teamMembers, setTeamMembers] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,6 +19,15 @@ const MyTeamSection = () => {
     password: '',
     role: '',
   });
+
+  // Closing function
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedMember(null);
+      setIsClosing(false);
+    }, 600);
+  };
 
   useEffect(() => {
     fetchTeamMembers();
@@ -121,7 +131,7 @@ const MyTeamSection = () => {
   };
 
   const Modal = (
-    <div className="fixed inset-0 z-10 flex items-center justify-center bg-transparent">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-transparent">
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
       <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
         <h3 className="text-subheading dark:text-surface-white font-bold mb-4">Add New Team Member</h3>
@@ -208,6 +218,7 @@ const MyTeamSection = () => {
             <Button
               width="fit"
               onClick={handleSubmit}
+              isTransparent={false}
             >
               Add Member
             </Button>
@@ -248,7 +259,7 @@ const MyTeamSection = () => {
               const members = groupedMembers[key] || [];
               // Only render section if there are team members for that role
               return members.length > 0 ? (
-                <div key={key} className={`w-full py-6 px-8 my-2 overflow-x-auto border dark:border-surface-white rounded-tl-2xl rounded-br-4xl shadow-4xl ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
+                <div key={key} className={`w-full py-3 sm:py-6 px-2 sm:px-8 my-2 overflow-x-auto border dark:border-surface-white rounded-tl-2xl rounded-br-4xl shadow-4xl ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
                   <h3 className="text-subheading dark:text-surface-white font-bold mb-2">{label}</h3>
                   <div className="flex flex-nowrap overflow-x-auto gap-8 p-2 pl-0">
                     {members.map((member) => (
@@ -277,10 +288,15 @@ const MyTeamSection = () => {
         </>
       )}
 
-      <div className={`fixed top-0 ${selectedMember ? 'right-0' : '-right-full'} w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 pt-20 overflow-y-scroll transition-all duration-600`}>
-        {selectedMember &&
+      <div className={`fixed z-40 top-0 ${selectedMember && !isClosing ? 'right-0' : '-right-full'} w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 pt-20 overflow-y-scroll transition-all duration-600`}>
+        {(selectedMember) &&
           <div className="relative flex flex-col justify-start items-start gap-4">
-            <div className="w-full flex justify-start items-start gap-2 mt-20 border-2 dark:border-surface-white">
+            <Button
+              onClick={handleClose}  
+              isCloseButton={true}
+              width="fit"
+            />
+            <div className="w-full flex justify-start items-start gap-2 border-2 dark:border-surface-white">
               <img src={profilePic} alt="" className="w-1/3 h-full" />
               <div className="flex flex-col justify-start items-start gap-2 p-2 whitespace-nowrap overflow-x-auto">
                 <h3 className="text-subheading dark:text-surface-white">{selectedMember.username}</h3>
@@ -318,19 +334,13 @@ const MyTeamSection = () => {
               }
             </div>
             <div className="w-full flex justify-between gap-4 my-6">
-              <Button onClick={() => toggleMemberStatus(selectedMember.id)}>
+              <Button onClick={() => toggleMemberStatus(selectedMember.id)} isTransparent={false}>
                 {selectedMember.active ? "Deactivate" : "Activate"}
               </Button>
-              <Button variant="destructive" onClick={() => deleteMember(selectedMember.id)}>
+              <Button isDeleteButton={true} onClick={() => deleteMember(selectedMember.id)} isTransparent={false}>
                 Delete
               </Button>
             </div>
-            <button 
-              onClick={() => setSelectedMember(null)}  
-              className="absolute top-0 left-0 py-1 px-6 bg-red-400 dark:bg-red-800 hover:bg-transparent text-white hover:text-red-400 dark:hover:text-red-800 flex items-center gap-1 border-2 border-red-400 dark:border-red-800 rounded-lg cursor-pointer transition duration-300"
-            >
-              <FaTimes /> Close
-            </button>
           </div>
         }
       </div>

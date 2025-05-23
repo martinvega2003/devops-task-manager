@@ -247,10 +247,20 @@ const CalendarPage = () => {
   const rightDisabled = currentYear === lastTask.getFullYear() && currentMonth === lastTask.getMonth();
 
   const Modal = (
-    <div className="fixed inset-0 z-10 w-full flex items-center justify-center bg-transparent">
+    <div className="fixed inset-0 z-40 w-full pt-16 flex items-center justify-center bg-transparent">
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-2/3 h-[80vh] flex flex-col items-start overflow-hidden">
-        <h3 className="text-body dark:text-surface-white font-bold mb-4">
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full sm:w-2/3 h-full sm:h-[80vh] flex flex-col items-start overflow-hidden">
+        {/* Small Devices Design */}
+        <div className="sm:hidden w-full flex flex-col-reverse justify-start items-start">
+          <h3 className="text-body dark:text-surface-white font-bold mb-4">
+            Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
+          </h3>
+
+          <Button onClick={closeModal} width='fit' isCloseButton={true} className='pl-0 ml-0' />
+        </div>
+
+        {/* Bigger Devices Design */}
+        <h3 className="hidden sm:block text-body dark:text-surface-white font-bold mb-4">
           Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
         </h3>
         
@@ -296,7 +306,7 @@ const CalendarPage = () => {
                     task={task} 
                     onClick={selectedProject !== 'all' && task.project_id !== selectedProject ? null : () => setSelectedTask(task)}
                     className={
-                      `truncate relative z-20 -translate-y-6 hover:-translate-y-7 transition-transform
+                      `truncate relative z-20 translate-y-6 hover:translate-y-5 transition-transform
                       ${selectedProject !== 'all' && task.project_id !== selectedProject ? 
                         task.status === "Completed" ? 'hidden' : 'opacity-50 truncate' : 'truncate'}`
                     } 
@@ -305,6 +315,7 @@ const CalendarPage = () => {
                       height: `${height}px`, 
                       position: 'absolute',
                     }} 
+                    timeBlockView={true}
                   />
                 </div>
               );
@@ -312,7 +323,7 @@ const CalendarPage = () => {
           </div>
         </div>
 
-        <div className="w-full flex justify-between items-center mt-12">
+        <div className="hidden w-full sm:flex justify-between items-center sm:mt-12">
           <Button onClick={closeModal} width='fit' isCloseButton={true} />
         </div>
       </div>
@@ -394,7 +405,12 @@ const CalendarPage = () => {
           <div className="flex flex-col gap-2 p-2 mb-4 rounded-lg border dark:bg-gray-800">
             {/* Project Scope Message */}
             <div className="text-left text-caption italic font-semibold text-surface-black dark:text-surface-white">
-              You have Tasks from <strong>{monthNames[firstTask.getMonth()]} {firstTask.getFullYear()}</strong> to <strong>{monthNames[lastTask.getMonth()]} {lastTask.getFullYear()}</strong>
+              {(monthNames[firstTask.getMonth()] ===  monthNames[lastTask.getMonth()]) &&
+              (firstTask.getFullYear() === lastTask.getFullYear())? (
+                <p>You only have Tasks on <strong>{monthNames[firstTask.getMonth()]} {firstTask.getFullYear()}</strong></p>
+              ) : (
+                <p>You have Tasks from <strong>{monthNames[firstTask.getMonth()]} {firstTask.getFullYear()}</strong> to <strong>{monthNames[lastTask.getMonth()]} {lastTask.getFullYear()}</strong></p>
+              )}
             </div>
             <div className="flex justify-between items-center">
               <h3 className="text-body text-surface-black dark:text-surface-white">
@@ -434,7 +450,7 @@ const CalendarPage = () => {
               return (
                 <div
                   key={index}
-                  className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto rounded-lg m-[2px] ${
+                  className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-[10px] sm:text-body text-left overflow-hidden sm:overflow-auto rounded-lg m-[2px] ${
                     isToday ? 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' :
                     cell.isCurrentMonth
                       ? 'bg-blue-300 dark:bg-blue-950 text-surface-white cursor-pointer'
@@ -443,7 +459,22 @@ const CalendarPage = () => {
                   onClick={() => openModal(cell, cellTasks)}
                 >
                   {cell.date.getDate()}
-                  <div className="flex flex-col gap-1 mt-2">
+
+                  {/* Dots for tasks on mobile */}
+                  <div className="flex flex-col gap-0.5 mt-0.5 sm:hidden">
+                    {cellTasks.map(task => {
+                      const bgColor = task.status === 'Completed' ? 'bg-green-500' :
+                        task.priority === 'High' ? 'bg-red-500' :
+                        task.priority === 'Medium' ? 'bg-yellow-500' : 'bg-blue-500'
+
+                      return (
+                        <div className={"w-full h-1 rounded-sm " + bgColor} />
+                      )
+                    })}
+                  </div>
+                  
+                  {/* TaskTitleCards for tasks on larger screens */}
+                  <div className="hidden sm:flex flex-col gap-1 mt-2">
                     {cellTasks.map((task) => (
                       <TaskTitleCard
                         key={task.id}
