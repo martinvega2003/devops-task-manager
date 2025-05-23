@@ -286,7 +286,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
           {/* Task Title and Description */}
           <div className="w-full flex justify-start items-start gap-2 mt-4">
-            <div className="flex flex-col justify-start items-start gap-2 p-2">
+            <div className="w-full flex flex-col justify-start items-start gap-2 p-2">
 
               {/* Task Status */}
               <button onClick={toggleTaskStatus} className={`${selectedTask.status !== "Completed" ? 'border border-gray-700 dark:border-gray-300 text-surface-black dark:text-surface-white' : 'border-success bg-success dark:bg-success-dark text-surface-white flex items-center gap-2'} text-caption px-4 py-1 rounded-md cursor-pointer hover:scale-105 transition duration-200`}>
