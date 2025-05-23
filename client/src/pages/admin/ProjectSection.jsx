@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../API/api.interceptors';
-import { FaChevronLeft, FaChevronRight, FaPen } from 'react-icons/fa';
+import { BsListCheck } from 'react-icons/bs';
+import { FaChevronLeft, FaChevronRight, FaCircle, FaPen, FaRegCheckSquare } from 'react-icons/fa';
 import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
 import AddTaskForm from '../../components/AddTaskForm';
@@ -378,7 +379,7 @@ const ProjectSection = () => {
           </div> 
         )}
 
-        <div className="relative flex justify-between items-center mb-4">
+        <div className="relative flex flex-col-reverse justify-start items-start sm:flex-row sm:justify-between sm:items-center mb-4">
           <div 
             className="relative"
             onMouseEnter={() => setIsHoveringTasks(true)}
@@ -498,7 +499,7 @@ const ProjectSection = () => {
                   ) && { onClick: () => openModal(cell, cellTasks) 
                 })}
                 key={index}
-                className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto rounded-lg m-[2px] ${
+                className={`relative aspect-square border border-gray-300 dark:border-gray-600 p-1 text-[10px] sm:text-body text-left overflow-hidden sm:overflow-auto rounded-lg m-[2px] ${
                   isToday ? 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' :
                   cell.isCurrentMonth
                     ? (
@@ -509,7 +510,22 @@ const ProjectSection = () => {
                 }`}
               >
                 {cell.date.getDate()}
-                <div className="flex flex-col gap-1 mt-2">
+
+                {/* Dots for tasks on mobile */}
+                <div className="flex flex-col gap-0.5 mt-0.5 sm:hidden">
+                  {cellTasks.map(task => {
+                    const bgColor = task.status === 'Completed' ? 'bg-green-500' :
+                      task.priority === 'High' ? 'bg-red-500' :
+                      task.priority === 'Medium' ? 'bg-yellow-500' : 'bg-blue-500'
+
+                    return (
+                      <div className={"w-full h-1 rounded-sm " + bgColor} />
+                    )
+                  })}
+                </div>
+                
+                {/* TaskTitleCards for tasks on larger screens */}
+                <div className="hidden sm:flex flex-col gap-1 mt-2">
                   {cellTasks.map(task => (
                     <TaskTitleCard key={task.id} task={task} className='truncate' />
                   ))}
