@@ -73,7 +73,7 @@ const MyProjectsSection = () => {
   };
 
   const Modal = (
-    <div className="fixed inset-0 z-10 flex items-center justify-center bg-transparent">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-transparent">
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
       <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
         <h3 className="text-subheading dark:text-surface-white font-bold mb-4">Create New Project</h3>
@@ -157,7 +157,7 @@ const MyProjectsSection = () => {
         </div>
       ) : (
         <>
-          <div className="flex gap-3 justify-between items-center p-4">
+          <div className="flex gap-3 justify-between items-center p-2 sm:p-4">
             <h2 className="text-heading dark:text-surface-white font-bold">My Projects</h2>
             <Button 
               width='fit' 
@@ -165,7 +165,7 @@ const MyProjectsSection = () => {
               onClick={() => setIsModalOpen(true)}
             />
           </div>
-          <div className="flex gap-4 items-center p-4">
+          <div className="flex flex-col justify-start items-start sm:flex-row sm:gap-4 sm:items-center p-2 sm:p-4">
             <div>
               <label className="block text-gray-700 dark:text-gray-200 mb-1">Sort By</label>
               <select
@@ -189,7 +189,7 @@ const MyProjectsSection = () => {
               </select>
             </div>
           </div>
-          <div className="px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div className="px-2 sm:px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {
               projects && projects.map((project) => (
                 <ProjectCard key={project.id} project={project} fetchProjects={fetchProjects} />

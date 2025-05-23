@@ -30,8 +30,8 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`fixed z-40 top-16 left-0 h-full bg-white dark:bg-gray-800 dark:text-surface-white transition-all duration-300 ${
-        isOpen ? 'w-[200px]' : 'w-[60px]'
+      className={`fixed z-30 top-16 left-0 h-full bg-white dark:bg-gray-800 dark:text-surface-white transition-all duration-300 ${
+        isOpen ? 'w-full sm:w-[200px]' : 'w-[60px]'
       } ${!user || user.role !== 'Admin' ? 'hidden' : ''}`}
     >
       <div className="flex flex-col h-full">

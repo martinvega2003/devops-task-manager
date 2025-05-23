@@ -4,7 +4,7 @@ import Button from "../../components/Button";
 import MemberCard from "../../components/MemberCard";
 import profilePic from "../../images/profile-pic.png"
 import "react-toastify/dist/ReactToastify.css";
-import { FaPlus, FaCheck, FaTimes } from "react-icons/fa"
+import { FaPlus, FaCheck } from "react-icons/fa"
 import TaskTitleCard from "../../components/TaskTitleCard";
 import { toast } from "react-toastify";
 
@@ -26,7 +26,7 @@ const MyTeamSection = () => {
     setTimeout(() => {
       setSelectedMember(null);
       setIsClosing(false);
-    }, 600); // Match your transition duration (ms)
+    }, 600);
   };
 
   useEffect(() => {
@@ -131,7 +131,7 @@ const MyTeamSection = () => {
   };
 
   const Modal = (
-    <div className="fixed inset-0 z-10 flex items-center justify-center bg-transparent">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-transparent">
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
       <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
         <h3 className="text-subheading dark:text-surface-white font-bold mb-4">Add New Team Member</h3>
@@ -259,7 +259,7 @@ const MyTeamSection = () => {
               const members = groupedMembers[key] || [];
               // Only render section if there are team members for that role
               return members.length > 0 ? (
-                <div key={key} className={`w-full py-6 px-8 my-2 overflow-x-auto border dark:border-surface-white rounded-tl-2xl rounded-br-4xl shadow-4xl ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
+                <div key={key} className={`w-full py-3 sm:py-6 px-2 sm:px-8 my-2 overflow-x-auto border dark:border-surface-white rounded-tl-2xl rounded-br-4xl shadow-4xl ${label === "Developers" ? "bg-blue-200 dark:bg-blue-900" : label === "Designers" ? "bg-yellow-200 dark:bg-yellow-900" : label === "Administratives" ? "bg-green-200 dark:bg-green-900" : "bg-red-200 dark:bg-red-900"}`}>
                   <h3 className="text-subheading dark:text-surface-white font-bold mb-2">{label}</h3>
                   <div className="flex flex-nowrap overflow-x-auto gap-8 p-2 pl-0">
                     {members.map((member) => (
@@ -288,7 +288,7 @@ const MyTeamSection = () => {
         </>
       )}
 
-      <div className={`fixed top-0 ${selectedMember && !isClosing ? 'right-0' : '-right-full'} w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 pt-20 overflow-y-scroll transition-all duration-600`}>
+      <div className={`fixed z-40 top-0 ${selectedMember && !isClosing ? 'right-0' : '-right-full'} w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 pt-20 overflow-y-scroll transition-all duration-600`}>
         {(selectedMember) &&
           <div className="relative flex flex-col justify-start items-start gap-4">
             <Button

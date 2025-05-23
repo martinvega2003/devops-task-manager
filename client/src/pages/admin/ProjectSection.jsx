@@ -243,9 +243,9 @@ const ProjectSection = () => {
   const rightDisabled = currentYear === projectDeadline.getFullYear() && currentMonth === projectDeadline.getMonth();
 
   const Modal = (
-    <div className="fixed inset-0 z-10 w-full flex items-center justify-center bg-transparent">
+    <div className="fixed inset-0 z-40 w-full flex items-center justify-center bg-transparent">
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-2/3 h-[80vh] flex flex-col items-start overflow-hidden">
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full sm:w-2/3 h-[80vh] flex flex-col items-start overflow-hidden">
         {isTaskFormOpen && <AddTaskForm project_id={project_id} setIsTaskFormOpen={setIsTaskFormOpen} modalCell={modalCell} fetchTasks={fetchTasks} />}
         <h3 className="text-body dark:text-surface-white font-bold mb-4">
           Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
