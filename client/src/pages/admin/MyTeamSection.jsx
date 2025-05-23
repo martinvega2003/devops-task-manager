@@ -9,6 +9,7 @@ import TaskTitleCard from "../../components/TaskTitleCard";
 import { toast } from "react-toastify";
 
 const MyTeamSection = () => {
+  const [isClosing, setIsClosing] = useState(false); // Closing state
   const [teamMembers, setTeamMembers] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,6 +19,15 @@ const MyTeamSection = () => {
     password: '',
     role: '',
   });
+
+  // Closing function
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedMember(null);
+      setIsClosing(false);
+    }, 600); // Match your transition duration (ms)
+  };
 
   useEffect(() => {
     fetchTeamMembers();
@@ -278,10 +288,15 @@ const MyTeamSection = () => {
         </>
       )}
 
-      <div className={`fixed top-0 ${selectedMember ? 'right-0' : '-right-full'} w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 pt-20 overflow-y-scroll transition-all duration-600`}>
-        {selectedMember &&
+      <div className={`fixed top-0 ${selectedMember && !isClosing ? 'right-0' : '-right-full'} w-full sm:w-4/5 md:w-1/2 h-full bg-background dark:bg-background-dark px-4 sm:px-8 pb-6 sm:pb-12 pt-20 overflow-y-scroll transition-all duration-600`}>
+        {(selectedMember) &&
           <div className="relative flex flex-col justify-start items-start gap-4">
-            <div className="w-full flex justify-start items-start gap-2 mt-20 border-2 dark:border-surface-white">
+            <Button
+              onClick={handleClose}  
+              isCloseButton={true}
+              width="fit"
+            />
+            <div className="w-full flex justify-start items-start gap-2 border-2 dark:border-surface-white">
               <img src={profilePic} alt="" className="w-1/3 h-full" />
               <div className="flex flex-col justify-start items-start gap-2 p-2 whitespace-nowrap overflow-x-auto">
                 <h3 className="text-subheading dark:text-surface-white">{selectedMember.username}</h3>
@@ -326,10 +341,6 @@ const MyTeamSection = () => {
                 Delete
               </Button>
             </div>
-            <Button
-              onClick={() => setSelectedMember(null)}  
-              isCloseButton={true}
-            />
           </div>
         }
       </div>
