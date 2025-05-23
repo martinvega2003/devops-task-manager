@@ -106,8 +106,7 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
 
   return (
     <div className="absolute inset-0 z-40 flex items-center justify-center bg-transparent">
-      <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-[60%] aspect-square overflow-auto">
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full h-full overflow-auto">
         <h3 className="text-subheading dark:text-surface-white font-bold mb-4">Add New Task</h3>
         <form className="text-body dark:text-surface-white">
           <div className="mb-4">
