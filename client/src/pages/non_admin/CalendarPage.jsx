@@ -395,7 +395,12 @@ const CalendarPage = () => {
           <div className="flex flex-col gap-2 p-2 mb-4 rounded-lg border dark:bg-gray-800">
             {/* Project Scope Message */}
             <div className="text-left text-caption italic font-semibold text-surface-black dark:text-surface-white">
-              You have Tasks from <strong>{monthNames[firstTask.getMonth()]} {firstTask.getFullYear()}</strong> to <strong>{monthNames[lastTask.getMonth()]} {lastTask.getFullYear()}</strong>
+              {(monthNames[firstTask.getMonth()] ===  monthNames[lastTask.getMonth()]) &&
+              (firstTask.getFullYear() === lastTask.getFullYear())? (
+                <p>You only have Tasks on <strong>{monthNames[firstTask.getMonth()]} {firstTask.getFullYear()}</strong></p>
+              ) : (
+                <p>You have Tasks from <strong>{monthNames[firstTask.getMonth()]} {firstTask.getFullYear()}</strong> to <strong>{monthNames[lastTask.getMonth()]} {lastTask.getFullYear()}</strong></p>
+              )}
             </div>
             <div className="flex justify-between items-center">
               <h3 className="text-body text-surface-black dark:text-surface-white">
