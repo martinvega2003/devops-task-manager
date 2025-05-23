@@ -247,10 +247,20 @@ const CalendarPage = () => {
   const rightDisabled = currentYear === lastTask.getFullYear() && currentMonth === lastTask.getMonth();
 
   const Modal = (
-    <div className="fixed inset-0 z-40 w-full flex items-center justify-center bg-transparent">
+    <div className="fixed inset-0 z-40 w-full pt-16 flex items-center justify-center bg-transparent">
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full sm:w-2/3 h-[80vh] flex flex-col items-start overflow-hidden">
-        <h3 className="text-body dark:text-surface-white font-bold mb-4">
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full sm:w-2/3 h-full sm:h-[80vh] flex flex-col items-start overflow-hidden">
+        {/* Small Devices Design */}
+        <div className="sm:hidden w-full flex flex-col-reverse justify-start items-start">
+          <h3 className="text-body dark:text-surface-white font-bold mb-4">
+            Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
+          </h3>
+
+          <Button onClick={closeModal} width='fit' isCloseButton={true} className='pl-0 ml-0' />
+        </div>
+
+        {/* Bigger Devices Design */}
+        <h3 className="hidden sm:block text-body dark:text-surface-white font-bold mb-4">
           Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
         </h3>
         
@@ -313,7 +323,7 @@ const CalendarPage = () => {
           </div>
         </div>
 
-        <div className="w-full flex justify-between items-center mt-12">
+        <div className="hidden w-full sm:flex justify-between items-center sm:mt-12">
           <Button onClick={closeModal} width='fit' isCloseButton={true} />
         </div>
       </div>
