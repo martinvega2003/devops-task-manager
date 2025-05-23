@@ -247,9 +247,9 @@ const CalendarPage = () => {
   const rightDisabled = currentYear === lastTask.getFullYear() && currentMonth === lastTask.getMonth();
 
   const Modal = (
-    <div className="fixed inset-0 z-10 w-full flex items-center justify-center bg-transparent">
+    <div className="fixed inset-0 z-40 w-full flex items-center justify-center bg-transparent">
       <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-2/3 h-[80vh] flex flex-col items-start overflow-hidden">
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full sm:w-2/3 h-[80vh] flex flex-col items-start overflow-hidden">
         <h3 className="text-body dark:text-surface-white font-bold mb-4">
           Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
         </h3>
@@ -435,7 +435,7 @@ const CalendarPage = () => {
               return (
                 <div
                   key={index}
-                  className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-body text-left overflow-auto rounded-lg m-[2px] ${
+                  className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-[10px] sm:text-body text-left overflow-hidden sm:overflow-auto rounded-lg m-[2px] ${
                     isToday ? 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' :
                     cell.isCurrentMonth
                       ? 'bg-blue-300 dark:bg-blue-950 text-surface-white cursor-pointer'
@@ -444,7 +444,22 @@ const CalendarPage = () => {
                   onClick={() => openModal(cell, cellTasks)}
                 >
                   {cell.date.getDate()}
-                  <div className="flex flex-col gap-1 mt-2">
+
+                  {/* Dots for tasks on mobile */}
+                  <div className="flex flex-col gap-0.5 mt-0.5 sm:hidden">
+                    {cellTasks.map(task => {
+                      const bgColor = task.status === 'Completed' ? 'bg-green-500' :
+                        task.priority === 'High' ? 'bg-red-500' :
+                        task.priority === 'Medium' ? 'bg-yellow-500' : 'bg-blue-500'
+
+                      return (
+                        <div className={"w-full h-1 rounded-sm " + bgColor} />
+                      )
+                    })}
+                  </div>
+                  
+                  {/* TaskTitleCards for tasks on larger screens */}
+                  <div className="hidden sm:flex flex-col gap-1 mt-2">
                     {cellTasks.map((task) => (
                       <TaskTitleCard
                         key={task.id}
