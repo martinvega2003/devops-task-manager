@@ -70,22 +70,40 @@ const ProjectCard = ({ project, fetchProjects }) => {
         </span>
       </div>
 
+      {/* Timeline Section - Small Devices */}
+      <div className="sm:hidden w-full py-2 px-4 bg-gray-200 dark:bg-gray-900 rounded flex items-center mt-3">
+        {/* Vertical line */}
+        <div className="flex flex-col justify-center items-center">
+          <div className="min-w-3 min-h-3 bg-primary dark:bg-secondary rounded-full" />
+          <div className="h-8 w-1 bg-primary dark:bg-secondary" />
+          <div className="min-w-3 min-h-3 bg-primary dark:bg-secondary rounded-full" />
+        </div>
+        <div className="flex flex-col justify-center items-center gap-5">
+          <span className="text-body text-gray-700 dark:text-gray-300 ml-2 whitespace-nowrap">
+            {formattedCreatedDate}
+          </span>
+          <span className="text-body text-gray-700 dark:text-gray-300 ml-2 whitespace-nowrap">
+            {formattedDeadline}
+          </span>
+        </div>
+      </div>
+
       {/* Timeline Section */}
-      <div className="w-full py-2 px-4 bg-gray-200 dark:bg-gray-900 rounded flex items-center mt-3">
+      <div className="hidden sm:flex items-center w-full py-2 px-4 bg-gray-200 dark:bg-gray-900 rounded mt-3">
         {/* Horizontal line */}
         <span className="text-body text-gray-700 dark:text-gray-300 mr-2 whitespace-nowrap">
           {formattedCreatedDate}
         </span>
-        <div className="min-w-3 min-h-3 bg-primary dark:bg-secondary rounded-full"></div>
-        <div className="w-1/2 border-t border-primary dark:border-secondary"></div>
-        <div className="min-w-3 min-h-3 bg-primary dark:bg-secondary rounded-full"></div>
+        <div className="min-w-3 min-h-3 bg-primary dark:bg-secondary rounded-full" />
+        <div className="w-1/2 border-t border-primary dark:border-secondary" />
+        <div className="min-w-3 min-h-3 bg-primary dark:bg-secondary rounded-full" />
         <span className="text-body text-gray-700 dark:text-gray-300 ml-2 whitespace-nowrap">
           {formattedDeadline}
         </span>
       </div>
 
       {/* Status Toggle Button */}
-      <div className="mt-4 flex justify-between items-center gap-2">
+      <div className="mt-4 flex flex-col justify-start items-start sm:flex-row sm:justify-between sm:items-center gap-2">
         <Button
           onClick={toggleProjectStatus}
           className={project.status === 'Active' ? '' : 'relative z-20'}
