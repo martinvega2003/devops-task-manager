@@ -244,7 +244,7 @@ const ProjectSection = () => {
   const rightDisabled = currentYear === projectDeadline.getFullYear() && currentMonth === projectDeadline.getMonth();
 
   const Modal = (
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-2 sm:p-6 rounded-lg shadow-lg w-full sm:w-2/3 h-screen sm:h-[80vh] flex flex-col items-start overflow-hidden">
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-2 sm:p-6 pb-8 rounded-lg shadow-lg w-full sm:w-2/3 h-screen sm:h-[80vh] flex flex-col items-start overflow-hidden">
         {isTaskFormOpen && <AddTaskForm project_id={project_id} setIsTaskFormOpen={setIsTaskFormOpen} modalCell={modalCell} fetchTasks={fetchTasks} />}
         <h3 className="text-body dark:text-surface-white font-bold sm:mb-4">
           Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
@@ -252,7 +252,7 @@ const ProjectSection = () => {
         
         {/* Timeline and Tasks Container */}
         <div 
-          className="relative flex h-5/6 w-full overflow-auto"
+          className="relative flex h-4/5 w-full overflow-auto"
           onClick={() => setIsTaskFormOpen(true)}
         >
 
@@ -308,7 +308,7 @@ const ProjectSection = () => {
           </div>
         </div>
 
-        <div className="w-full h-1/6 flex justify-between items-start sm:items-center mt-3 sm:mt-12">
+        <div className="w-full h-1/5 flex justify-between items-start sm:items-center mt-3 sm:mt-12">
           <Button onClick={() => setIsModalOpen(false)} width='fit' isCloseButton={true} />
 
           <Button isAddButton={true} width='fit' onClick={() => setIsTaskFormOpen(true)} />
@@ -323,17 +323,20 @@ const ProjectSection = () => {
   }
 
   return (
-    <div className="bg-background dark:bg-background-dark min-h-screen w-full">
+    <div className="bg-background dark:bg-background-dark h-screen w-full">
       {/* Modal for Task Page */}
       <TaskPage selectedTask={selectedTask} setSelectedTask={setSelectedTask} fetchTasks={fetchTasks}/>
-      {/* Modal for Task Creation */}
+
+      {/* Modal for Task And Daily Timeline */}
       {isModalOpen && (
         <>
+          {/* Tablets, Notebooks, etc. */}
           <div className="hidden fixed inset-0 z-40 w-full sm:flex items-center justify-center bg-transparent">
             <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
             {Modal}
           </div>
 
+          {/* Mobile Devices */}
           <div className="sm:hidden fixed inset-0 top-16 z-40 w-full h-screen items-center justify-center bg-transparent">
             {Modal}
           </div>
@@ -454,7 +457,7 @@ const ProjectSection = () => {
       </div>
 
       {/* Timeline Calendar View */}
-      <div className="bg-white dark:bg-gray-800 text-surface-black dark:text-surface-white shadow border-t pb-16">
+      <div className="bg-white dark:bg-background-dark text-surface-black dark:text-surface-white border-t pb-16">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
             <p className="text-body font-semibold">Calendar View:</p>

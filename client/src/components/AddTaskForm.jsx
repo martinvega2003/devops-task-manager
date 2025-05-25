@@ -226,7 +226,7 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
               })}
             </div>
           </div>
-          <div className="flex justify-end space-x-2">
+          <div className="flex justify-end space-x-2 pb-8 sm:pb-0">
             <Button
               width="fit"
               onClick={() => setIsTaskFormOpen(false)}
