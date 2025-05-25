@@ -247,7 +247,7 @@ const CalendarPage = () => {
   const rightDisabled = currentYear === lastTask.getFullYear() && currentMonth === lastTask.getMonth();
 
   const Modal = (
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-3 sm:p-6 sm:rounded-lg shadow-lg w-full sm:w-2/3 h-full sm:h-[80vh] flex flex-col items-start overflow-hidden">
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-3 sm:p-6 pb-8 sm:rounded-lg shadow-lg w-full sm:w-2/3 h-full sm:h-[80vh] flex flex-col items-start overflow-hidden">
         {/* Small Devices Design */}
         <div className="sm:hidden w-full flex flex-col-reverse justify-start items-start">
           <h3 className="text-body dark:text-surface-white font-bold mb-4">
@@ -332,14 +332,15 @@ const CalendarPage = () => {
       {/* Modal for Task Page */}
       {selectedTask && <TaskPage taskId={selectedTask.id} setSelectedTask={setSelectedTask} fetchTasks={fetchAllTasks}/>}
 
-      {/* Modal for Task Creation */}
+      {/* Modal for Task And Daily Timeline */}
       {isModalOpen && (
         <>
+          {/* Tablets, Notebooks, etc. */}
           <div className="hidden fixed inset-0 z-40 w-full pt-16 sm:flex items-center justify-center bg-transparent">
             <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
             {Modal}
           </div>
-
+          {/* Mobile Devices */}
           <div className="sm:hidden fixed inset-0 z-40 w-full h-screen pt-16 flex items-center justify-center bg-transparent">
             {Modal}
           </div>
