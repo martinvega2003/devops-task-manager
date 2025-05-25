@@ -247,9 +247,7 @@ const CalendarPage = () => {
   const rightDisabled = currentYear === lastTask.getFullYear() && currentMonth === lastTask.getMonth();
 
   const Modal = (
-    <div className="fixed inset-0 z-40 w-full pt-16 flex items-center justify-center bg-transparent">
-      <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full sm:w-2/3 h-full sm:h-[80vh] flex flex-col items-start overflow-hidden">
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-3 sm:p-6 sm:rounded-lg shadow-lg w-full sm:w-2/3 h-full sm:h-[80vh] flex flex-col items-start overflow-hidden">
         {/* Small Devices Design */}
         <div className="sm:hidden w-full flex flex-col-reverse justify-start items-start">
           <h3 className="text-body dark:text-surface-white font-bold mb-4">
@@ -270,7 +268,7 @@ const CalendarPage = () => {
           {/* Vertical Timeline */}
           <div className="sticky z-30 left-0 h-fit bg-white dark:bg-gray-800 text-caption text-surface-black dark:text-surface-white pr-2 border-r border-gray-300 dark:border-gray-600 flex flex-col items-end">
             {Array.from({ length: 24 }).map((_, hour) => (
-              <div key={hour} className="py-4 text-right w-12 h-12">
+              <div key={hour} className="py-4 text-right w-fit sm:w-12 h-12">
                 <span>{hour}:00</span>
               </div>
             ))}
@@ -327,7 +325,6 @@ const CalendarPage = () => {
           <Button onClick={closeModal} width='fit' isCloseButton={true} />
         </div>
       </div>
-    </div>
   );
 
   return (
@@ -336,7 +333,18 @@ const CalendarPage = () => {
       {selectedTask && <TaskPage taskId={selectedTask.id} setSelectedTask={setSelectedTask} fetchTasks={fetchAllTasks}/>}
 
       {/* Modal for Task Creation */}
-      {isModalOpen && Modal}
+      {isModalOpen && (
+        <>
+          <div className="hidden fixed inset-0 z-40 w-full pt-16 sm:flex items-center justify-center bg-transparent">
+            <div className="absolute z-0 inset-0 bg-white dark:bg-black opacity-90 dark:opacity-70" />
+            {Modal}
+          </div>
+
+          <div className="sm:hidden fixed inset-0 z-40 w-full h-screen pt-16 flex items-center justify-center bg-transparent">
+            {Modal}
+          </div>
+        </>
+      )}
 
       <div className="flex flex-col md:flex-row gap-4 px-4 sm:px-8 py-8 sm:py-16">
         {/* Sidebar */}

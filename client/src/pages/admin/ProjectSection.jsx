@@ -246,20 +246,20 @@ const ProjectSection = () => {
   const Modal = (
       <div className="relative z-10 bg-white dark:bg-gray-800 p-2 sm:p-6 rounded-lg shadow-lg w-full sm:w-2/3 h-screen sm:h-[80vh] flex flex-col items-start overflow-hidden">
         {isTaskFormOpen && <AddTaskForm project_id={project_id} setIsTaskFormOpen={setIsTaskFormOpen} modalCell={modalCell} fetchTasks={fetchTasks} />}
-        <h3 className="text-body dark:text-surface-white font-bold mb-4">
+        <h3 className="text-body dark:text-surface-white font-bold sm:mb-4">
           Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
         </h3>
         
         {/* Timeline and Tasks Container */}
         <div 
-          className="relative flex h-fit w-full overflow-auto"
+          className="relative flex h-5/6 w-full overflow-auto"
           onClick={() => setIsTaskFormOpen(true)}
         >
 
           {/* Vertical Timeline */}
           <div className="sticky z-30 left-0 h-fit bg-white dark:bg-gray-800 text-caption text-surface-black dark:text-surface-white pr-2 border-r border-gray-300 dark:border-gray-600 flex flex-col items-end">
             {Array.from({ length: 24 }).map((_, hour) => (
-              <div key={hour} className="py-4 text-right w-12 h-12">
+              <div key={hour} className="py-4 text-right w-fit sm:w-12 h-12">
                 <span>{hour}:00</span>
               </div>
             ))}
@@ -308,7 +308,7 @@ const ProjectSection = () => {
           </div>
         </div>
 
-        <div className="w-full flex justify-between items-center mt-3 sm:mt-12">
+        <div className="w-full h-1/6 flex justify-between items-start sm:items-center mt-3 sm:mt-12">
           <Button onClick={() => setIsModalOpen(false)} width='fit' isCloseButton={true} />
 
           <Button isAddButton={true} width='fit' onClick={() => setIsTaskFormOpen(true)} />
