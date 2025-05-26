@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../API/api.interceptors';
 import { BsListCheck } from 'react-icons/bs';
@@ -88,6 +88,22 @@ const ProjectSection = () => {
       })
     }
   }
+
+  // Description editing ref and useEffect to handle auto-focus
+  // Ref for the description textarea
+  const descriptionRef = useRef(null);
+
+  useEffect(() => {
+    if (isDescriptionEditing && descriptionRef.current) {
+      const textarea = descriptionRef.current;
+      textarea.focus();
+      // Move cursor to the end
+      textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+
+      // Scroll to the end so the last part is visible
+      textarea.scrollTop = textarea.scrollHeight;
+    }
+  }, [isDescriptionEditing]);
 
   // Modal related states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -293,7 +309,10 @@ const ProjectSection = () => {
                 >
                   <TaskTitleCard 
                     task={task} 
-                    onClick={() => setSelectedTask(task)}
+                    onClick={e => {
+                      e.stopPropagation(); // Prevent opening the modal when clicking on the task
+                      setSelectedTask(task);
+                    }}
                     className="truncate relative z-20 translate-y-6 hover:translate-y-5 transition-transform" 
                     style={{ 
                       top: `${topPosition}px`, 
@@ -350,14 +369,17 @@ const ProjectSection = () => {
             <h2 className="text-subheading text-surface-black dark:text-surface-white">
               {project.name}
             </h2>
-            <button onClick={() => setIsTitleEditing(true)} className="aspect-square p-2 rounded-full border border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-600 text-body cursor-pointer">
+            <button onClick={() => setIsTitleEditing(true)} className={isDescriptionEditing || isDeadlineEditing ? "hidden" : "aspect-square p-2 rounded-full border border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-600 text-body cursor-pointer"}>
               <FaPen />
             </button>
           </div> 
         ) : (
-          <div className="w-full flex justify-start items-center gap-2 mb-2">
+          <div className="w-full flex justify-start items-center gap-2 mb-2 overflow-y-auto">
             <input 
               name='name'
+              value={updatedProject.name}
+              type="text"
+              autoFocus
               className="w-fit text-subheading font-bold text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
               placeholder='Title cannot be null...'
               onChange={handleChange}
@@ -374,14 +396,19 @@ const ProjectSection = () => {
             <p className="text-body text-surface-black dark:text-surface-white">
               {project.description}
             </p>
-            <button onClick={() => setIsDescriptionEditing(true)} className="aspect-square p-2 rounded-full border border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-600 text-caption cursor-pointer">
+            <button onClick={() => setIsDescriptionEditing(true)} className={isDeadlineEditing || isTitleEditing ? "hidden" : "aspect-square p-2 rounded-full border border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-600 text-caption cursor-pointer"}>
               <FaPen />
             </button>
           </div> 
         ) : (
-          <div className="w-full flex justify-start items-center gap-2 mb-4">
-            <input 
+          <div className="w-full flex justify-start items-end gap-2 mb-4">
+            <textarea
+              ref={descriptionRef}
+              value={updatedProject.description} 
               name='description'
+              autoFocus
+              rows={4}
+              cols={50}
               className="w-fit text-body font-bold text-surface-black dark:text-surface-white placeholder:text-gray-400 dark:placeholder:text-gray-600" 
               placeholder='Description cannot be null...'
               onChange={handleChange}
@@ -435,7 +462,7 @@ const ProjectSection = () => {
               <span className="text-caption text-gray-700 dark:text-gray-300">
                 Deadline: {new Date(project.deadline).toISOString().split('T')[0]}
               </span>
-              <button onClick={() => setIsDeadlineEditing(true)} className="aspect-square p-2 rounded-full border border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-600 text-caption cursor-pointer">
+              <button onClick={() => setIsDeadlineEditing(true)} className={isDescriptionEditing || isTitleEditing ? "hidden" : "aspect-square p-2 rounded-full border border-gray-400 dark:border-gray-600 text-gray-400 dark:text-gray-600 text-caption cursor-pointer"}>
                 <FaPen />
               </button>
             </div>
@@ -444,8 +471,11 @@ const ProjectSection = () => {
               <input
                 type="date"
                 name="deadline"
+                value={updatedProject.deadline.split('T')[0]} // Extract date part from ISO string
+                autoFocus
+                min={new Date(project.created_at).toISOString().split('T')[0]} // Prevent setting a deadline before project creation
                 onChange={handleDeadlineChange}
-                className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
+                className="w-full text-surface-black dark:text-surface-white border border-gray-300 dark:border-gray-600 p-2 rounded"
                 required
               />
               <Button onClick={handleSubmit} width='fit'>

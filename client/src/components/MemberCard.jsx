@@ -26,9 +26,12 @@ const MemberCard = ({ onClick, member }) => {
     >
       <img src={profilePic} alt="Profile picture" className='w-1/5 h-auto rounded-md' />
       <div className="w-4/5">
-        <h3 className="text-body font-semibold whitespace-nowrap">{member.username} - {!member.active ? "Deactivated" : ""}</h3>
+        <h3 className="text-body font-semibold whitespace-nowrap">{member.username}</h3>
         <p className="text-caption italic whitespace-nowrap text-zinc-100">
-          Currently working on <strong>{member.tasks_count}</strong> tasks
+          {!member.active ? "Deactivated" : (
+            <>Currently working on <strong>{member.tasks_count}</strong> tasks</>
+          )}
+          
         </p>
       </div>
     </div>
