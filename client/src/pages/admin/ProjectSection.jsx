@@ -309,7 +309,10 @@ const ProjectSection = () => {
                 >
                   <TaskTitleCard 
                     task={task} 
-                    onClick={() => setSelectedTask(task)}
+                    onClick={e => {
+                      e.stopPropagation(); // Prevent opening the modal when clicking on the task
+                      setSelectedTask(task);
+                    }}
                     className="truncate relative z-20 translate-y-6 hover:translate-y-5 transition-transform" 
                     style={{ 
                       top: `${topPosition}px`, 
