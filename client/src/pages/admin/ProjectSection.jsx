@@ -323,7 +323,7 @@ const ProjectSection = () => {
   }
 
   return (
-    <div className="bg-background dark:bg-background-dark h-screen w-full">
+    <div className="bg-background dark:bg-background-dark h-full w-full">
       {/* Modal for Task Page */}
       <TaskPage selectedTask={selectedTask} setSelectedTask={setSelectedTask} fetchTasks={fetchTasks}/>
 
@@ -337,7 +337,7 @@ const ProjectSection = () => {
           </div>
 
           {/* Mobile Devices */}
-          <div className="sm:hidden fixed inset-0 top-16 z-40 w-full h-screen items-center justify-center bg-transparent">
+          <div className="sm:hidden fixed inset-0 top-16 z-40 w-full h-full items-center justify-center bg-transparent">
             {Modal}
           </div>
         </>
