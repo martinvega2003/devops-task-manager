@@ -302,11 +302,11 @@ const CalendarPage = () => {
                 >
                   <TaskTitleCard 
                     task={task} 
-                    onClick={selectedProject !== 'all' && task.project_id !== selectedProject ? null : () => setSelectedTask(task)}
+                    onClick={selectedProject !== 'all' && task.project_id !== selectedProject ? () => {toast.warning("The task you're trying to open does not belong to the filtered project")} : () => setSelectedTask(task)}
                     className={
                       `truncate relative z-20 translate-y-6 hover:translate-y-5 transition-transform
                       ${selectedProject !== 'all' && task.project_id !== selectedProject ? 
-                        task.status === "Completed" ? 'hidden' : 'opacity-50 truncate' : 'truncate'}`
+                        task.status === "Completed" ? 'hidden' : 'opacity-10 truncate' : 'truncate'}`
                     } 
                     style={{ 
                       top: `${topPosition}px`, 
@@ -458,14 +458,22 @@ const CalendarPage = () => {
               const isToday = isSameDay(cell.date, new Date());
               return (
                 <div
+                  {...(cell.isCurrentMonth &&
+                    !(
+                      (currentMonth === firstTask.getMonth() && cell.date.getDate() < firstTask.getDate()) ||
+                      (currentMonth === lastTask.getMonth() && cell.date.getDate() > lastTask.getDate())
+                    ) && { onClick: () => openModal(cell, cellTasks) 
+                  })}
                   key={index}
-                  className={`aspect-square border border-gray-300 dark:border-gray-600 p-1 text-[10px] sm:text-body text-left overflow-hidden sm:overflow-auto rounded-lg m-[2px] ${
+                  className={`relative aspect-square border border-gray-300 dark:border-gray-600 p-1 text-[10px] sm:text-body text-left overflow-hidden sm:overflow-auto rounded-lg m-[2px] ${
                     isToday ? 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' :
                     cell.isCurrentMonth
-                      ? 'bg-blue-300 dark:bg-blue-950 text-surface-white cursor-pointer'
-                      : 'opacity-30 text-success-dark dark:text-surface-white'
+                      ? (
+                        (currentMonth === firstTask.getMonth() && cell.date.getDate() < firstTask.getDate()) ||
+                        (currentMonth === lastTask.getMonth() && cell.date.getDate() > lastTask.getDate())
+                      ) ? 'opacity-30 dark:text-surface-white' : 'bg-blue-300 dark:bg-blue-950 text-surface-white cursor-pointer'
+                      : 'opacity-30 dark:text-surface-white'
                   }`}
-                  onClick={() => openModal(cell, cellTasks)}
                 >
                   {cell.date.getDate()}
 
@@ -477,7 +485,10 @@ const CalendarPage = () => {
                         task.priority === 'Medium' ? 'bg-yellow-500' : 'bg-blue-500'
 
                       return (
-                        <div className={"w-full h-1 rounded-sm " + bgColor} />
+                        <div 
+                          className={selectedProject !== 'all' && task.project_id !== selectedProject ? 
+                          task.status === "Completed" ? 'hidden' : 'opacity-30 w-full h-1 rounded-sm ' + bgColor : 'w-full h-1 rounded-sm ' + bgColor}
+                        />
                       )
                     })}
                   </div>
@@ -489,7 +500,7 @@ const CalendarPage = () => {
                         key={task.id}
                         task={task}
                         className={selectedProject !== 'all' && task.project_id !== selectedProject ? 
-                          task.status === "Completed" ? 'hidden' : 'opacity-50 truncate' : 'truncate'}
+                          task.status === "Completed" ? 'hidden' : 'opacity-30 truncate' : 'truncate'}
                       />
                     ))}
                   </div>
