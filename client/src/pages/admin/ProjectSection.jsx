@@ -244,7 +244,7 @@ const ProjectSection = () => {
   const rightDisabled = currentYear === projectDeadline.getFullYear() && currentMonth === projectDeadline.getMonth();
 
   const Modal = (
-      <div className="relative z-10 bg-white dark:bg-gray-800 p-2 sm:p-6 pb-8 rounded-lg shadow-lg w-full sm:w-2/3 h-screen sm:h-[80vh] flex flex-col items-start overflow-hidden">
+      <div className="relative z-10 bg-white dark:bg-gray-800 p-2 sm:p-6 pb-12 sm:pb-6 rounded-lg shadow-lg w-full sm:w-2/3 h-full sm:h-[80vh] flex flex-col items-start overflow-y-auto">
         {isTaskFormOpen && <AddTaskForm project_id={project_id} setIsTaskFormOpen={setIsTaskFormOpen} modalCell={modalCell} fetchTasks={fetchTasks} />}
         <h3 className="text-body dark:text-surface-white font-bold sm:mb-4">
           Task for {monthNames[currentMonth]} {modalCell && modalCell.date.getDate()}, {currentYear}:
@@ -323,7 +323,7 @@ const ProjectSection = () => {
   }
 
   return (
-    <div className="bg-background dark:bg-background-dark h-screen w-full">
+    <div className="bg-background dark:bg-background-dark h-full w-full">
       {/* Modal for Task Page */}
       <TaskPage selectedTask={selectedTask} setSelectedTask={setSelectedTask} fetchTasks={fetchTasks}/>
 
@@ -337,7 +337,7 @@ const ProjectSection = () => {
           </div>
 
           {/* Mobile Devices */}
-          <div className="sm:hidden fixed inset-0 top-16 z-40 w-full h-screen items-center justify-center bg-transparent">
+          <div className="sm:hidden fixed inset-0 top-16 z-40 w-full h-full items-center justify-center bg-transparent">
             {Modal}
           </div>
         </>
