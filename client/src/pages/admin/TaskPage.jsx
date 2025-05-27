@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import api from '../../API/api.interceptors';
 import Button from '../../components/Button';
-import { FaCheck, FaPen, FaTrash, FaDownload, FaArrowLeft } from 'react-icons/fa';
+import { FaCheck, FaPen, FaTrash, FaDownload, FaTimes, FaSave } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
@@ -247,27 +247,28 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
           {/* Editing and Delete Buttons */}
           <div className="w-full flex justify-between gap-2">
             {/* Close Button */}
-            <Button onClick={handleClose} width="fit" isCloseButton={true} />
+            {!isEditing ? (
+              <Button onClick={handleClose} width="fit" isCloseButton={true} />
+            ) : (
+              <Button
+                onClick={() => setIsEditing(false)}
+                width='fit'
+                className='flex items-center gap-2 text-red-500'
+              >
+                <FaTimes /> Cancel
+              </Button>
+            )}
             
             <div className='flex gap-2'>
-              {isEditing && (
-                <Button
-                  onClick={() => setIsEditing(false)}
-                  width='fit'
-                  className='flex items-center gap-2'
-                >
-                  <FaArrowLeft /> Back
-                </Button>
-              )}
               <Button
                 onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
                 width="fit"
                 className={`${selectedTask.status === "Completed" ? 'hidden' : ''}`}
                 isTransparent={false}
               >
-                <div className={`${isEditing ? '' : 'flex items-center gap-2'}`}>
-                  {isEditing ? 'Save' : 'Edit '}
-                  {isEditing ? '' : <FaPen />}
+                <div className='flex items-center gap-2'>
+                  {isEditing ? 'Save' : 'Edit '} 
+                  {isEditing ? <FaSave /> : <FaPen />}
                 </div>
               </Button>
 
