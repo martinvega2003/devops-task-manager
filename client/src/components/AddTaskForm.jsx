@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import api from "../API/api.interceptors";
 import Button from "./Button";
+import TimePicker from 'react-time-picker';
 import { FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 
@@ -163,36 +164,70 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
               ))}
             </div>
           </div>
-          {/* Start Time Field (only hours and minutes) */}
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-200 mb-1" htmlFor="startTime">
-              Start Time
-            </label>
-            <input
-              type="time"
-              id="startTime"
-              name="startTime"
-              value={taskData.startTime}
-              onChange={handleChange}
-              className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
-              required
-            />
+
+          <div className="mb-4 flex flex-col md:flex-row md:justify-between lg:justify-evenly gap-4">
+            {/* Custom Time Picker */}
+            {["startTime", "endTime"].map((field, idx) => {
+              const label = field === "startTime" ? "Start Time" : "End Time";
+              const value = taskData[field];
+              const hour = parseInt(value.split(":")[0], 10);
+              const minute = parseInt(value.split(":")[1], 10);
+
+              return (
+                <div key={field}>
+                  <label className="block text-gray-700 dark:text-gray-200 mb-1">{label}</label>
+                  <div className="flex items-center gap-4">
+                    {/* Hour scrollable picker */}
+                    <div className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center">
+                      {Array.from({ length: 24 }, (_, h) => (
+                        <div
+                          key={h}
+                          onClick={() =>
+                            setTaskData({
+                              ...taskData,
+                              [field]: `${h.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`,
+                            })
+                          }
+                          className={`w-full py-2 text-center cursor-pointer rounded ${
+                            h === hour
+                              ? "bg-primary text-white font-bold shadow"
+                              : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                          }`}
+                          style={{ transition: "all 0.15s" }}
+                        >
+                          {h.toString().padStart(2, "0")}
+                        </div>
+                      ))}
+                    </div>
+                    <span className="text-xl font-bold">:</span>
+                    {/* Minute scrollable picker */}
+                    <div className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center">
+                      {Array.from({ length: 60 }, (_, m) => (
+                        <div
+                          key={m}
+                          onClick={() =>
+                            setTaskData({
+                              ...taskData,
+                              [field]: `${hour.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`,
+                            })
+                          }
+                          className={`w-full py-2 text-center cursor-pointer rounded ${
+                            m === minute
+                              ? "bg-primary text-white font-bold shadow"
+                              : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                          }`}
+                          style={{ transition: "all 0.15s" }}
+                        >
+                          {m.toString().padStart(2, "0")}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          {/* End Time Field (only hours and minutes) */}
-          <div className="mb-4">
-            <label className="block text-gray-700 dark:text-gray-200 mb-1" htmlFor="endTime">
-              End Time
-            </label>
-            <input
-              type="time"
-              id="endTime"
-              name="endTime"
-              value={taskData.endTime}
-              onChange={handleChange}
-              className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
-              required
-            />
-          </div>
+          
           {/* Assigned Users Section */}
           <div className="mb-4">
             <label className="block text-gray-700 dark:text-gray-200 mb-1">
