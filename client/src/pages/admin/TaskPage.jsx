@@ -371,7 +371,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
               {/* Task Duration */}
               <div className="min-w-full flex flex-col gap-2">
-                <div className="min-w-full flex items-center gap-4 p-4 border border-gray-300 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-700">
+                <div className="min-w-full flex flex-col lg:flex-row items-start lg:items-center gap-4 p-4 border border-gray-300 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-700">
                   <div className="flex flex-col items-start">
                     <span className="text-caption font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">
                       Start Time
@@ -381,15 +381,53 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                         {updatedTask.startTime}
                       </span>
                     ) : (
-                      <input
-                        type="time"
-                        id="startTime"
-                        name="startTime"
-                        value={updatedTask.startTime}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
-                        required
-                      />
+                      <div className="flex items-center gap-4">
+                        {/* Hour scrollable picker */}
+                        <div className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center">
+                          {Array.from({ length: 24 }, (_, h) => (
+                            <div
+                              key={h}
+                              onClick={() =>
+                                setUpdatedTask({
+                                  ...updatedTask,
+                                  startTime: `${h.toString().padStart(2, "0")}:${updatedTask.startTime.split(":")[1]}`,
+                                })
+                              }
+                              className={`w-full py-2 text-center cursor-pointer rounded ${
+                                h === parseInt(updatedTask.startTime.split(":")[0], 10)
+                                  ? "bg-primary text-white font-bold shadow"
+                                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                              }`}
+                              style={{ transition: "all 0.15s" }}
+                            >
+                              {h.toString().padStart(2, "0")}
+                            </div>
+                          ))}
+                        </div>
+                        <span className="text-xl font-bold">:</span>
+                        {/* Minute scrollable picker */}
+                        <div className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center">
+                          {Array.from({ length: 60 }, (_, m) => (
+                            <div
+                              key={m}
+                              onClick={() =>
+                                setUpdatedTask({
+                                  ...updatedTask,
+                                  startTime: `${updatedTask.startTime.split(":")[0]}:${m.toString().padStart(2, "0")}`,
+                                })
+                              }
+                              className={`w-full py-2 text-center cursor-pointer rounded ${
+                                m === parseInt(updatedTask.startTime.split(":")[1], 10)
+                                  ? "bg-primary text-white font-bold shadow"
+                                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                              }`}
+                              style={{ transition: "all 0.15s" }}
+                            >
+                              {m.toString().padStart(2, "0")}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
                   <div className="w-full mx-1 border border-dashed" />
@@ -402,15 +440,53 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                         {updatedTask.endTime}
                       </span>
                     ) : (
-                      <input
-                        type="time"
-                        id="endTime"
-                        name="endTime"
-                        value={updatedTask.endTime}
-                        onChange={handleChange}
-                        className="w-full border border-gray-300 dark:border-gray-600 p-2 rounded"
-                        required
-                      />
+                      <div className="flex items-center gap-4">
+                        {/* Hour scrollable picker */}
+                        <div className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center">
+                          {Array.from({ length: 24 }, (_, h) => (
+                            <div
+                              key={h}
+                              onClick={() =>
+                                setUpdatedTask({
+                                  ...updatedTask,
+                                  endTime: `${h.toString().padStart(2, "0")}:${updatedTask.endTime.split(":")[1]}`,
+                                })
+                              }
+                              className={`w-full py-2 text-center cursor-pointer rounded ${
+                                h === parseInt(updatedTask.endTime.split(":")[0], 10)
+                                  ? "bg-primary text-white font-bold shadow"
+                                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                              }`}
+                              style={{ transition: "all 0.15s" }}
+                            >
+                              {h.toString().padStart(2, "0")}
+                            </div>
+                          ))}
+                        </div>
+                        <span className="text-xl font-bold">:</span>
+                        {/* Minute scrollable picker */}
+                        <div className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center">
+                          {Array.from({ length: 60 }, (_, m) => (
+                            <div
+                              key={m}
+                              onClick={() =>
+                                setUpdatedTask({
+                                  ...updatedTask,
+                                  endTime: `${updatedTask.endTime.split(":")[0]}:${m.toString().padStart(2, "0")}`,
+                                })
+                              }
+                              className={`w-full py-2 text-center cursor-pointer rounded ${
+                                m === parseInt(updatedTask.endTime.split(":")[1], 10)
+                                  ? "bg-primary text-white font-bold shadow"
+                                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                              }`}
+                              style={{ transition: "all 0.15s" }}
+                            >
+                              {m.toString().padStart(2, "0")}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
