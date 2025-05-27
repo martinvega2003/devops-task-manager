@@ -271,7 +271,6 @@ const ProjectSection = () => {
           className="relative flex h-4/5 w-full overflow-auto"
           onClick={() => setIsTaskFormOpen(true)}
         >
-
           {/* Vertical Timeline */}
           <div className="sticky z-30 left-0 h-fit bg-white dark:bg-gray-800 text-caption text-surface-black dark:text-surface-white pr-2 border-r border-gray-300 dark:border-gray-600 flex flex-col items-end">
             {Array.from({ length: 24 }).map((_, hour) => (
@@ -281,49 +280,50 @@ const ProjectSection = () => {
             ))}
           </div>
 
-          {/* Hours Separating lines */}
-          <div className="absolute w-full z-10 inset-0 top-6 flex flex-col gap-12">
-            {Array.from({ length: 24 }).map((_, hour) => (
-              <div 
-                key={hour}
-                className="w-[2000px] border-t border-dashed border-gray-300 dark:border-gray-600"
-                style={{ position: 'absolute', top: `${hour * 48}px` }}
-              />
-            ))}
-          </div>
-          
-          {/* Tasks Container */}
-          <div className="relative flex justify-start gap-1">
-            {modalCellTasks.map(task => {
-              const taskStart = new Date(task.start_time);
-              const taskEnd = new Date(task.end_time);
-              const startHour = taskStart.getHours();
-              const startMinutes = taskStart.getMinutes();
-              const durationHours = (taskEnd - taskStart) / (1000 * 60 * 60);
-              const topPosition = startHour * 48 + (startMinutes / 60) * 48; // 44px per hour
-              const height = durationHours * 48; // Task height based on duration
-  
-              return (
+          {/* Timeline + Tasks */}
+          <div className="relative flex-1 pr-12"> {/* flex-1 fills the remaining horizontal space */}
+            {/* Hour lines */}
+            <div className="absolute inset-0 top-6 z-10 w-full h-full pointer-events-none"> {/* Match scrollable area with w-full (And on each line) */}
+              {Array.from({ length: 24 }).map((_, hour) => (
                 <div
-                  key={task.id}
-                >
-                  <TaskTitleCard 
-                    task={task} 
-                    onClick={e => {
-                      e.stopPropagation(); // Prevent opening the modal when clicking on the task
-                      setSelectedTask(task);
-                    }}
-                    className="truncate relative z-20 translate-y-6 hover:translate-y-5 transition-transform" 
-                    style={{ 
-                      top: `${topPosition}px`, 
-                      height: `${height}px`, 
-                      position: 'relative',
-                    }} 
-                    timeBlockView={true}
-                  />
-                </div>
-              );
-            })}
+                  key={hour}
+                  className="w-full border-t border-dashed border-gray-300 dark:border-gray-600" 
+                  style={{ position: 'absolute', top: `${hour * 48}px` }}
+                /> 
+              ))} 
+            </div>
+
+            {/* Tasks container */}
+            <div className="relative flex justify-start gap-1 min-w-full w-max"> {/* w-max allows the container to grow horizontally if content exceeds width & min-w-full to always match scrollable area width */}
+              {modalCellTasks.map(task => {
+                const taskStart = new Date(task.start_time);
+                const taskEnd = new Date(task.end_time);
+                const startHour = taskStart.getHours();
+                const startMinutes = taskStart.getMinutes();
+                const durationHours = (taskEnd - taskStart) / (1000 * 60 * 60);
+                const topPosition = startHour * 48 + (startMinutes / 60) * 48;
+                const height = durationHours * 48;
+
+                return (
+                  <div key={task.id}>
+                    <TaskTitleCard
+                      task={task}
+                      onClick={e => {
+                        e.stopPropagation();
+                        setSelectedTask(task);
+                      }}
+                      className="truncate relative z-20 translate-y-6 hover:translate-y-5 transition-transform"
+                      style={{
+                        top: `${topPosition}px`,
+                        height: `${height}px`,
+                        position: 'relative',
+                      }}
+                      timeBlockView={true}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
