@@ -371,7 +371,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
               {/* Task Duration */}
               <div className="min-w-full flex flex-col gap-2">
-                <div className="min-w-full flex flex-col lg:flex-row items-start lg:items-center gap-4 p-4 border border-gray-300 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-700">
+                <div className={`min-w-full flex ${!isEditing ? '': 'flex-col lg:flex-row'} items-start lg:items-center gap-4 p-4 border border-gray-300 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-700`}>
                   <div className="flex flex-col items-start">
                     <span className="text-caption font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">
                       Start Time
