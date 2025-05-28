@@ -45,18 +45,21 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
   const [updatedTask, setUpdatedTask] = useState({...selectedTask})
 
   useEffect(() => {
+    fetchTask()
+  }, [selectedTask]);
 
-    const fetchAssets = async () => {
-      try {
-        const response = await api.get(`tasks/${selectedTask.id}/assets/`);
-        setAssets(response.data);
-      } catch (error) {
-        toast.error(error.response?.data?.msg || "Failed to fetch assets", {
-          toastId: 'assets-fetch-error'
-        });
-      }
-    };
+  const fetchAssets = async () => {
+    try {
+      const response = await api.get(`tasks/${selectedTask.id}/assets/`);
+      setAssets(response.data);
+    } catch (error) {
+      toast.error(error.response?.data?.msg || "Failed to fetch assets", {
+        toastId: 'assets-fetch-error'
+      });
+    }
+  };
 
+  const fetchTask = () => {
     if (selectedTask) {
       // Format time
       const formatTime = (isoString) => {
@@ -81,7 +84,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
       fetchAssets();
     }
-  }, [selectedTask]);
+  }
 
   const handleChange = e => {
     setUpdatedTask({
@@ -251,7 +254,10 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
               <Button onClick={handleClose} width="fit" isCloseButton={true} />
             ) : (
               <Button
-                onClick={() => setIsEditing(false)}
+                onClick={() => {
+                  setIsEditing(false);
+                  fetchTask();
+                }}
                 width='fit'
                 className='flex items-center gap-2 text-red-500'
               >
