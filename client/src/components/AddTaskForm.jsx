@@ -1,7 +1,6 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import api from "../API/api.interceptors";
 import Button from "./Button";
-import TimePicker from 'react-time-picker';
 import { FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 
@@ -14,8 +13,8 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
     priority: "Low",
     status: "Pending",
     projectId: project_id,
-    startTime: "12:00",  
-    endTime: "12:15",  
+    startTime: "00:00",  
+    endTime: "00:00",  
     assignedUsers: []
   });
 
@@ -105,6 +104,55 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
     }
   };
 
+  //Scrolling Animation for Time Picker:
+  // 1. base arrays
+  const hours = Array.from({ length: 24 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
+   
+  const minutes = Array.from({ length: 60 }, (_, i) =>
+    i.toString().padStart(2, "0")
+  );
+ 
+  // 2. triple-wrap for infinite scroll
+  const hours3   = [...hours, ...hours, ...hours];
+  const minutes3 = [...minutes, ...minutes, ...minutes];
+ 
+  // 3. one ref per field+type
+  const hourRefs   = { startTime: useRef(null), endTime: useRef(null) };
+  const minuteRefs = { startTime: useRef(null), endTime: useRef(null) };
+ 
+  // 4. scroll handler
+  const ITEM_H = 32; // must match your .py-2 line-height
+  function handleWrapScroll(e, type, field) {
+    const ref = e.target;
+    const len = type === "hour" ? hours.length : minutes.length;
+    const blockHeight = len * ITEM_H;
+    // if you scroll into the first copy
+    if (ref.scrollTop < ITEM_H) {
+      ref.scrollTop += blockHeight;
+    }
+    
+    // if you scroll into the last copy
+    else if (ref.scrollTop > blockHeight * 2) {
+      ref.scrollTop -= blockHeight;
+    }
+  }
+ 
+  // 5. on mount, position each picker in the middle copy
+  useEffect(() => {
+    ["startTime", "endTime"].forEach((field) => {
+      const { [field]: val } = taskData;
+      const hour = parseInt(val.split(":")[0], 10);
+      const minute = parseInt(val.split(":")[1], 10);
+      const hrEl = hourRefs[field].current;
+      const mnEl = minuteRefs[field].current;
+      if (hrEl) hrEl.scrollTop = (hours.length + hour) * ITEM_H;
+      if (mnEl) mnEl.scrollTop = (minutes.length + minute) * ITEM_H;
+    });
+  }, []); // run once
+
+
   return (
     <div className="absolute inset-0 z-40 flex items-center justify-center bg-transparent">
       <div className="relative z-10 bg-white dark:bg-gray-800 p-6 pb-24 sm:pb-6 rounded-lg shadow-lg w-full h-full overflow-auto">
@@ -167,65 +215,78 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
 
           <div className="mb-4 flex flex-col md:flex-row md:justify-between lg:justify-evenly gap-4">
             {/* Custom Time Picker */}
-            {["startTime", "endTime"].map((field, idx) => {
-              const label = field === "startTime" ? "Start Time" : "End Time";
-              const value = taskData[field];
-              const hour = parseInt(value.split(":")[0], 10);
-              const minute = parseInt(value.split(":")[1], 10);
+            {["startTime", "endTime"].map((field) => {
+  const label = field === "startTime" ? "Start Time" : "End Time";
+  const [h, m] = taskData[field].split(":");
+  const hour   = parseInt(h, 10);
+  const minute = parseInt(m, 10);
 
-              return (
-                <div key={field}>
-                  <label className="block text-gray-700 dark:text-gray-200 mb-1">{label}</label>
-                  <div className="flex items-center gap-4">
-                    {/* Hour scrollable picker */}
-                    <div className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center">
-                      {Array.from({ length: 24 }, (_, h) => (
-                        <div
-                          key={h}
-                          onClick={() =>
-                            setTaskData({
-                              ...taskData,
-                              [field]: `${h.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`,
-                            })
-                          }
-                          className={`w-full py-2 text-center cursor-pointer rounded ${
-                            h === hour
-                              ? "bg-primary text-white font-bold shadow"
-                              : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                          }`}
-                          style={{ transition: "all 0.15s" }}
-                        >
-                          {h.toString().padStart(2, "0")}
-                        </div>
-                      ))}
-                    </div>
-                    <span className="text-xl font-bold">:</span>
-                    {/* Minute scrollable picker */}
-                    <div className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center">
-                      {Array.from({ length: 60 }, (_, m) => (
-                        <div
-                          key={m}
-                          onClick={() =>
-                            setTaskData({
-                              ...taskData,
-                              [field]: `${hour.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`,
-                            })
-                          }
-                          className={`w-full py-2 text-center cursor-pointer rounded ${
-                            m === minute
-                              ? "bg-primary text-white font-bold shadow"
-                              : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                          }`}
-                          style={{ transition: "all 0.15s" }}
-                        >
-                          {m.toString().padStart(2, "0")}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+  return (
+    <div key={field}>
+      <label className="block text-gray-700 dark:text-gray-200 mb-1">
+        {label}
+      </label>
+      <div className="flex items-center gap-4">
+        {/* Hour scrollable picker */}
+        <div
+          ref={hourRefs[field]}
+          onScroll={(e) => handleWrapScroll(e, "hour", field)}
+          className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center"
+        >
+          {hours3.map((hStr, idx) => (
+            <div
+              key={`h-${idx}`}
+              onClick={() =>
+                setTaskData({
+                  ...taskData,
+                  [field]: `${hStr}:${m.padStart(2, "0")}`,
+                })
+              }
+              className={`w-full py-2 text-center cursor-pointer rounded ${
+                parseInt(hStr, 10) === hour
+                  ? "bg-primary text-white font-bold shadow"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+              style={{ transition: "all 0.15s" }}
+            >
+              {hStr}
+            </div>
+          ))}
+        </div>
+
+        <span className="text-xl font-bold">:</span>
+
+        {/* Minute scrollable picker */}
+        <div
+          ref={minuteRefs[field]}
+          onScroll={(e) => handleWrapScroll(e, "minute", field)}
+          className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center"
+        >
+          {minutes3.map((mStr, idx) => (
+            <div
+              key={`m-${idx}`}
+              onClick={() =>
+                setTaskData({
+                  ...taskData,
+                  [field]: `${h.padStart(2, "0")}:${mStr}`,
+                })
+              }
+              className={`w-full py-2 text-center cursor-pointer rounded ${
+                parseInt(mStr, 10) === minute
+                  ? "bg-primary text-white font-bold shadow"
+                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+              style={{ transition: "all 0.15s" }}
+            >
+              {mStr}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+})}
+
           </div>
           
           {/* Assigned Users Section */}
