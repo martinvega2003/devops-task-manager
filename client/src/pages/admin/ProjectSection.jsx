@@ -537,8 +537,14 @@ const ProjectSection = () => {
               <div
                 {...(cell.isCurrentMonth &&
                   !(
-                    (currentMonth === projectCreated.getMonth() && cell.date.getDate() < projectCreated.getDate()) ||
-                    (currentMonth === projectDeadline.getMonth() && cell.date.getDate() > projectDeadline.getDate())
+                    (
+                      currentMonth === projectCreated.getMonth() &&
+                      currentYear === projectCreated.getFullYear() && 
+                      cell.date.getDate() < projectCreated.getDate()
+                    ) || (
+                      currentMonth === projectDeadline.getMonth() &&
+                      currentYear === projectDeadline.getFullYear() && 
+                      cell.date.getDate() > projectDeadline.getDate())
                   ) && { onClick: () => openModal(cell, cellTasks) 
                 })}
                 key={index}
@@ -546,8 +552,15 @@ const ProjectSection = () => {
                   isToday ? 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' :
                   cell.isCurrentMonth
                     ? (
-                        (currentMonth === projectCreated.getMonth() && cell.date.getDate() < projectCreated.getDate()) ||
-                        (currentMonth === projectDeadline.getMonth() && cell.date.getDate() > projectDeadline.getDate())
+                        (
+                          currentMonth === projectCreated.getMonth() && 
+                          currentYear === projectCreated.getFullYear() &&
+                          cell.date.getDate() < projectCreated.getDate()
+                        ) || (
+                          currentMonth === projectDeadline.getMonth() && 
+                          currentYear === projectDeadline.getFullYear() &&
+                          cell.date.getDate() > projectDeadline.getDate()
+                        )
                       ) ? 'opacity-30' : 'bg-blue-300 dark:bg-blue-950 text-surface-white cursor-pointer'
                     : 'opacity-30'
                 }`}
