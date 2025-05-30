@@ -268,56 +268,60 @@ const CalendarPage = () => {
           {/* Vertical Timeline */}
           <div className="sticky z-30 left-0 h-fit bg-white dark:bg-gray-800 text-caption text-surface-black dark:text-surface-white pr-2 border-r border-gray-300 dark:border-gray-600 flex flex-col items-end">
             {Array.from({ length: 24 }).map((_, hour) => (
-              <div key={hour} className="py-4 text-right w-fit sm:w-12 h-12">
+              <div key={hour} className="pb-8 text-right w-fit sm:w-12 h-12 flex items-start">
                 <span>{hour}:00</span>
               </div>
             ))}
           </div>
 
-          {/* Hours Separating lines */}
-          <div className="absolute w-full z-10 inset-0 top-6 flex flex-col gap-12">
-            {Array.from({ length: 24 }).map((_, hour) => (
-              <div 
-                key={hour}
-                className="w-[2000px] border-t border-dashed border-gray-300 dark:border-gray-600"
-                style={{ position: 'absolute', top: `${hour * 48}px` }}
-              />
-            ))}
-          </div>
-          
-          {/* Tasks Container */}
-          <div className="relative flex justify-start gap-1">
-            {modalCellTasks.map(task => {
-              const taskStart = new Date(task.start_time);
-              const taskEnd = new Date(task.end_time);
-              const startHour = taskStart.getHours();
-              const startMinutes = taskStart.getMinutes();
-              const durationHours = (taskEnd - taskStart) / (1000 * 60 * 60);
-              const topPosition = startHour * 48 + (startMinutes / 60) * 48; // 44px per hour
-              const height = durationHours * 48; // Task height based on duration
-  
-              return (
-                <div
-                  key={task.id}
-                >
-                  <TaskTitleCard 
-                    task={task} 
-                    onClick={selectedProject !== 'all' && task.project_id !== selectedProject ? () => {toast.warning("The task you're trying to open does not belong to the filtered project")} : () => setSelectedTask(task)}
-                    className={
-                      `truncate relative z-20 translate-y-6 hover:translate-y-5 transition-transform
-                      ${selectedProject !== 'all' && task.project_id !== selectedProject ? 
-                        task.status === "Completed" ? 'hidden' : 'opacity-10 truncate' : 'truncate'}`
-                    } 
-                    style={{ 
-                      top: `${topPosition}px`, 
-                      height: `${height}px`, 
-                      position: 'absolute',
-                    }} 
-                    timeBlockView={true}
-                  />
-                </div>
-              );
-            })}
+          {/* Timeline + Tasks */}
+          <div className="relative flex-1 pr-12">
+
+            {/* Hours Separating lines */}
+            <div className="absolute z-10 inset-0 w-full h-full pointer-events-none">
+              {Array.from({ length: 24 }).map((_, hour) => (
+                <div 
+                  key={hour}
+                  className="w-full border-t border-dashed border-gray-300 dark:border-gray-600"
+                  style={{ position: 'absolute', top: `${hour * 48}px` }}
+                />
+              ))}
+            </div>
+            
+            {/* Tasks Container */}
+            <div className="relative flex justify-start gap-1 min-w-full w-max">
+              {modalCellTasks.map(task => {
+                const taskStart = new Date(task.start_time);
+                const taskEnd = new Date(task.end_time);
+                const startHour = taskStart.getHours();
+                const startMinutes = taskStart.getMinutes();
+                const durationHours = (taskEnd - taskStart) / (1000 * 60 * 60);
+                const topPosition = startHour * 48 + (startMinutes / 60) * 48; // 44px per hour
+                const height = durationHours * 48; // Task height based on duration
+    
+                return (
+                  <div
+                    key={task.id}
+                  >
+                    <TaskTitleCard 
+                      task={task} 
+                      onClick={selectedProject !== 'all' && task.project_id !== selectedProject ? () => {toast.warning("The task you're trying to open does not belong to the filtered project")} : () => setSelectedTask(task)}
+                      className={
+                        `truncate relative z-20 hover:-translate-y-1 transition-transform
+                        ${selectedProject !== 'all' && task.project_id !== selectedProject ? 
+                          task.status === "Completed" ? 'hidden' : 'opacity-10 truncate' : 'truncate'}`
+                      } 
+                      style={{ 
+                        top: `${topPosition}px`, 
+                        height: `${height}px`, 
+                        position: 'relative',
+                      }} 
+                      timeBlockView={true}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 

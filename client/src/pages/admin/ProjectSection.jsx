@@ -274,7 +274,7 @@ const ProjectSection = () => {
           {/* Vertical Timeline */}
           <div className="sticky z-30 left-0 h-fit bg-white dark:bg-gray-800 text-caption text-surface-black dark:text-surface-white pr-2 border-r border-gray-300 dark:border-gray-600 flex flex-col items-end">
             {Array.from({ length: 24 }).map((_, hour) => (
-              <div key={hour} className="py-4 text-right w-fit sm:w-12 h-12">
+              <div key={hour} className="pb-8 text-right w-fit sm:w-12 h-12 flex items-start">
                 <span>{hour}:00</span>
               </div>
             ))}
@@ -282,8 +282,9 @@ const ProjectSection = () => {
 
           {/* Timeline + Tasks */}
           <div className="relative flex-1 pr-12"> {/* flex-1 fills the remaining horizontal space */}
+
             {/* Hour lines */}
-            <div className="absolute inset-0 top-6 z-10 w-full h-full pointer-events-none"> {/* Match scrollable area with w-full (And on each line) */}
+            <div className="absolute inset-0 z-10 w-full h-full pointer-events-none"> {/* Match scrollable area with w-full (And on each line) */}
               {Array.from({ length: 24 }).map((_, hour) => (
                 <div
                   key={hour}
@@ -312,7 +313,7 @@ const ProjectSection = () => {
                         e.stopPropagation();
                         setSelectedTask(task);
                       }}
-                      className="truncate relative z-20 translate-y-6 hover:translate-y-5 transition-transform"
+                      className="truncate relative z-20 hover:-translate-y-1 transition-transform"
                       style={{
                         top: `${topPosition}px`,
                         height: `${height}px`,
