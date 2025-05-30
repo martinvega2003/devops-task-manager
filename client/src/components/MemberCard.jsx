@@ -29,7 +29,7 @@ const MemberCard = ({ onClick, member }) => {
         <h3 className="text-body font-semibold whitespace-nowrap truncate">{member.username}</h3>
         <p className="text-caption italic whitespace-nowrap text-zinc-100 truncate">
           {!member.active ? "Deactivated" : (
-            <>Currently working on <strong>{member.tasks_count}</strong> tasks</>
+            <>Currently working on <strong>{member.pending_tasks_count}</strong> tasks</>
           )}
           
         </p>
