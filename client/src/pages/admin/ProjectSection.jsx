@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../API/api.interceptors';
-import { BsListCheck } from 'react-icons/bs';
-import { FaChevronLeft, FaChevronRight, FaCircle, FaPen, FaRegCheckSquare } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaPen } from 'react-icons/fa';
 import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
-import AddTaskForm from '../../components/AddTaskForm';
 import TaskPage from './TaskPage';
 import { toast } from 'react-toastify';
 
