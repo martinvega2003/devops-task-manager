@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.route.js';
 import taskRoutes from './routes/task.route.js';
 import projectRoutes from "./routes/project.route.js"
@@ -25,6 +27,15 @@ app.get('/', async (req, res) => {
     res.status(500).send("Database not reachable");
   }
 })
+
+// serve anything under /uploads from the filesystem
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+
+app.use(
+  '/api/uploads',
+  express.static(path.join(__dirname, 'uploads')) 
+);
 
 // Routes
 app.use('/api/auth', authRoutes);

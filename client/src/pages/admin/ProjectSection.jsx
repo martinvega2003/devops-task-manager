@@ -1,21 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../API/api.interceptors';
-import { BsListCheck } from 'react-icons/bs';
-import { FaChevronLeft, FaChevronRight, FaCircle, FaPen, FaRegCheckSquare } from 'react-icons/fa';
 import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
-import AddTaskForm from '../../components/AddTaskForm';
 import TaskPage from './TaskPage';
+import AddTaskForm from '../../components/AddTaskForm'
+import { FaChevronLeft, FaChevronRight, FaPen } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-
-const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-// Helper function to check if two dates represent the same calendar day.
-const isSameDay = (d1, d2) =>
-  d1.getFullYear() === d2.getFullYear() &&
-  d1.getMonth() === d2.getMonth() &&
-  d1.getDate() === d2.getDate();
 
 const ProjectSection = () => {
   const { project_id } = useParams();
@@ -246,6 +237,9 @@ const ProjectSection = () => {
 
   if (!project) return null;
 
+  // Days of the week
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   // Format month/year for display (e.g., "August 2025")
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -258,6 +252,12 @@ const ProjectSection = () => {
   const projectDeadline = new Date(project.deadline);
   const leftDisabled = currentYear === projectCreated.getFullYear() && currentMonth === projectCreated.getMonth();
   const rightDisabled = currentYear === projectDeadline.getFullYear() && currentMonth === projectDeadline.getMonth();
+
+  // Helper function to check if two dates represent the same calendar day.
+  const isSameDay = (d1, d2) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
 
   const Modal = (
       <div className="relative z-10 bg-white dark:bg-gray-800 p-2 sm:p-6 pb-12 sm:pb-6 rounded-lg shadow-lg w-full sm:w-2/3 h-full sm:h-[80vh] flex flex-col items-start overflow-y-auto">
@@ -274,7 +274,7 @@ const ProjectSection = () => {
           {/* Vertical Timeline */}
           <div className="sticky z-30 left-0 h-fit bg-white dark:bg-gray-800 text-caption text-surface-black dark:text-surface-white pr-2 border-r border-gray-300 dark:border-gray-600 flex flex-col items-end">
             {Array.from({ length: 24 }).map((_, hour) => (
-              <div key={hour} className="py-4 text-right w-fit sm:w-12 h-12">
+              <div key={hour} className="pb-8 text-right w-fit sm:w-12 h-12 flex items-start">
                 <span>{hour}:00</span>
               </div>
             ))}
@@ -282,8 +282,9 @@ const ProjectSection = () => {
 
           {/* Timeline + Tasks */}
           <div className="relative flex-1 pr-12"> {/* flex-1 fills the remaining horizontal space */}
+
             {/* Hour lines */}
-            <div className="absolute inset-0 top-6 z-10 w-full h-full pointer-events-none"> {/* Match scrollable area with w-full (And on each line) */}
+            <div className="absolute inset-0 z-10 w-full h-full pointer-events-none"> {/* Match scrollable area with w-full (And on each line) */}
               {Array.from({ length: 24 }).map((_, hour) => (
                 <div
                   key={hour}
@@ -312,7 +313,7 @@ const ProjectSection = () => {
                         e.stopPropagation();
                         setSelectedTask(task);
                       }}
-                      className="truncate relative z-20 translate-y-6 hover:translate-y-5 transition-transform"
+                      className="truncate relative z-20 hover:-translate-y-1 transition-transform"
                       style={{
                         top: `${topPosition}px`,
                         height: `${height}px`,
@@ -538,8 +539,14 @@ const ProjectSection = () => {
               <div
                 {...(cell.isCurrentMonth &&
                   !(
-                    (currentMonth === projectCreated.getMonth() && cell.date.getDate() < projectCreated.getDate()) ||
-                    (currentMonth === projectDeadline.getMonth() && cell.date.getDate() > projectDeadline.getDate())
+                    (
+                      currentMonth === projectCreated.getMonth() &&
+                      currentYear === projectCreated.getFullYear() && 
+                      cell.date.getDate() < projectCreated.getDate()
+                    ) || (
+                      currentMonth === projectDeadline.getMonth() &&
+                      currentYear === projectDeadline.getFullYear() && 
+                      cell.date.getDate() > projectDeadline.getDate())
                   ) && { onClick: () => openModal(cell, cellTasks) 
                 })}
                 key={index}
@@ -547,8 +554,15 @@ const ProjectSection = () => {
                   isToday ? 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' :
                   cell.isCurrentMonth
                     ? (
-                        (currentMonth === projectCreated.getMonth() && cell.date.getDate() < projectCreated.getDate()) ||
-                        (currentMonth === projectDeadline.getMonth() && cell.date.getDate() > projectDeadline.getDate())
+                        (
+                          currentMonth === projectCreated.getMonth() && 
+                          currentYear === projectCreated.getFullYear() &&
+                          cell.date.getDate() < projectCreated.getDate()
+                        ) || (
+                          currentMonth === projectDeadline.getMonth() && 
+                          currentYear === projectDeadline.getFullYear() &&
+                          cell.date.getDate() > projectDeadline.getDate()
+                        )
                       ) ? 'opacity-30' : 'bg-blue-300 dark:bg-blue-950 text-surface-white cursor-pointer'
                     : 'opacity-30'
                 }`}

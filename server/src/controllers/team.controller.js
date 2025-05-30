@@ -64,6 +64,7 @@ export const getTeamMembers = async (req, res) => {
           u.role,
           u.active,
           COUNT(DISTINCT t.id) AS tasks_count,
+          COUNT(DISTINCT t.id) FILTER (WHERE t.status <> 'Completed') AS pending_tasks_count,
           COUNT(DISTINCT ta.project_id) AS projects_count
       FROM 
           users u
