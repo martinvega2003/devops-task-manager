@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../../API/api.interceptors';
-import { FaChevronLeft, FaChevronRight, FaPen } from 'react-icons/fa';
 import TaskTitleCard from '../../components/TaskTitleCard';
 import Button from '../../components/Button';
 import TaskPage from './TaskPage';
+import AddTaskForm from '../../components/AddTaskForm'
+import { FaChevronLeft, FaChevronRight, FaPen } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const ProjectSection = () => {
