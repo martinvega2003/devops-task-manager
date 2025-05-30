@@ -190,22 +190,41 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
   }
 
   // Handle asset download
-  const handleAssetDownload = (fileUrl, filename) => {
+  const handleAssetDownload = async (fileUrl, filename) => {
     try {
-      const baseUrl = "http://localhost:5001"; // Replace with your server's base URL
-      const fullUrl = `${baseUrl}${fileUrl}`;
+      // perform the request as a blob
+      const res = await api.get(fileUrl, {
+        responseType: 'blob',
+      });
 
+      if (res.status !== 200) {
+        throw new Error(`Unexpected HTTP ${res.status}`);
+      }
+
+      // download via object URL
+      const blobUrl = window.URL.createObjectURL(res.data);
       const link = document.createElement('a');
-      link.target = '_blank'; // Open in a new tab
-      link.href = fullUrl;
-      link.download = filename; 
+      link.href = blobUrl;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
       link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+
+      toast.success('Asset downloaded successfully', {
+        toastId: 'asset-download-success'
+      });
+
     } catch (error) {
-      toast.error('Could not download Asset', {
-        toastId: 'asset-download-error'
-      })
+      toast.error(
+        (error.response?.data?.msg) ||
+        error.message ||
+        'Failed to download asset',
+        { toastId: 'asset-download-error' }
+      );
     }
   };
+
 
   // Handle file upload
   const handleAssetUpload = async (e) => {
