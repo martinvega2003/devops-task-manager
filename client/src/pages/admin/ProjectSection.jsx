@@ -7,14 +7,6 @@ import Button from '../../components/Button';
 import TaskPage from './TaskPage';
 import { toast } from 'react-toastify';
 
-const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-// Helper function to check if two dates represent the same calendar day.
-const isSameDay = (d1, d2) =>
-  d1.getFullYear() === d2.getFullYear() &&
-  d1.getMonth() === d2.getMonth() &&
-  d1.getDate() === d2.getDate();
-
 const ProjectSection = () => {
   const { project_id } = useParams();
   const [project, setProject] = useState(null);
@@ -244,6 +236,9 @@ const ProjectSection = () => {
 
   if (!project) return null;
 
+  // Days of the week
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   // Format month/year for display (e.g., "August 2025")
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -256,6 +251,12 @@ const ProjectSection = () => {
   const projectDeadline = new Date(project.deadline);
   const leftDisabled = currentYear === projectCreated.getFullYear() && currentMonth === projectCreated.getMonth();
   const rightDisabled = currentYear === projectDeadline.getFullYear() && currentMonth === projectDeadline.getMonth();
+
+  // Helper function to check if two dates represent the same calendar day.
+  const isSameDay = (d1, d2) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
 
   const Modal = (
       <div className="relative z-10 bg-white dark:bg-gray-800 p-2 sm:p-6 pb-12 sm:pb-6 rounded-lg shadow-lg w-full sm:w-2/3 h-full sm:h-[80vh] flex flex-col items-start overflow-y-auto">
