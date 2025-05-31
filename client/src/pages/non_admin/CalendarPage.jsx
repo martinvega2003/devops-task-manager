@@ -7,18 +7,6 @@ import TaskPage from './TaskPage';
 import { AuthContext } from '../../context/authContext';
 import { toast } from 'react-toastify';
 
-const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-];
-
-// Helper function to check if two dates represent the same calendar day.
-const isSameDay = (d1, d2) =>
-  d1.getFullYear() === d2.getFullYear() &&
-  d1.getMonth() === d2.getMonth() &&
-  d1.getDate() === d2.getDate();
-
 const CalendarPage = () => {
   const { user } = useContext(AuthContext)
 
@@ -39,6 +27,18 @@ const CalendarPage = () => {
   const [modalCell, setModalCell] = useState(null);
   const [modalCellTasks, setModalCellTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
+
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  // Helper function to check if two dates represent the same calendar day.
+  const isSameDay = (d1, d2) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
 
   useEffect(() => {
     fetchProjects();
@@ -464,8 +464,15 @@ const CalendarPage = () => {
                 <div
                   {...(cell.isCurrentMonth &&
                     !(
-                      (currentMonth === firstTask.getMonth() && cell.date.getDate() < firstTask.getDate()) ||
-                      (currentMonth === lastTask.getMonth() && cell.date.getDate() > lastTask.getDate())
+                      (
+                        currentMonth === firstTask.getMonth() && 
+                        currentYear === firstTask.getFullYear() &&
+                        cell.date.getDate() < firstTask.getDate()
+                      ) || (
+                        currentMonth === lastTask.getMonth() && 
+                        currentYear === lastTask.getFullYear() &&
+                        cell.date.getDate() > lastTask.getDate()
+                      )
                     ) && { onClick: () => openModal(cell, cellTasks) 
                   })}
                   key={index}
@@ -473,8 +480,15 @@ const CalendarPage = () => {
                     isToday ? 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' :
                     cell.isCurrentMonth
                       ? (
-                        (currentMonth === firstTask.getMonth() && cell.date.getDate() < firstTask.getDate()) ||
-                        (currentMonth === lastTask.getMonth() && cell.date.getDate() > lastTask.getDate())
+                          (
+                            currentMonth === firstTask.getMonth() && 
+                            currentYear == firstTask.getFullYear() &&
+                            cell.date.getDate() < firstTask.getDate()
+                          ) || (
+                            currentMonth === lastTask.getMonth() && 
+                            currentYear === lastTask.getFullYear() &&
+                            cell.date.getDate() > lastTask.getDate()
+                          )
                       ) ? 'opacity-30 dark:text-surface-white' : 'bg-blue-300 dark:bg-blue-950 text-surface-white cursor-pointer'
                       : 'opacity-30 dark:text-surface-white'
                   }`}
