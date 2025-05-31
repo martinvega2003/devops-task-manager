@@ -464,8 +464,15 @@ const CalendarPage = () => {
                 <div
                   {...(cell.isCurrentMonth &&
                     !(
-                      (currentMonth === firstTask.getMonth() && cell.date.getDate() < firstTask.getDate()) ||
-                      (currentMonth === lastTask.getMonth() && cell.date.getDate() > lastTask.getDate())
+                      (
+                        currentMonth === firstTask.getMonth() && 
+                        currentYear === firstTask.getFullYear() &&
+                        cell.date.getDate() < firstTask.getDate()
+                      ) || (
+                        currentMonth === lastTask.getMonth() && 
+                        currentYear === lastTask.getFullYear() &&
+                        cell.date.getDate() > lastTask.getDate()
+                      )
                     ) && { onClick: () => openModal(cell, cellTasks) 
                   })}
                   key={index}
@@ -473,8 +480,15 @@ const CalendarPage = () => {
                     isToday ? 'bg-primary dark:bg-primary-dark text-surface-white cursor-pointer' :
                     cell.isCurrentMonth
                       ? (
-                        (currentMonth === firstTask.getMonth() && cell.date.getDate() < firstTask.getDate()) ||
-                        (currentMonth === lastTask.getMonth() && cell.date.getDate() > lastTask.getDate())
+                          (
+                            currentMonth === firstTask.getMonth() && 
+                            currentYear == firstTask.getFullYear() &&
+                            cell.date.getDate() < firstTask.getDate()
+                          ) || (
+                            currentMonth === lastTask.getMonth() && 
+                            currentYear === lastTask.getFullYear() &&
+                            cell.date.getDate() > lastTask.getDate()
+                          )
                       ) ? 'opacity-30 dark:text-surface-white' : 'bg-blue-300 dark:bg-blue-950 text-surface-white cursor-pointer'
                       : 'opacity-30 dark:text-surface-white'
                   }`}
