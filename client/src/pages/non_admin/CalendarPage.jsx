@@ -7,18 +7,6 @@ import TaskPage from './TaskPage';
 import { AuthContext } from '../../context/authContext';
 import { toast } from 'react-toastify';
 
-const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const monthNames = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-];
-
-// Helper function to check if two dates represent the same calendar day.
-const isSameDay = (d1, d2) =>
-  d1.getFullYear() === d2.getFullYear() &&
-  d1.getMonth() === d2.getMonth() &&
-  d1.getDate() === d2.getDate();
-
 const CalendarPage = () => {
   const { user } = useContext(AuthContext)
 
@@ -39,6 +27,18 @@ const CalendarPage = () => {
   const [modalCell, setModalCell] = useState(null);
   const [modalCellTasks, setModalCellTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
+
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  // Helper function to check if two dates represent the same calendar day.
+  const isSameDay = (d1, d2) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
 
   useEffect(() => {
     fetchProjects();
