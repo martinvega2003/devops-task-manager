@@ -104,54 +104,28 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
     }
   };
 
-  //Scrolling Animation for Time Picker:
-  // 1. base arrays
-  const hours = Array.from({ length: 24 }, (_, i) =>
-    i.toString().padStart(2, "0")
-  );
-   
-  const minutes = Array.from({ length: 60 }, (_, i) =>
-    i.toString().padStart(2, "0")
-  );
- 
-  // 2. triple-wrap for infinite scroll
-  const hours3   = [...hours, ...hours, ...hours];
-  const minutes3 = [...minutes, ...minutes, ...minutes];
- 
-  // 3. one ref per field+type
-  const hourRefs   = { startTime: useRef(null), endTime: useRef(null) };
-  const minuteRefs = { startTime: useRef(null), endTime: useRef(null) };
- 
-  // 4. scroll handler
-  const ITEM_H = 32; // must match your .py-2 line-height
-  function handleWrapScroll(e, type, field) {
-    const ref = e.target;
-    const len = type === "hour" ? hours.length : minutes.length;
-    const blockHeight = len * ITEM_H;
-    // if you scroll into the first copy
-    if (ref.scrollTop < ITEM_H) {
-      ref.scrollTop += blockHeight;
+  // Handle task time block input
+  
+  // 1 Local state for each two-digit field
+  const [startHour, setStartHour] = useState('00');
+  const [startMin,  setStartMin]  = useState('00');
+  const [endHour,   setEndHour]   = useState('00');
+  const [endMin,    setEndMin]    = useState('00');
+  
+  // 2 Validation helper
+  function validate(part, val) {
+    const num = parseInt(val, 10);
+    if (isNaN(num) || num < 0) return false;
+    if (part === 'hour' && num > 23) {
+      toast.error('Hour must be between 00 and 23');
+      return false;
     }
-    
-    // if you scroll into the last copy
-    else if (ref.scrollTop > blockHeight * 2) {
-      ref.scrollTop -= blockHeight;
+    if (part === 'min' && num > 59) {
+      toast.error('Minute must be between 00 and 59');
+      return false;
     }
+    return true;
   }
- 
-  // 5. on mount, position each picker in the middle copy
-  useEffect(() => {
-    ["startTime", "endTime"].forEach((field) => {
-      const { [field]: val } = taskData;
-      const hour = parseInt(val.split(":")[0], 10);
-      const minute = parseInt(val.split(":")[1], 10);
-      const hrEl = hourRefs[field].current;
-      const mnEl = minuteRefs[field].current;
-      if (hrEl) hrEl.scrollTop = (hours.length + hour) * ITEM_H;
-      if (mnEl) mnEl.scrollTop = (minutes.length + minute) * ITEM_H;
-    });
-  }, []); // run once
-
 
   return (
     <div className="absolute inset-0 z-40 flex items-center justify-center bg-transparent">
@@ -215,79 +189,64 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
 
           <div className="mb-4 flex flex-col md:flex-row md:justify-between lg:justify-evenly gap-4">
             {/* Custom Time Picker */}
-            {["startTime", "endTime"].map((field) => {
-  const label = field === "startTime" ? "Start Time" : "End Time";
-  const [h, m] = taskData[field].split(":");
-  const hour   = parseInt(h, 10);
-  const minute = parseInt(m, 10);
+            {["startTime", "endTime"].map((field, i) => {
+              const label = field === "startTime" ? "Start Time" : "End Time";
+              const [h, m] = taskData[field].split(":");
 
-  return (
-    <div key={field}>
-      <label className="block text-gray-700 dark:text-gray-200 mb-1">
-        {label}
-      </label>
-      <div className="flex items-center gap-4">
-        {/* Hour scrollable picker */}
-        <div
-          ref={hourRefs[field]}
-          onScroll={(e) => handleWrapScroll(e, "hour", field)}
-          className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center"
-        >
-          {hours3.map((hStr, idx) => (
-            <div
-              key={`h-${idx}`}
-              onClick={() =>
-                setTaskData({
-                  ...taskData,
-                  [field]: `${hStr}:${m.padStart(2, "0")}`,
-                })
-              }
-              className={`w-full py-2 text-center cursor-pointer rounded ${
-                parseInt(hStr, 10) === hour
-                  ? "bg-primary text-white font-bold shadow"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
-              style={{ transition: "all 0.15s" }}
-            >
-              {hStr}
-            </div>
-          ))}
-        </div>
+              return (
+                <div key={i} className="flex items-center gap-2">
+                  {/* Hour */}
+                  <input
+                    type="text"
+                    className="w-12 text-center rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 py-1"
+                    maxLength={2}
+                    value={field === "startTime" ? startHour : endHour}
+                    onChange={e => {
+                      const v = e.target.value.replace(/\D/g, '');
+                      if (v.length <= 2 && validate('hour', v)) field === "startTime" ? setStartHour(v) : setEndHour(v)
+                    }}
+                    onBlur={() => {
+                      let v = field === "startTime" ? startHour : endHour;
+                      if (v === '') v = '00';
+                      else if (v.length === 1) v = v.padStart(2, '0');
+                      if (!validate('hour', v)) v = field === "startTime" ? startHour.padStart(2, '0') : endHour.padStart(2, '0');
+                      field === "startTime" ? setStartHour(v) : setEndHour(v)
+                      setTaskData({
+                        ...taskData,
+                        [field]: `${v}:${field === "startTime" ? startMin : endMin}`,
+                      });
+                    }}
+                  />
 
-        <span className="text-xl font-bold">:</span>
+                  <span className="text-xl font-bold">:</span>
 
-        {/* Minute scrollable picker */}
-        <div
-          ref={minuteRefs[field]}
-          onScroll={(e) => handleWrapScroll(e, "minute", field)}
-          className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center"
-        >
-          {minutes3.map((mStr, idx) => (
-            <div
-              key={`m-${idx}`}
-              onClick={() =>
-                setTaskData({
-                  ...taskData,
-                  [field]: `${h.padStart(2, "0")}:${mStr}`,
-                })
-              }
-              className={`w-full py-2 text-center cursor-pointer rounded ${
-                parseInt(mStr, 10) === minute
-                  ? "bg-primary text-white font-bold shadow"
-                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
-              style={{ transition: "all 0.15s" }}
-            >
-              {mStr}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-})}
-
+                  {/* Minute */}
+                  <input
+                    type="text"
+                    className="w-12 text-center rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 py-1"
+                    maxLength={2}
+                    value={field === "startTime" ? startMin : endMin}
+                    onChange={e => {
+                      const v = e.target.value.replace(/\D/g, '');
+                      if (v.length <= 2 && validate('min', v)) field === "startTime" ? setStartMin(v) : setEndMin(v)
+                    }}
+                    onBlur={() => {
+                      let v = field === "startTime" ? startMin : endMin;
+                      if (v === '') v = '00';
+                      else if (v.length === 1) v = v.padStart(2, '0');
+                      if (!validate('min', v)) v = field === "startTime" ? startMin.padStart(2, '0') : endMin.padStart(2, '0')
+                      field === "startTime" ? setStartMin(v) : setEndMin(v)
+                      setTaskData({
+                        ...taskData,
+                        [field]: `${field === "startTime" ? startHour : endHour}:${v}`,
+                      });
+                    }}
+                  />
+                </div>
+              );
+            })}
           </div>
+
           
           {/* Assigned Users Section */}
           <div className="mb-4">
