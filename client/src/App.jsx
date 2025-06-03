@@ -5,18 +5,17 @@ import { AuthProvider } from './context/authContext.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import Navbar from './components/Navbar.jsx';
 import Sidebar from './components/Sidebar.jsx';
-import ProtectedRoute from './components/ProtectedRoute.jsx';
-import NotFoundRoute from './components/NotFoundRoute.jsx';
 import HomePage from './pages/HomePage.jsx';
+import MyTeamSection from './pages/admin/MyTeamSection.jsx';
+import MyProjectsSection from './pages/admin/MyProjectsSection.jsx';
+import ProjectSection from './pages/admin/ProjectSection.jsx';
+import NotFoundRoute from './components/NotFoundRoute.jsx';
+import AdminRoute from './components/AdminRoute.jsx';
+import NonAdminRoute from './components/NonAdminRoute.jsx';
 
 //React-tostify:
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import AdminRoute from './components/AdminRoute.jsx';
-import MyTeamSection from './pages/admin/MyTeamSection.jsx';
-import NonAdminRoute from './components/NonAdminRoute.jsx';
-import MyProjectsSection from './pages/admin/MyProjectsSection.jsx';
-import ProjectSection from './pages/admin/ProjectSection.jsx';
 
 const App = () => {
 
