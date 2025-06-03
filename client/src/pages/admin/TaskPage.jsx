@@ -93,7 +93,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
     })
   }
 
-  // Handle task time block change (Scrolling Animation)
+  // Handle task time block change
 
   // 1 Local state for each two-digit field
   const [startHour, setStartHour] = useState('00');
