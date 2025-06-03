@@ -95,52 +95,41 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
   // Handle task time block change (Scrolling Animation)
 
-  // 1. base arrays
-  const hours   = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
-  const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, "0"));
+  // 1 Local state for each two-digit field
+  const [startHour, setStartHour] = useState('00');
+  const [startMin,  setStartMin]  = useState('00');
+  const [endHour,   setEndHour]   = useState('00');
+  const [endMin,    setEndMin]    = useState('00');
 
-  // 2. triple-wrap for infinite scroll
-  const hours3   = [...hours, ...hours, ...hours];
-  const minutes3 = [...minutes, ...minutes, ...minutes];
-
-  // 3. refs for each picker
-  const startHourRef   = useRef(null);
-  const startMinuteRef = useRef(null);
-  const endHourRef     = useRef(null);
-  const endMinuteRef   = useRef(null);
-
-  // 4. scroll-wrap handler
-  const ITEM_H = 32; // must match your .py-2 height
-  function handleWrapScroll(e, type) {
-    const ref = e.target;
-    const len = type === "hour" ? hours.length : minutes.length;
-    const block = len * ITEM_H;
-
-    // entered first copy?
-    if (ref.scrollTop < ITEM_H) {
-      ref.scrollTop += block;
-    }
-    // entered last copy?
-    else if (ref.scrollTop > block * 2) {
-      ref.scrollTop -= block;
-    }
-  }
-
-  // 5. on mount center each picker on its current value
+  // 2 Sync local state when updatedTask changes
   useEffect(() => {
+    if (!selectedTask) return;
 
-    if (selectedTask) {
-      const sh = new Date(selectedTask.start_time).getHours();
-      const sm = new Date(selectedTask.start_time).getMinutes();
-      const eh = new Date(selectedTask.end_time).getHours();
-      const em = new Date(selectedTask.end_time).getMinutes();
+    const sh = String(new Date(selectedTask.start_time).getHours()).padStart(2, '0');
+    const sm = String(new Date(selectedTask.start_time).getMinutes()).padStart(2, '0');
+    const eh = String(new Date(selectedTask.end_time).getHours()).padStart(2, '0');
+    const em = String(new Date(selectedTask.end_time).getMinutes()).padStart(2, '0');
 
-      if (startHourRef.current)   startHourRef.current.scrollTop   = (hours.length + sh) * ITEM_H;
-      if (startMinuteRef.current) startMinuteRef.current.scrollTop = (minutes.length + sm) * ITEM_H;
-      if (endHourRef.current)     endHourRef.current.scrollTop     = (hours.length + eh) * ITEM_H;
-      if (endMinuteRef.current)   endMinuteRef.current.scrollTop   = (minutes.length + em) * ITEM_H;
+    setStartHour(sh);
+    setStartMin(sm);
+    setEndHour(eh);
+    setEndMin(em);
+  }, [selectedTask]);
+
+  // 3 Validation helper
+  function validate(part, val) {
+    const num = parseInt(val, 10);
+    if (isNaN(num) || num < 0) return false;
+    if (part === 'hour' && num > 23) {
+      toast.error('Hour must be between 00 and 23');
+      return false;
     }
-  }, []);
+    if (part === 'min' && num > 59) {
+      toast.error('Minute must be between 00 and 59');
+      return false;
+    }
+    return true;
+  }
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -445,7 +434,7 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
 
               {/* Task Duration */}
               <div className="min-w-full flex flex-col gap-2">
-                <div className={`min-w-full flex ${!isEditing ? 'items-center' : 'flex-col lg:flex-row items-start lg:items-center'} gap-2 p-4 border border-gray-300 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-700`}>
+                <div className='min-w-full flex items-center gap-2 p-4 border border-gray-300 dark:border-gray-600 rounded-2xl bg-white dark:bg-gray-700'>
                   {/* Start Time */}
                   <div className="flex flex-col items-start">
                     <span className="text-caption font-semibold text-gray-600 dark:text-gray-400 whitespace-nowrap">
@@ -457,62 +446,54 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                         {String(new Date(selectedTask.start_time).getMinutes()).padStart(2, '0')}
                       </span>
                     ) : (
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
                         {/* Hour */}
-                        <div
-                          ref={startHourRef}
-                          onScroll={(e) => handleWrapScroll(e, "hour")}
-                          className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center"
-                        >
-                          {hours3.map((hStr, idx) => (
-                            <div
-                              key={`sh-${idx}`}
-                              onClick={() =>
-                                setUpdatedTask({
-                                  ...updatedTask,
-                                  startTime: `${hStr}:${updatedTask.startTime.split(":")[1]}`,
-                                })
-                              }
-                              className={`w-full py-2 text-center cursor-pointer rounded ${
-                                hStr === updatedTask.startTime.split(":")[0]
-                                  ? "bg-primary text-white font-bold shadow"
-                                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                              }`}
-                              style={{ transition: "all 0.15s" }}
-                            >
-                              {hStr}
-                            </div>
-                          ))}
-                        </div>
+                        <input
+                          type="text"
+                          className="w-12 text-center rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 py-1"
+                          maxLength={2}
+                          value={startHour}
+                          onChange={e => {
+                            const v = e.target.value.replace(/\D/g, '');
+                            if (v.length <= 2) setStartHour(v);
+                          }}
+                          onBlur={() => {
+                            let v = startHour;
+                            if (v === '') v = '00';
+                            else if (v.length === 1) v = v.padStart(2, '0');
+                            if (!validate('hour', v)) v = updatedTask.startTime.split(':')[0];
+                            setStartHour(v);
+                            setUpdatedTask({
+                              ...updatedTask,
+                              startTime: `${v}:${startMin}`,
+                            });
+                          }}
+                        />
 
                         <span className="text-xl font-bold">:</span>
 
                         {/* Minute */}
-                        <div
-                          ref={startMinuteRef}
-                          onScroll={(e) => handleWrapScroll(e, "minute")}
-                          className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center"
-                        >
-                          {minutes3.map((mStr, idx) => (
-                            <div
-                              key={`sm-${idx}`}
-                              onClick={() =>
-                                setUpdatedTask({
-                                  ...updatedTask,
-                                  startTime: `${updatedTask.startTime.split(":")[0]}:${mStr}`,
-                                })
-                              }
-                              className={`w-full py-2 text-center cursor-pointer rounded ${
-                                mStr === updatedTask.startTime.split(":")[1]
-                                  ? "bg-primary text-white font-bold shadow"
-                                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                              }`}
-                              style={{ transition: "all 0.15s" }}
-                            >
-                              {mStr}
-                            </div>
-                          ))}
-                        </div>
+                        <input
+                          type="text"
+                          className="w-12 text-center rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 py-1"
+                          maxLength={2}
+                          value={startMin}
+                          onChange={e => {
+                            const v = e.target.value.replace(/\D/g, '');
+                            if (v.length <= 2) setStartMin(v);
+                          }}
+                          onBlur={() => {
+                            let v = startMin;
+                            if (v === '') v = '00';
+                            else if (v.length === 1) v = v.padStart(2, '0');
+                            if (!validate('min', v)) v = updatedTask.startTime.split(':')[1];
+                            setStartMin(v);
+                            setUpdatedTask({
+                              ...updatedTask,
+                              startTime: `${startHour}:${v}`,
+                            });
+                          }}
+                        />
                       </div>
                     )}
                   </div>
@@ -530,62 +511,54 @@ const TaskPage = ({ selectedTask, setSelectedTask, fetchTasks }) => {
                         {String(new Date(selectedTask.end_time).getMinutes()).padStart(2, '0')}
                       </span>
                     ) : (
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
                         {/* Hour */}
-                        <div
-                          ref={endHourRef}
-                          onScroll={(e) => handleWrapScroll(e, "hour")}
-                          className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center"
-                        >
-                          {hours3.map((hStr, idx) => (
-                            <div
-                              key={`eh-${idx}`}
-                              onClick={() =>
-                                setUpdatedTask({
-                                  ...updatedTask,
-                                  endTime: `${hStr}:${updatedTask.endTime.split(":")[1]}`,
-                                })
-                              }
-                              className={`w-full py-2 text-center cursor-pointer rounded ${
-                                hStr === updatedTask.endTime.split(":")[0]
-                                  ? "bg-primary text-white font-bold shadow"
-                                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                              }`}
-                              style={{ transition: "all 0.15s" }}
-                            >
-                              {hStr}
-                            </div>
-                          ))}
-                        </div>
+                        <input
+                          type="text"
+                          className="w-12 text-center rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 py-1"
+                          maxLength={2}
+                          value={endHour}
+                          onChange={e => {
+                            const v = e.target.value.replace(/\D/g, '');
+                            if (v.length <= 2) setEndHour(v);
+                          }}
+                          onBlur={() => {
+                            let v = endHour;
+                            if (v === '') v = '00';
+                            else if (v.length === 1) v = v.padStart(2, '0');
+                            if (!validate('hour', v)) v = updatedTask.endTime.split(':')[0];
+                            setEndHour(v);
+                            setUpdatedTask({
+                              ...updatedTask,
+                              endTime: `${v}:${endMin}`,
+                            });
+                          }}
+                        />
 
                         <span className="text-xl font-bold">:</span>
 
                         {/* Minute */}
-                        <div
-                          ref={endMinuteRef}
-                          onScroll={(e) => handleWrapScroll(e, "minute")}
-                          className="w-16 h-32 overflow-y-auto rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex flex-col items-center"
-                        >
-                          {minutes3.map((mStr, idx) => (
-                            <div
-                              key={`em-${idx}`}
-                              onClick={() =>
-                                setUpdatedTask({
-                                  ...updatedTask,
-                                  endTime: `${updatedTask.endTime.split(":")[0]}:${mStr}`,
-                                })
-                              }
-                              className={`w-full py-2 text-center cursor-pointer rounded ${
-                                mStr === updatedTask.endTime.split(":")[1]
-                                  ? "bg-primary text-white font-bold shadow"
-                                  : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                              }`}
-                              style={{ transition: "all 0.15s" }}
-                            >
-                              {mStr}
-                            </div>
-                          ))}
-                        </div>
+                        <input
+                          type="text"
+                          className="w-12 text-center rounded border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 py-1"
+                          maxLength={2}
+                          value={endMin}
+                          onChange={e => {
+                            const v = e.target.value.replace(/\D/g, '');
+                            if (v.length <= 2) setEndMin(v);
+                          }}
+                          onBlur={() => {
+                            let v = endMin;
+                            if (v === '') v = '00';
+                            else if (v.length === 1) v = v.padStart(2, '0');
+                            if (!validate('min', v)) v = updatedTask.endTime.split(':')[1];
+                            setEndMin(v);
+                            setUpdatedTask({
+                              ...updatedTask,
+                              endTime: `${endHour}:${v}`,
+                            });
+                          }}
+                        />
                       </div>
                     )}
                   </div>
