@@ -22,7 +22,6 @@
     "react-router-dom": "^7.3.0",
     "react-time-picker": "^7.0.0",
     "react-toastify": "^11.0.5",
-    "react-wheel-time-picker": "^1.2.11",
     "tailwindcss": "^4.0.7"
   },
   "devDependencies": {
