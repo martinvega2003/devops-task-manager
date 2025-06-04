@@ -88,8 +88,8 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
         priority: "Low",
         status: "Pending",
         projectId: project_id,
-        startTime: "12:00",  
-        endTime: "12:15",  
+        startTime: "00:00",  
+        endTime: "00:00",  
         assignedUsers: []
       });
       fetchTasks()
@@ -203,14 +203,14 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
                     value={field === "startTime" ? startHour : endHour}
                     onChange={e => {
                       const v = e.target.value.replace(/\D/g, '');
-                      if (v.length <= 2 && validate('hour', v)) field === "startTime" ? setStartHour(v) : setEndHour(v)
+                      if (v.length <= 2 && validate('hour', v)) field === "startTime" ? setStartHour(v).padStart(2, '0') : setEndHour(v).padStart(2, '0')
                     }}
                     onBlur={() => {
                       let v = field === "startTime" ? startHour : endHour;
                       if (v === '') v = '00';
                       else if (v.length === 1) v = v.padStart(2, '0');
                       if (!validate('hour', v)) v = field === "startTime" ? startHour.padStart(2, '0') : endHour.padStart(2, '0');
-                      field === "startTime" ? setStartHour(v) : setEndHour(v)
+                      field === "startTime" ? setStartHour(v).padStart(2, '0') : setEndHour(v).padStart(2, '0')
                       setTaskData({
                         ...taskData,
                         [field]: `${v}:${field === "startTime" ? startMin : endMin}`,
@@ -228,14 +228,14 @@ const AddTaskForm = ({ project_id, setIsTaskFormOpen, modalCell, fetchTasks }) =
                     value={field === "startTime" ? startMin : endMin}
                     onChange={e => {
                       const v = e.target.value.replace(/\D/g, '');
-                      if (v.length <= 2 && validate('min', v)) field === "startTime" ? setStartMin(v) : setEndMin(v)
+                      if (v.length <= 2 && validate('min', v)) field === "startTime" ? setStartMin(v).padStart(2, '0') : setEndMin(v).padStart(2, '0')
                     }}
                     onBlur={() => {
                       let v = field === "startTime" ? startMin : endMin;
                       if (v === '') v = '00';
                       else if (v.length === 1) v = v.padStart(2, '0');
                       if (!validate('min', v)) v = field === "startTime" ? startMin.padStart(2, '0') : endMin.padStart(2, '0')
-                      field === "startTime" ? setStartMin(v) : setEndMin(v)
+                      field === "startTime" ? setStartMin(v).padStart(2, '0') : setEndMin(v).padStart(2, '0')
                       setTaskData({
                         ...taskData,
                         [field]: `${field === "startTime" ? startHour : endHour}:${v}`,
